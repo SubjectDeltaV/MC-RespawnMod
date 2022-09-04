@@ -1,3 +1,4 @@
+2022-09-03 Recreate Changelog: 
 2022-09-03 Finalized Initial Setup: 
 2022-09-03 recreate changelog: 
 2022-09-03 Deleted & rebuilt project files: 

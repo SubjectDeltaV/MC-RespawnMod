@@ -1,3 +1,7 @@
+2022-09-06 004: Added generic item and tab: Added Creative Mode Tab for items and generic items Lantern.
+
+2022-09-06 003: Finished Defining Touchstone: Fixed Issue with MODID being uppercase. Finished writing out definitions for touchstone. Predictably, item does not appear in menu but there is a stable launch to world.
+
 2022-09-04 002: Continued work on Touchstone: creating definitions for touchstone block
 
 2022-09-04 001 Block Init and Touchstone Creation: Created Block Initialization code. Added new Block TOUCHSTONE, and created method for auto registering BlockItems

@@ -9,6 +9,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
+import com.blackbeltjedi.spiritwalker.init.ItemInit;
 
 import java.util.function.Supplier;
 import com.blackbeltjedi.spiritwalker.*;
@@ -24,7 +25,8 @@ public class BlockInit {
 		if (event.getRegistryKey().equals(ForgeRegistries.Keys.ITEMS)) {
 			BLOCKS.getEntries().forEach( (blockRegistryObject) -> {
 				Block block = blockRegistryObject.get();
-				Supplier<Item> blockItemFactory = () -> new BlockItem(block, null);
+				Item.Properties properties = new Item.Properties().tab(ItemInit.ModCreativeTab.instance);
+				Supplier<Item> blockItemFactory = () -> new BlockItem(block, properties);
 				event.register(ForgeRegistries.Keys.ITEMS, blockRegistryObject.getId(), blockItemFactory);
 			});
 		}

@@ -1,3 +1,8 @@
+2022-09-04 002: Continued work on Touchstone: creating definitions for touchstone block
+
+2022-09-04 001 Block Init and Touchstone Creation: Created Block Initialization code. Added new Block TOUCHSTONE, and created method for auto registering BlockItems
+
+2022-09-04 Update CHANGELOG.md: 
 2022-09-03 Update Mod metadata: 
 2022-09-03 Recreate Changelog: 
 2022-09-03 Finalized Initial Setup: 

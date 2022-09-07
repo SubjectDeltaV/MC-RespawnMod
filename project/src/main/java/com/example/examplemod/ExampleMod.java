@@ -1,4 +1,4 @@
-package com.blackbeltjedi.spiritwalker;
+package com.example.examplemod;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
@@ -24,14 +24,13 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
-import com.blackbeltjedi.spiritwalker.init.*;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(spiritwalker.MODID)
-public class spiritwalker
+@Mod(ExampleMod.MODID)
+public class ExampleMod
 {
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "spiritwalker";
+    public static final String MODID = "examplemod";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
@@ -44,7 +43,7 @@ public class spiritwalker
     // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties().tab(CreativeModeTab.TAB_BUILDING_BLOCKS)));
 
-    public spiritwalker()
+    public ExampleMod()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 

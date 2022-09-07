@@ -1,4 +1,4 @@
-2022-09-06 004: Added generic item and tab: Added Creative Mode Tab for items and generic items Lantern.
+2022-09-06 004: Added generic item and tab: Added Creative Mode Tab for items and generic items Lantern. These changes generating a crash. Probably a programming error.
 
 2022-09-06 003: Finished Defining Touchstone: Fixed Issue with MODID being uppercase. Finished writing out definitions for touchstone. Predictably, item does not appear in menu but there is a stable launch to world.
 

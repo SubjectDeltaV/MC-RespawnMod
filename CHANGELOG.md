@@ -1,3 +1,4 @@
+2022-09-07 008: Fix Render Issue: 
 2022-09-07 007: Create Item Registry: Created Item Registry, creative mode tab, and lantern item. PNG not rendering in game. Investigate.
 
 2022-09-07 006: New Enviro setup: Tested to world and paused. No crashes.

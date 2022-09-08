@@ -1,5 +1,6 @@
 { 
 	"itemgroup.spiritw":"Spirit Walker Items",
 	
-	"item.spiritw.splantern": "Spirit Lantern"
+	"item.spiritw.splantern": "Spirit Lantern",
+	"block.spiritw.touchstone": "Touchstone"
 }

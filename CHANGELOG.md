@@ -1,4 +1,7 @@
-2022-09-07 008: Fix Render Issue: 
+2022-09-07 009: Create Block Registry: Created Block Registry, Added Touchstone Block.
+
+2022-09-07 008: Fix Render Issue: Had to move a folder around, structure was not built correctly the first time
+
 2022-09-07 007: Create Item Registry: Created Item Registry, creative mode tab, and lantern item. PNG not rendering in game. Investigate.
 
 2022-09-07 006: New Enviro setup: Tested to world and paused. No crashes.

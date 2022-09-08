@@ -1,6 +1,8 @@
 package com.subjectdeltav.spiritw;
 
 import com.mojang.logging.LogUtils;
+import com.subjectdeltav.spiritw.init.ItemInit;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -54,6 +56,8 @@ public class spiritw
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
+        
+        ItemInit.ITEMS.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

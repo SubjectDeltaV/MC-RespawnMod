@@ -1,4 +1,6 @@
-2022-09-07 009: Create Block Registry: Created Block Registry, Added Touchstone Block.
+2022-09-07 010: Fix Touchstone Render Issues: Using Deepslate Model for now
+
+2022-09-07 009: Create Block Registry: Created Block Registry, Added Touchstone Block. Block texture not pulling from vanilla deepslate.
 
 2022-09-07 008: Fix Render Issue: Had to move a folder around, structure was not built correctly the first time
 

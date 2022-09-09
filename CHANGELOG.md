@@ -1,3 +1,5 @@
+2022-09-08 011: Create Enchantment Registry: Created Enchantment Registry and new blank Enchantment Spiritbound.
+
 2022-09-07 010: Fix Touchstone Render Issues: Using Deepslate Model for now
 
 2022-09-07 009: Create Block Registry: Created Block Registry, Added Touchstone Block. Block texture not pulling from vanilla deepslate.

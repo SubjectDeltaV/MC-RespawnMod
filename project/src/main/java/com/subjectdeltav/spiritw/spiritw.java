@@ -2,6 +2,7 @@ package com.subjectdeltav.spiritw;
 
 import com.mojang.logging.LogUtils;
 import com.subjectdeltav.spiritw.init.BlockInit;
+import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
 
 import net.minecraft.client.Minecraft;
@@ -60,6 +61,7 @@ public class spiritw
         
         ItemInit.ITEMS.register(modEventBus);
         BlockInit.BLOCKS.register(modEventBus);
+        EnchantmentInit.ENCHANTMENTS.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

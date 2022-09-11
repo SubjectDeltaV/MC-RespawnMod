@@ -1,3 +1,5 @@
+2022-09-10 101: Program Enchantment: Added Event Logic for Spiritbound Enchantment. Took inspiration from standalone mode below, but required substantial rewrites to do correctly. https://github.com/vova7865/Soulbound/blob/master/src/main/java/com/vova7865/soulbound/Events.java
+
 2022-09-08 011: Create Enchantment Registry: Created Enchantment Registry and new blank Enchantment Spiritbound.
 
 2022-09-07 010: Fix Touchstone Render Issues: Using Deepslate Model for now

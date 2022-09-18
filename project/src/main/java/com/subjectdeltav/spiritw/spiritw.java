@@ -37,7 +37,7 @@ public class spiritw
     // Define mod id in a common place for everything to reference
     public static final String MODID = "spiritw";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
@@ -64,6 +64,7 @@ public class spiritw
         ItemInit.ITEMS.register(modEventBus);
         BlockInit.BLOCKS.register(modEventBus);
         EnchantmentInit.ENCHANTMENTS.register(modEventBus);
+        MinecraftForge.EVENT_BUS.register(new eventHandler());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

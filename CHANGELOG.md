@@ -1,3 +1,5 @@
+2022-09-17 102: Fixed Events: Events are now working. Was missing a registry. Dynamic events have to registered the old way. Running into errors checking for enchantment. Enchantment debug still WIP.
+
 2022-09-10 101: Program Enchantment: Added Event Logic for Spiritbound Enchantment. Took inspiration from standalone mode below, but required substantial rewrites to do correctly. https://github.com/vova7865/Soulbound/blob/master/src/main/java/com/vova7865/soulbound/Events.java
 
 2022-09-08 011: Create Enchantment Registry: Created Enchantment Registry and new blank Enchantment Spiritbound.

@@ -88,8 +88,10 @@ public class eventHandler
 			{
 				spiritw.LOGGER.debug("Detected Items for Restoring to Player for Respawn with correct Enchantment Type 'Spiritbound'");
 				ItemStack[] itemsToReturn = itemsToRestore.get(player.getUUID().toString());
-				System.arraycopy(itemsToReturn, player.getInventory().armor.size(), player.getInventory().items, 0, player.getInventory().items.size());
-				System.arraycopy(itemsToReturn, 0, player.getInventory().armor, 0, player.getInventory().armor.size());
+				for(int itemIndex = 0; itemIndex < itemsToReturn.length; itemIndex++)
+				{
+					player.addItem(itemsToReturn[itemIndex]);
+				}
 				spiritw.LOGGER.debug("Restored correct Items to player, erasing...");
 				itemsToRestore.remove(player.getUUID().toString());
 			}

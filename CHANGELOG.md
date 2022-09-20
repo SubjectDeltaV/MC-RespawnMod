@@ -1,3 +1,4 @@
+2022-09-18 Move Notes Into Repo: 
 2022-09-17 103: Fixed Respawn Bug: Respawning Fixed. Enchantment working as intended.
 
 2022-09-17 102: Fixed Events: Events are now working. Was missing a registry. Dynamic events have to registered the old way. Running into errors checking for enchantment. Enchantment debug still WIP. Respawn is broken as of this commit.

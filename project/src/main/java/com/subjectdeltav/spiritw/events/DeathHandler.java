@@ -9,14 +9,15 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DeathHandler 
 {
+	boolean diedAlready = false;
 	@SubscribeEvent
 	public void Death(LivingDeathEvent event) 
 	{
-		boolean diedAlready = false;
 		MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 		if(event.getEntity() instanceof Player)
 		{
@@ -25,8 +26,10 @@ public class DeathHandler
 			if(diedAlready == false)
 			{
 				event.setCanceled(true);
+				diedAlready = true;
 				pl.addEffect(downedplayer);
 			}
 		}
 	}
+
 }

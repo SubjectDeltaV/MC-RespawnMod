@@ -1,6 +1,8 @@
 package com.subjectdeltav.spiritw;
 
 import com.mojang.logging.LogUtils;
+import com.subjectdeltav.spiritw.events.DeathHandler;
+import com.subjectdeltav.spiritw.events.InventoryHandler;
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
@@ -61,10 +63,14 @@ public class spiritw
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
         
+        //register normal items and effects
         ItemInit.ITEMS.register(modEventBus);
         BlockInit.BLOCKS.register(modEventBus);
         EnchantmentInit.ENCHANTMENTS.register(modEventBus);
-        MinecraftForge.EVENT_BUS.register(new eventHandler());
+        
+        //register events
+        MinecraftForge.EVENT_BUS.register(new InventoryHandler());
+        MinecraftForge.EVENT_BUS.register(new DeathHandler());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

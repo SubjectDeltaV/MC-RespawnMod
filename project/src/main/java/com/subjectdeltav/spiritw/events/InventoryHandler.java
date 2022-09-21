@@ -1,4 +1,4 @@
-package com.subjectdeltav.spiritw;
+package com.subjectdeltav.spiritw.events;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +28,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
+import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.enchants.SpiritBoundEnchantment;
 
 
 
-public class eventHandler
+public class InventoryHandler
 	{
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		

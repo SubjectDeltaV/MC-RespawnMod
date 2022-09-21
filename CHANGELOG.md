@@ -1,3 +1,5 @@
+2022-09-20 104 - Create Wounded Effect: Created New Effect "Wounded" and created the MobEffect registry.
+
 2022-09-18 Move Notes Into Repo: 
 2022-09-17 103: Fixed Respawn Bug: Respawning Fixed. Enchantment working as intended.
 

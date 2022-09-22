@@ -1,3 +1,5 @@
+2022-09-21 107 - Worked on Crashes: Fixed Crash on Startup. Still crashing on player death.
+
 2022-09-21 106: Edits to DeathHandler: 
 2022-09-20 105: Finished Wounded Effect: Completed Work on Bleeded Effect, added new event handler and renamed existing handler, we will keep events organized in different handlers.
 

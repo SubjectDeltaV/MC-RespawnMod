@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.subjectdeltav.spiritw.events.DeathHandler;
 import com.subjectdeltav.spiritw.events.InventoryHandler;
 import com.subjectdeltav.spiritw.init.BlockInit;
+import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
 
@@ -67,6 +68,7 @@ public class spiritw
         ItemInit.ITEMS.register(modEventBus);
         BlockInit.BLOCKS.register(modEventBus);
         EnchantmentInit.ENCHANTMENTS.register(modEventBus);
+        EffectInit.EFFECTS.register(modEventBus);
         
         //register events
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());

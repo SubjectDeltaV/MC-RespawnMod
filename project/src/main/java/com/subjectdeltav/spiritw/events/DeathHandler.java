@@ -14,20 +14,21 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DeathHandler 
 {
-	boolean diedAlready = false;
+	//public MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
+	//boolean diedAlready = false;
+	
 	@SubscribeEvent
 	public void Death(LivingDeathEvent event) 
 	{
-		MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
+		//MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 		if(event.getEntity() instanceof Player)
 		{
 			Player pl = (Player) event.getEntity();
 			System.out.println("A Player has died, cancelling event and putting in down state");
-			if(diedAlready == false)
+			if(pl.hasEffect(EffectInit.WOUNDED.get()) == false)
 			{
 				event.setCanceled(true);
-				diedAlready = true;
-				pl.addEffect(downedplayer);
+				pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 1800));
 			}
 		}
 	}

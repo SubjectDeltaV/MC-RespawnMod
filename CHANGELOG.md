@@ -1,3 +1,5 @@
+2022-09-21 108 - Fixed Errors preventing registration: Fixed crash on death, and the following crashes when I fixed the crash on death. Effect now correctly applying but isn't applying any of it's effects.
+
 2022-09-21 107 - Worked on Crashes: Fixed Crash on Startup. Still crashing on player death.
 
 2022-09-21 106: Edits to DeathHandler: 

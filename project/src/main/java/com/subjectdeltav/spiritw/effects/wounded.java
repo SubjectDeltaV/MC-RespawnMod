@@ -1,5 +1,8 @@
 package com.subjectdeltav.spiritw.effects;
 
+import com.subjectdeltav.spiritw.SpiritwMobEffect;
+import com.subjectdeltav.spiritw.init.EffectInit;
+
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -9,18 +12,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class wounded extends MobEffect 
+public class wounded extends SpiritwMobEffect 
 {
-	protected wounded(MobEffectCategory HARMFUL, int x, int timeInput) 
+	public wounded() 
 	{
-		super(HARMFUL, x);
-		t = timeInput;
+		super(MobEffectCategory.HARMFUL, 2039587);
+		t = 1800;
 	}
 	//x is severity
 
 	int t; // where t is time in ticks
-	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS, 200);
+	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS, 5);
 	MobEffectInstance slow = new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 5);
+	
+	@Override
+	public boolean isDurationEffectTick(int x, int y)
+	{
+		
+		return true;
+	}
 	
 	@Override
 	public void applyEffectTick(LivingEntity mob, int x)
@@ -38,6 +48,7 @@ public class wounded extends MobEffect
 		{
 			System.out.println(mob.getName() + " has bleed out");
 			mob.kill(); //kill the player once the timer runs out
+			mob.removeEffect(EffectInit.WOUNDED.get());
 		}
 	}
 }

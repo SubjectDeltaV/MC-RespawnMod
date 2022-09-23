@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
@@ -29,6 +30,8 @@ public class Revive extends InstantenousMobEffect
 			mob.removeEffect(EffectInit.WOUNDED.get());
 			mob.removeEffect(MobEffects.HUNGER);
 			mob.removeEffect(MobEffects.DARKNESS);
+			Player player = (Player) mob;
+			player.setForcedPose(null); //clear dying pose
 		}
 	}
 

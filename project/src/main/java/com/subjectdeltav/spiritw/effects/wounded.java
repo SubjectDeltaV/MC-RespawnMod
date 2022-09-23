@@ -15,10 +15,12 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
@@ -27,7 +29,8 @@ public class wounded extends MobEffect
 	public wounded() 
 	{
 		super(MobEffectCategory.HARMFUL, 2039587);
-		//t = 1800;
+		t = 200;
+		player = null;
 	}
 	//x is severity
 
@@ -35,7 +38,9 @@ public class wounded extends MobEffect
 	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS, 6000, 10);
 	MobEffectInstance slow = new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 6000, 5);
 	MobEffectInstance hunger = new MobEffectInstance(MobEffects.HUNGER, 6000, 25); 
-	protected DamageSource attacker;
+	public LivingEntity attacker;
+	public boolean diedFromMob = false;
+	public Player player;
 	
 	@Override
 	public boolean isDurationEffectTick(int x, int y)
@@ -56,21 +61,40 @@ public class wounded extends MobEffect
 	}
 	
 	@Override
-	public void applyEffectTick(LivingEntity mob, int x)
+	public void applyEffectTick(LivingEntity pl, int x)
 	{
 		
-		//t--; //reduce the timer by 1 every tick
-		if(mob.hasEffect(MobEffects.DARKNESS) == false)
+		t--; //reduce the timer by 1 every tick
+		if(pl.hasEffect(MobEffects.DARKNESS) == false)
 		{
-			mob.addEffect(dark);
+			pl.addEffect(dark);
 		}
-		if(mob.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) == false)
+		if(pl.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) == false)
 		{
-			mob.addEffect(slow);
+			pl.addEffect(slow);
 		}
-		if(mob.hasEffect(MobEffects.HUNGER) == false)
+		if(pl.hasEffect(MobEffects.HUNGER) == false)
 		{
-			mob.addEffect(hunger);
+			pl.addEffect(hunger);
+		}
+		if(t <= 0)
+		{
+			player = (Player) pl;
+		}
+	}
+	
+	@SubscribeEvent
+	public void secondWind(LivingDeathEvent event)
+	{
+		if(diedFromMob)
+		{
+			if(event.getEntity() == attacker && player != null)
+			{
+				player.removeEffect(MobEffects.DARKNESS);
+				player.removeEffect(MobEffects.HUNGER);
+				player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+				player.removeEffect(this);
+			}
 		}
 	}
 }

@@ -1,3 +1,7 @@
+2022-09-23 118 - Create Second Wind: Second Wind Logic now in place. Events should register the mob that killed you. Taking down that mob will remove the effect.
+
+2022-09-23 117 - Force Pose: Force Player into "Dying" Pose
+
 2022-09-23 116 - Fixed Hunger Death: Secondary Effects now working as expected. Hunger killing player, tuned down to intensity of 25.
 
 2022-09-23 115 - Cleaned up code: Removed separation between damage protection while wounded and death protection while wounded. All immunities while wounded are outright immunity to Damage.

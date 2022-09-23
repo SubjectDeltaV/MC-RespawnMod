@@ -7,6 +7,7 @@ import com.subjectdeltav.spiritw.init.EffectInit;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
@@ -29,6 +30,18 @@ public class DeathHandler
 		{
 			Player pl = (Player) event.getEntity();
 			DamageSource src = event.getSource();
+			LivingEntity att;
+			boolean diedFromMob;
+			if(src.getEntity() != null && src.getEntity() instanceof Mob)
+			{
+				Entity ent = src.getEntity();
+				att = (LivingEntity) ent;
+				diedFromMob = true;
+			} else
+			{
+				att = null;
+				diedFromMob = false;
+			}
 			System.out.println("A Player has died, checking for wounded status...");
 			//MobEffectInstance playerEffect = pl.getEffect(EffectInit.WOUNDED.get());
 			if(
@@ -50,7 +63,14 @@ public class DeathHandler
 				src.getLocalizedDeathMessage(pl);
 				event.setCanceled(true);
 				pl.setHealth(1);
-				pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 1800));
+				wounded Wounded = new wounded();
+				if(diedFromMob)
+				{
+					Wounded.attacker = att;
+					Wounded.diedFromMob = true;
+				}
+				MobEffectInstance effect = new MobEffectInstance(Wounded, 6000);
+				pl.addEffect(new MobEffectInstance(effect));
 			}
 		}
 	}

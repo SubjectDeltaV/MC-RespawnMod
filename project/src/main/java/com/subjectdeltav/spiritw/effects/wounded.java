@@ -27,13 +27,14 @@ public class wounded extends MobEffect
 	public wounded() 
 	{
 		super(MobEffectCategory.HARMFUL, 2039587);
-		t = 1800;
+		//t = 1800;
 	}
 	//x is severity
 
 	int t; // where t is time in ticks
-	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS, 5, 5);
-	MobEffectInstance slow = new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 10);
+	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS); //unlimited darkness
+	MobEffectInstance slow = new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 600);
+	MobEffectInstance hunger = new MobEffectInstance(MobEffects.HUNGER); //unlimited hunger
 	protected DamageSource attacker;
 	
 	@Override
@@ -57,7 +58,8 @@ public class wounded extends MobEffect
 	@Override
 	public void applyEffectTick(LivingEntity mob, int x)
 	{
-		t--; //reduce the timer by 1 every tick
+		
+		//t--; //reduce the timer by 1 every tick
 		if(mob.hasEffect(MobEffects.DARKNESS) == false)
 		{
 			mob.addEffect(dark);
@@ -66,11 +68,9 @@ public class wounded extends MobEffect
 		{
 			mob.addEffect(slow);
 		}
-		if(t<3)
+		if(mob.hasEffect(MobEffects.HUNGER) == false)
 		{
-			System.out.println(mob.getName() + " has bleed out");
-			mob.kill() ; //kill the player once the timer runs out
-			mob.removeEffect(EffectInit.WOUNDED.get());
+			mob.addEffect(hunger);
 		}
 	}
 }

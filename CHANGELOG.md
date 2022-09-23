@@ -1,4 +1,6 @@
-2022-09-22 112 - Nuclear Option: Changed to CureAll Effects. Will Look for a better solution
+2022-09-22 113 - Tweaked Logic: Fixed Issue related to Screen Jerkiness due to Slowness and Darkness getting applied every second. Removed Timer from Wounded Effect. Timeout will now be based on food in hunger bar.
+
+2022-09-22 112 - Reworked Cure Logic: Potion will now target ONLY the Wounded Effect. Note that it is now immune to milk.
 
 2022-09-22 111 - Added Revive Potion: Added new Revive Potion. Potion not curing Effect yet. Will need some custom code in the effect.
 

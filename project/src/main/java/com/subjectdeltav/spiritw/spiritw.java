@@ -3,6 +3,7 @@ package com.subjectdeltav.spiritw;
 import com.mojang.logging.LogUtils;
 import com.subjectdeltav.spiritw.events.DeathHandler;
 import com.subjectdeltav.spiritw.events.InventoryHandler;
+import com.subjectdeltav.spiritw.events.WoundedProtectionHandler;
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
@@ -73,6 +74,7 @@ public class spiritw
         //register events
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
+        MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

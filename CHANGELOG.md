@@ -1,3 +1,7 @@
+2022-09-22 110 Protections and (in)abilities: Wounded Effect won't trigger from drowning, suffocation, lava, falling out of the world or starvation. Wounded players are now immune from damage from Falling Blocks, Magma Blocks, Lightning and Poison. Wounded players cannot be killed by Projectiles or Generic Damage
+
+2022-09-21 109 - Effect is working: The effects effects are working now. TODO: Create Texture for effect.
+
 2022-09-21 108 - Fixed Errors preventing registration: Fixed crash on death, and the following crashes when I fixed the crash on death. Effect now correctly applying but isn't applying any of it's effects.
 
 2022-09-21 107 - Worked on Crashes: Fixed Crash on Startup. Still crashing on player death.

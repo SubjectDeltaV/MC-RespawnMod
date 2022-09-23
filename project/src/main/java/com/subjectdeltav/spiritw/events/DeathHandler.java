@@ -26,34 +26,6 @@ public class DeathHandler
 		//MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 		if(event.getEntity() instanceof Player)
 		{
-			Player player = (Player) event.getEntity();
-			DamageSource src = event.getSource();
-			if(player.hasEffect(EffectInit.WOUNDED.get()))
-			{
-				System.out.println("Wounded Player has died, checking for immunities...");
-				if(
-						src.isExplosion()||
-						src.isCreativePlayer()||
-						src.isFire() ||
-						src == DamageSource.LAVA ||
-						src == DamageSource.DROWN ||
-						src == DamageSource.IN_WALL ||
-						src == DamageSource.IN_FIRE ||
-						src == DamageSource.OUT_OF_WORLD ||
-						src == DamageSource.STARVE)
-				{
-					System.out.println("Wounded Players are NOT immune to damage of type " + src.toString());
-				}else
-				{
-					
-					System.out.println("Wounded Players cannot be killed by Arrows or melee Attacks, Cancelling...");
-					event.setCanceled(true);
-				}
-				
-			}
-		}
-		if(event.getEntity() instanceof Player)
-		{
 			Player pl = (Player) event.getEntity();
 			DamageSource src = event.getSource();
 			System.out.println("A Player has died, checking for wounded status...");

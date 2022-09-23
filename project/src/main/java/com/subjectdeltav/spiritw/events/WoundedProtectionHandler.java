@@ -25,6 +25,12 @@ public class WoundedProtectionHandler {
 						src == DamageSource.FALLING_BLOCK || 
 						src == DamageSource.HOT_FLOOR || 
 						src == DamageSource.LIGHTNING_BOLT ||
+						src == DamageSource.LAVA ||
+						src == DamageSource.DROWN ||
+						src == DamageSource.IN_WALL ||
+						src == DamageSource.IN_FIRE ||
+						src == DamageSource.OUT_OF_WORLD ||
+						src == DamageSource.STARVE ||
 						src.isMagic() ||
 						src.isBypassMagic())
 				{

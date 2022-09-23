@@ -8,6 +8,7 @@ import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
+import com.subjectdeltav.spiritw.init.PotionInit;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BlockItem;
@@ -70,6 +71,7 @@ public class spiritw
         BlockInit.BLOCKS.register(modEventBus);
         EnchantmentInit.ENCHANTMENTS.register(modEventBus);
         EffectInit.EFFECTS.register(modEventBus);
+        PotionInit.POTIONS.register(modEventBus);
         
         //register events
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());

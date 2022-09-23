@@ -1,3 +1,5 @@
+2022-09-22 111T - Added Revive Potion: Added new Revive Potion
+
 2022-09-22 110 Protections and (in)abilities: Wounded Effect won't trigger from drowning, suffocation, lava, falling out of the world or starvation. Wounded players are now immune from damage from Falling Blocks, Magma Blocks, Lightning and Poison. Wounded players cannot be killed by Projectiles or Generic Damage
 
 2022-09-21 109 - Effect is working: The effects effects are working now. TODO: Create Texture for effect.

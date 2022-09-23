@@ -37,7 +37,7 @@ public class DeathHandler
 					src == DamageSource.OUT_OF_WORLD ||
 					src == DamageSource.STARVE)
 			{
-				System.out.println("No Protections from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ignoring...");
+				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ignoring...");
 			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
 			{
 				System.out.println("Player was in a wounded state, the event will not be cancelled");

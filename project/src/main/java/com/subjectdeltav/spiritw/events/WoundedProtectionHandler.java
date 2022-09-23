@@ -22,17 +22,14 @@ public class WoundedProtectionHandler {
 			{
 				System.out.println("Wounded Player has taken damage, checking damage type");
 				if(
-						src == DamageSource.FALLING_BLOCK || 
-						src == DamageSource.HOT_FLOOR || 
-						src == DamageSource.LIGHTNING_BOLT ||
-						src == DamageSource.LAVA ||
-						src == DamageSource.DROWN ||
-						src == DamageSource.IN_WALL ||
-						src == DamageSource.IN_FIRE ||
-						src == DamageSource.OUT_OF_WORLD ||
-						src == DamageSource.STARVE ||
-						src.isMagic() ||
-						src.isBypassMagic())
+						src.isExplosion() ||
+						src.isCreativePlayer() ||
+						src.equals(DamageSource.STARVE) ||
+						src.equals(DamageSource.DROWN) ||
+						src.equals(DamageSource.LAVA))
+				{
+					System.out.println("Wounded Players are not immune to damage of type " + src.toString());
+				} else
 				{
 					System.out.println("Wounded Player is Immune to Damage of type " + src.toString());
 					event.setCanceled(true);

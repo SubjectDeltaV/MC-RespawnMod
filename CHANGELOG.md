@@ -1,3 +1,5 @@
+2022-09-23 115 - Cleaned up code: Removed separation between damage protection while wounded and death protection while wounded. All immunities while wounded are outright immunity to Damage.
+
 2022-09-22 114 - Attempt to Fix Mobs still killing: Attempt to resolve issue related to mobs being able to kill you in a wounded state. Moved event checking for living entity death to same event handler.
 
 2022-09-22 113 - Tweaked Logic: Fixed Issue related to Screen Jerkiness due to Slowness and Darkness getting applied every second. Removed Timer from Wounded Effect. Timeout will now be based on food in hunger bar.

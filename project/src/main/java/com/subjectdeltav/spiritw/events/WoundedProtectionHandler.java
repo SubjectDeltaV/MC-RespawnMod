@@ -34,29 +34,7 @@ public class WoundedProtectionHandler {
 			}
 		}
 	}
-	
-	@SubscribeEvent
-	public void woundedDeath(LivingDeathEvent event)
-	{
-		if(event.getEntity() instanceof Player)
-		{
-			Player player = (Player) event.getEntity();
-			DamageSource src = event.getSource();
-			if(player.hasEffect(EffectInit.WOUNDED.get()))
-			{
-				System.out.println("Wounded Player has died, checking for immunities...");
-				if(src == DamageSource.GENERIC || src.isProjectile())
-				{
-					System.out.println("Wounded Players cannot be killed by Arrows or Zombie Attacks, Cancelling...");
-					event.setCanceled(false);
-				}else
-				{
-					System.out.println("Wounded Players are NOT immune to damage of type " + src.toString());
-				}
-				
-			}
-		}
-	}
+
 	
 	@SubscribeEvent
 	public void heal(LivingHealEvent event)

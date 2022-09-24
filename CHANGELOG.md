@@ -1,3 +1,5 @@
+2022-09-24 120 - Minor Changes, started revival sickness work: Toned Darkness from 10 down to 5. Created new Mob Effect Revival Sickness
+
 2022-09-23 119 - Reworked Second Wind: Reworked second wind programming to avoid ctd on player death. Now mirrors inventoryHandler logic.
 
 2022-09-23 118 - Create Second Wind: Second Wind Logic now in place. Events should register the mob that killed you. Taking down that mob will remove the effect.

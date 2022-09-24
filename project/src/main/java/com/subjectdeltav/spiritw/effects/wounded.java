@@ -37,7 +37,7 @@ public class wounded extends MobEffect
 	//x is severity
 
 	//int t; // where t is time in ticks
-	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS, 6000, 10);
+	MobEffectInstance dark = new MobEffectInstance(MobEffects.DARKNESS, 6000, 5);
 	MobEffectInstance slow = new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 6000, 5);
 	MobEffectInstance hunger = new MobEffectInstance(MobEffects.HUNGER, 6000, 15); 
 	//public LivingEntity attacker;

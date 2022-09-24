@@ -2,6 +2,7 @@ package com.subjectdeltav.spiritw.init;
 
 import com.subjectdeltav.spiritw.SpiritwMobEffect;
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.effects.Revival_Sickness;
 import com.subjectdeltav.spiritw.effects.Revive;
 import com.subjectdeltav.spiritw.effects.wounded;
 
@@ -18,4 +19,5 @@ public class EffectInit
 	
 	public static final RegistryObject<MobEffect> WOUNDED = EFFECTS.register("wounded", wounded::new);
 	public static final RegistryObject<MobEffect> REVIVE = EFFECTS.register("revive", Revive::new);
+	public static final RegistryObject<MobEffect> REVIVAL_SICKNESS = EFFECTS.register("revival_sickness", Revival_Sickness::new);
 }

@@ -66,7 +66,7 @@ public class InventoryHandler
 					{
 						ItemsToSave[itemIndex] = itemToCheck;
 						saveItemsForRespawn = true;
-						System.out.println("Found  and Saved Item of Correct Enchantment " + itemToCheck.getDisplayName());
+						System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.getDisplayName());
 						event.getDrops().remove(itemToCheck);
 					}
 				}

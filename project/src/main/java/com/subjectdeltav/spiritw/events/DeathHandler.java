@@ -1,12 +1,19 @@
 package com.subjectdeltav.spiritw.events;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.wounded;
 import com.subjectdeltav.spiritw.init.EffectInit;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -20,27 +27,33 @@ public class DeathHandler
 {
 	//public MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 	//boolean diedAlready = false;
+	private Map<String, String> rememberKillers = new HashMap<String, String>();
 	
 	@SubscribeEvent
 	public void Death(LivingDeathEvent event) 
 	{
 		System.out.println("Death of LivingEntity Detected, checking if Player...");
+
 		//MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
+		//boolean diedFromMob;
+		LivingEntity attacker = null;
+		Player pl = null;
 		if(event.getEntity() instanceof Player)
 		{
-			Player pl = (Player) event.getEntity();
+			pl = (Player) event.getEntity();
 			DamageSource src = event.getSource();
-			LivingEntity att;
-			boolean diedFromMob;
 			if(src.getEntity() != null && src.getEntity() instanceof Mob)
 			{
+				System.out.println("Player died from Mob, recording mob info");
 				Entity ent = src.getEntity();
-				att = (LivingEntity) ent;
-				diedFromMob = true;
+				attacker = (LivingEntity) ent;
+				//diedFromMob = true;
+				//int mobId = pl.getLastHurtByMob().getId();
+				rememberKillers.put(pl.getLastHurtByMob().getEncodeId(), pl.getEncodeId());
 			} else
 			{
-				att = null;
-				diedFromMob = false;
+				attacker = null;
+				//diedFromMob = false;
 			}
 			System.out.println("A Player has died, checking for wounded status...");
 			//MobEffectInstance playerEffect = pl.getEffect(EffectInit.WOUNDED.get());
@@ -63,14 +76,24 @@ public class DeathHandler
 				src.getLocalizedDeathMessage(pl);
 				event.setCanceled(true);
 				pl.setHealth(1);
-				wounded Wounded = new wounded();
-				if(diedFromMob)
+				pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 6000));
+			}
+		}
+		if(event.getEntity() instanceof Mob)
+		{
+			System.out.println("Mob has died, checking to see if it killed any players");
+			LivingEntity mob = event.getEntity();
+			LivingEntity killer = mob.getLastHurtByMob();
+			if(rememberKillers.containsKey(mob.getEncodeId()))
+			{
+				String mobId = String.valueOf(mob.getEncodeId());
+				System.out.println("Mob has killed players, checking iff killer was the original victim");
+				if(killer.getEncodeId() == rememberKillers.get(mobId) && killer.hasEffect(EffectInit.WOUNDED.get()));
 				{
-					Wounded.attacker = att;
-					Wounded.diedFromMob = true;
+					System.out.println("Mob was killed by his victim while it was downed, lifting wounded status");
+					killer.removeAllEffects();
+				    rememberKillers.remove(mobId);
 				}
-				MobEffectInstance effect = new MobEffectInstance(Wounded, 6000);
-				pl.addEffect(new MobEffectInstance(effect));
 			}
 		}
 	}

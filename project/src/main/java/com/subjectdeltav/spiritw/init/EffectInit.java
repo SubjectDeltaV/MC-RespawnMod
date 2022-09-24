@@ -17,6 +17,5 @@ public class EffectInit
 	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, spiritw.MODID);
 	
 	public static final RegistryObject<MobEffect> WOUNDED = EFFECTS.register("wounded", wounded::new);
-	
 	public static final RegistryObject<MobEffect> REVIVE = EFFECTS.register("revive", Revive::new);
 }

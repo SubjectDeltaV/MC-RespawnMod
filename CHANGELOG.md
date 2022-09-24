@@ -1,3 +1,5 @@
+2022-09-23 119 - Reworked Second Wind: Reworked second wind programming to avoid ctd on player death. Now mirrors inventoryHandler logic.
+
 2022-09-23 118 - Create Second Wind: Second Wind Logic now in place. Events should register the mob that killed you. Taking down that mob will remove the effect.
 
 2022-09-23 117 - Force Pose: Force Player into "Dying" Pose

@@ -1,6 +1,9 @@
 package com.subjectdeltav.spiritw.effects;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.subjectdeltav.spiritw.init.PotionInit;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -8,6 +11,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 
 public class Revival_Sickness extends MobEffect {
 
@@ -49,7 +54,12 @@ public class Revival_Sickness extends MobEffect {
 	@Override //setup items that can cure (none)
 	public List<ItemStack> getCurativeItems()
 	{
-		return null;
+		List<ItemStack> list = new ArrayList<ItemStack>();
+		Potion potion = PotionInit.CUREALL_POTION.get();
+		ItemStack devPotion = ItemStack.EMPTY;
+		devPotion = PotionUtils.setPotion(devPotion, potion);
+		list.add(devPotion);
+		return list;
 	}
 	
 	@Override //configure effects

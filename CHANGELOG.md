@@ -1,3 +1,5 @@
+2022-09-26 122 - Resolve CTD: Should fix CTD on pause/save. Did so by changing items to cure Revival Sickness from null to a new dev only potion that removes all effects.
+
 2022-09-26 121 - Revival Sickness Implementation: First pass on Revival Sickness done. It includes multiple severities.
 
 2022-09-24 120 - Minor Changes, started revival sickness work: Toned Darkness from 10 down to 5. Created new Mob Effect Revival Sickness

@@ -35,6 +35,7 @@ public class Revive extends InstantenousMobEffect
 			mob.removeEffect(EffectInit.WOUNDED.get());
 			mob.removeEffect(MobEffects.HUNGER);
 			mob.removeEffect(MobEffects.DARKNESS);
+			mob.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
 			Player player = (Player) mob;
 			player.setForcedPose(null); //clear dying pose
 			//player.addEffect(new MobEffectInstance(EffectInit.REVIVAL_SICKNESS.get(), 2400, 1));

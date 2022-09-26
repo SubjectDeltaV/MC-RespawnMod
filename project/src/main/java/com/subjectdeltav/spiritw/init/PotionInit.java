@@ -13,4 +13,5 @@ public class PotionInit
 	public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTIONS, spiritw.MODID);
 	
 	public static final RegistryObject<Potion> REVIVE_POTION = POTIONS.register("revive_potion", () -> new Potion(new MobEffectInstance(EffectInit.REVIVE.get())));
+	public static final RegistryObject<Potion> CUREALL_POTION = POTIONS.register("Cureall_Potion", () -> new Potion(new MobEffectInstance(EffectInit.CUREALL.get())));
 }

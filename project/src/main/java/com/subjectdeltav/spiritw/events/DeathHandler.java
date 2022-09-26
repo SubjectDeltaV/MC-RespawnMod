@@ -104,11 +104,15 @@ public class DeathHandler
 			if(rememberKillers.containsKey(mob.getEncodeId()))
 			{
 				String mobId = String.valueOf(mob.getEncodeId());
-				System.out.println("Mob has killed players, checking iff killer was the original victim");
+				System.out.println("Mob has killed players, checking if killer was the original victim");
 				if(killer.getEncodeId() == rememberKillers.get(mobId) && killer.hasEffect(EffectInit.WOUNDED.get()));
 				{
 					System.out.println("Mob was killed by his victim while it was downed, lifting wounded status");
+					MobEffectInstance woundEffect = killer.getEffect(EffectInit.WOUNDED.get());
+					int woundEffectAmplifier = woundEffect.getAmplifier();
 					killer.removeAllEffects();
+					MobEffectInstance sickness = new MobEffectInstance(EffectInit.REVIVAL_SICKNESS.get(), 2400, woundEffectAmplifier);
+					killer.addEffect(sickness);
 				    rememberKillers.remove(mobId);
 				}
 			}

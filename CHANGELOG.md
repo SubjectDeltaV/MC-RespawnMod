@@ -1,3 +1,5 @@
+2022-09-26 121 - Revival Sickness Implementation: First pass on Revival Sickness done. It includes multiple severities.
+
 2022-09-24 120 - Minor Changes, started revival sickness work: Toned Darkness from 10 down to 5. Created new Mob Effect Revival Sickness
 
 2022-09-23 119 - Reworked Second Wind: Reworked second wind programming to avoid ctd on player death. Now mirrors inventoryHandler logic.

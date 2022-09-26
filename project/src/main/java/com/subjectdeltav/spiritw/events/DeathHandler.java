@@ -42,6 +42,15 @@ public class DeathHandler
 		{
 			pl = (Player) event.getEntity();
 			DamageSource src = event.getSource();
+			int woundseverity;
+			if(pl.hasEffect(EffectInit.REVIVAL_SICKNESS.get()))
+			{
+				MobEffectInstance sickness = pl.getEffect(EffectInit.REVIVAL_SICKNESS.get());
+				woundseverity = sickness.getAmplifier() + 1;
+			}else
+			{
+				woundseverity = 0;
+			}
 			if(src.getEntity() != null && src.getEntity() instanceof Mob)
 			{
 				System.out.println("Player died from Mob, recording mob info");
@@ -76,10 +85,18 @@ public class DeathHandler
 				src.getLocalizedDeathMessage(pl);
 				event.setCanceled(true);
 				pl.setHealth(1);
-				pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 6000));
+				if(woundseverity == 0)
+				{
+					pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 6000, 1));
+					System.out.println("Wounded Amplifier is set to 1");
+				}else
+				{
+					System.out.println("Wounded Amplifier is set to " + woundseverity);
+					pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 6000, woundseverity));
+				}
 			}
 		}
-		if(event.getEntity() instanceof Mob)
+		else if(event.getEntity() instanceof Mob)
 		{
 			System.out.println("Mob has died, checking to see if it killed any players");
 			LivingEntity mob = event.getEntity();

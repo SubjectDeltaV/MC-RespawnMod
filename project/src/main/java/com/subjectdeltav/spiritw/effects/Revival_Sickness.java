@@ -16,21 +16,21 @@ public class Revival_Sickness extends MobEffect {
 		super(MobEffectCategory.HARMFUL, 2039587);
 		hunger = MobEffects.HUNGER;
 		weakness = MobEffects.WEAKNESS;
-		fatigue = MobEffects.DIG_SLOWDOWN;
+		mfatigue = MobEffects.DIG_SLOWDOWN;
 		blindness = MobEffects.BLINDNESS;
 		nausea = MobEffects.CONFUSION;
 		slow = MobEffects.MOVEMENT_SLOWDOWN;
-		appliedOnce = false;
+		//appliedOnce = false;
 		//t = 0;
 	}
 	
 	MobEffect hunger;
 	MobEffect weakness;
-	MobEffect fatigue;
+	MobEffect mfatigue;
 	MobEffect blindness;
 	MobEffect nausea;
 	MobEffect slow;
-	boolean appliedOnce;
+	//boolean appliedOnce;
 	//int t; //ticks
 	
 	@Override //apply effect every 30 seconds, related effects are applied just short of this to ensure they are re-applied
@@ -58,10 +58,14 @@ public class Revival_Sickness extends MobEffect {
 		pl.addEffect(new MobEffectInstance(hunger, 590, 5 * x));
 		if(x >= 2)
 		{
-			pl.addEffect(new MobEffectInstance(weakness, 590, 5 * x));
+			pl.addEffect(new MobEffectInstance(weakness, 590, 4 * x));
 			if( x>= 3)
 			{
-				
+				pl.addEffect(new MobEffectInstance (mfatigue, 590, 2));
+				if(x >= 4)
+				{
+					pl.addEffect(new MobEffectInstance (blindness, 590, x / 4));
+				}
 			}
 		}
 	}

@@ -1,3 +1,5 @@
+2022-09-26 123 - Fix Crash on Load: Fixed crash on startup. Made a capitalization error in PotionInit
+
 2022-09-26 122 - Resolve CTD: Should fix CTD on pause/save. Did so by changing items to cure Revival Sickness from null to a new dev only potion that removes all effects.
 
 2022-09-26 121 - Revival Sickness Implementation: First pass on Revival Sickness done. It includes multiple severities.

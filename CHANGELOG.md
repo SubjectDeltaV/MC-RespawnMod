@@ -1,3 +1,8 @@
+2022-09-27 Update Gameplay.one: 
+2022-09-27 Add dependencies: Added depency on corpse mod. Need to execute build to pull the code and add Metadata
+
+2022-09-26 124 - Add Revival Sickness to Second Wind: Added Revival Sickness to second wind effect.
+
 2022-09-26 123 - Fix Crash on Load: Fixed crash on startup. Made a capitalization error in PotionInit
 
 2022-09-26 122 - Resolve CTD: Should fix CTD on pause/save. Did so by changing items to cure Revival Sickness from null to a new dev only potion that removes all effects.

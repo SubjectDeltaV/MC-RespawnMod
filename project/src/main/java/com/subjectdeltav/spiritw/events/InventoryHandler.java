@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 
 import net.minecraft.world.entity.Entity;
@@ -24,6 +25,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -86,6 +89,23 @@ public class InventoryHandler
 		{
 			Player player = (Player) event.getEntity();
 			if (event.isWasDeath() && itemsToRestore.containsKey(player.getUUID().toString())) 
+			{
+				spiritw.LOGGER.debug("Detected Items for Restoring to Player for Respawn with correct Enchantment Type 'Spiritbound'");
+				ItemStack[] itemsToReturn = itemsToRestore.get(player.getUUID().toString());
+				for(int itemIndex = 0; itemIndex < itemsToReturn.length; itemIndex++)
+				{
+					player.addItem(itemsToReturn[itemIndex]);
+				}
+				spiritw.LOGGER.debug("Restored correct Items to player, erasing...");
+				itemsToRestore.remove(player.getUUID().toString());
+			}
+		}
+		
+		@SubscribeEvent
+		public void InteractTouchstone(EntityInteract event)
+		{
+			Player player = event.getEntity();
+			if(itemsToRestore.containsKey(player.getUUID().toString()))
 			{
 				spiritw.LOGGER.debug("Detected Items for Restoring to Player for Respawn with correct Enchantment Type 'Spiritbound'");
 				ItemStack[] itemsToReturn = itemsToRestore.get(player.getUUID().toString());

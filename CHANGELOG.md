@@ -1,3 +1,4 @@
+2022-09-28 126 - Attempt to add dependencies: 
 2022-09-27 Update Gameplay.one: 
 2022-09-27 Add dependencies: Added depency on corpse mod. Need to execute build to pull the code and add Metadata
 

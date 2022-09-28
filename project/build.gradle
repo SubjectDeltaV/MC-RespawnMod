@@ -124,7 +124,7 @@ repositories {
     //     dir 'libs'
     // }
     maven {
-    	url "https://cursemaven.com"
+    	url "https://www.cursemaven.com"
     	content {
     		includeGroup "curse.maven"
     	}
@@ -150,8 +150,7 @@ dependencies {
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    implementation fg.deobf("curse.maven:Corpse-316582:3920717")
-    implementation fg.deobf("curse.maven:Corpse_Corelib- 
+    implementation fg.deobf("curse.maven:corpse-316582:3920717")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

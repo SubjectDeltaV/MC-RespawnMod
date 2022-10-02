@@ -82,6 +82,13 @@ public class spiritw
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        
+        //enumerate guis
+        enum GUI_ENUM
+        {
+        	TOUCHSTONE,
+        	LANTERN
+        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

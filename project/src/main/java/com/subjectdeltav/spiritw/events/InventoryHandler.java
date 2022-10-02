@@ -100,24 +100,6 @@ public class InventoryHandler
 				itemsToRestore.remove(player.getUUID().toString());
 			}
 		}
-		
-		@SubscribeEvent
-		public void InteractTouchstone(EntityInteract event)
-		{
-			Player player = event.getEntity();
-			if(itemsToRestore.containsKey(player.getUUID().toString()))
-			{
-				spiritw.LOGGER.debug("Detected Items for Restoring to Player for Respawn with correct Enchantment Type 'Spiritbound'");
-				ItemStack[] itemsToReturn = itemsToRestore.get(player.getUUID().toString());
-				for(int itemIndex = 0; itemIndex < itemsToReturn.length; itemIndex++)
-				{
-					player.addItem(itemsToReturn[itemIndex]);
-				}
-				spiritw.LOGGER.debug("Restored correct Items to player, erasing...");
-				itemsToRestore.remove(player.getUUID().toString());
-			}
-		}
-		
 	}
 	
 

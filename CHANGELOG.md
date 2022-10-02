@@ -1,3 +1,9 @@
+2022-10-02 129 - Trying to Implement touchstone functionality: Roadblock on touchstone logic. Unable to locate IInventory interface from tutorial.
+
+2022-09-29 128 - Touchstone is now a Tile Entity: Trying to implement Touchstone functionality. No event exists that allows me to check block status. Will probably need to either implement custom event or make implementation for lesser enchantment entirely inside Touchstone. TODO: Add checker to make sure enchantment in Inventory Handler checks the enchantment level once the lesser version is implemented.
+
+2022-09-28 127 - Added Dependency, Began Retrofit of Enchantment: Began altering event to force users to interact with touchstone to retrieve their items. Needs finishing still.
+
 2022-09-28 126 - Attempt to add dependencies: 
 2022-09-27 Update Gameplay.one: 
 2022-09-27 Add dependencies: Added depency on corpse mod. Need to execute build to pull the code and add Metadata

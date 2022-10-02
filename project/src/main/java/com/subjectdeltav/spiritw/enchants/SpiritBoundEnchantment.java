@@ -14,7 +14,6 @@ import java.util.stream.StreamSupport;
 
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
-import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -38,15 +37,11 @@ public class SpiritBoundEnchantment extends Enchantment
 		super(Enchantment.Rarity.UNCOMMON, EnchantmentCategory.DIGGER, new EquipmentSlot[]{EquipmentSlot.MAINHAND});
 	}
 	
-	UUID ownerID;
-	TouchstoneTile touchstone;
-	
-	
 	
 	@Override
 	public int getMaxLevel() 
 	{
-		return 1;
+		return 2;
 	}
 }
 

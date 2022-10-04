@@ -12,7 +12,12 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class TileEntityInit 
 {
-	public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, spiritw.MODID);
+	public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES_TYPES = 
+			DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, spiritw.MODID);
 	
-	public static final RegistryObject<BlockEntityType<TouchstoneTile>> TOUCHSTONE = TILE_ENTITIES_TYPES.register("touchstone", () -> BlockEntityType.Builder.of(TouchstoneTile::new, BlockInit.TOUCHSTONE.get()).build(null));
+	public static final RegistryObject<BlockEntityType<TouchstoneTile>> TOUCHSTONE = 
+			TILE_ENTITIES_TYPES.register(
+					"touchstone", 
+					() -> BlockEntityType.Builder.of(TouchstoneTile::new, 
+							BlockInit.TOUCHSTONE.get()).build(null));
 }

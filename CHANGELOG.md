@@ -1,3 +1,6 @@
+2022-10-03 131 - Finished Tick logic for Touchstone: Still need to get the block to the implementation phase so it can be tested.
+
+2022-10-03 130 - More Touchstone Work: 
 2022-10-02 129 - Trying to Implement touchstone functionality: Roadblock on touchstone logic. Unable to locate IInventory interface from tutorial.
 
 2022-09-29 128 - Touchstone is now a Tile Entity: Trying to implement Touchstone functionality. No event exists that allows me to check block status. Will probably need to either implement custom event or make implementation for lesser enchantment entirely inside Touchstone. TODO: Add checker to make sure enchantment in Inventory Handler checks the enchantment level once the lesser version is implemented.

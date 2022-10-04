@@ -38,7 +38,10 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private int currentSavedItemsQ;
 	private int maxSavedItems = 3;
 	private int maxItemsRemaining;
-	private UUID playerID;
+	public UUID ownerPlayerID;
+	private boolean itemInInput;
+	private boolean itemInOutput;
+	private boolean enchantedItem;
 	
 	//properties with a method
 	private final ItemStackHandler itemHandler = new ItemStackHandler(3) 
@@ -50,11 +53,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	};
 	
-	//constructor
-	
 	//CONSTRUCTOR
-	public TouchstoneTile(BlockPos pos, BlockState state) {
+	public TouchstoneTile(BlockPos pos, BlockState state) 
+	{
 		super(TileEntityInit.TOUCHSTONE.get(), pos, state);
+		this.enchantedItem = false;
 		this.data = new ContainerData()
 				{
 					@Override
@@ -105,28 +108,35 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		{
 			return;
 		}
-		ItemStack item = CanEnchantItem(ent); //get the item in the first slot if it's enchantable
-		if(item != null)
+		ent.CheckSlots();
+		if(ent.itemInInput && ent.itemInOutput == false && ent.enchantedItem == false)
 		{
-			ItemStack enchantedResult = enchantInSlot(item); //enchant as applicable
-			ent.itemHandler.setStackInSlot(2, enchantedResult); // put enchanted result in second slot
-			ent.itemHandler.setStackInSlot(1, ItemStack.EMPTY); //clear out the first slot
-			ent.setCopiedItem(enchantedResult); //save the item in the noted slot
-		}else
+			ItemStack item = CanEnchantItem(ent); //get the item in the first slot if it's enchantable
+			if(item != null)
+			{
+				ItemStack enchantedResult = enchantInSlot(item); //enchant as applicable
+				ent.itemHandler.setStackInSlot(2, enchantedResult); // put enchanted result in second slot
+				ent.setCopiedItem(enchantedResult); //save the item in the noted slot
+				ent.enchantedItem = true; //save the information that we have enchanted an item
+			}
+		}else if(ent.enchantedItem && ent.itemInInput && ent.itemInOutput == false)
 		{
-			return;
+			ent.itemHandler.setStackInSlot(1, ItemStack.EMPTY); //clear out the first slot if the player takes the enchanted item
+			ent.enchantedItem = false;
+		}else if(ent.enchantedItem && ent.itemInInput == false && ent.itemInOutput)
+		{
+			ent.itemHandler.setStackInSlot(2, ItemStack.EMPTY); //clear out the second slot if the player removes the item to enchant
+			ent.enchantedItem = false;
+		}else if(ent.enchantedItem && ent.itemInInput == false && ent.itemInOutput == false)
+		{
+			ent.enchantedItem = false; //for any edge cases
 		}
+		return;
 	}
 	
 	@Nullable
 	private static ItemStack CanEnchantItem(TouchstoneTile ent) //check if the item in slot 1 can be enchanted
 	{
-		SimpleContainer inventory = new SimpleContainer(ent.itemHandler.getSlots());
-		for (int i = 0; i < ent.itemHandler.getSlots(); i++)
-		{
-			inventory.setItem(i, ent.itemHandler.getStackInSlot(i));
-		}
-		
 		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(1);
 		boolean hasEnchantableInFirstSlot = firstSlotItem.isEnchantable();
 		if(hasEnchantableInFirstSlot && ent.currentSavedItemsQ >= ent.maxSavedItems) //also check if we have slots available
@@ -173,6 +183,25 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
+	private void CheckSlots()
+	{
+		ItemStack inputSlot = this.itemHandler.getStackInSlot(1);
+		ItemStack outputSlot = this.itemHandler.getStackInSlot(2);
+		if(inputSlot == ItemStack.EMPTY)
+		{
+			itemInInput = false;
+		}else
+		{
+			itemInInput = true;
+		}
+		if(outputSlot == ItemStack.EMPTY)
+		{
+			itemInOutput = false;
+		}else
+		{
+			itemInOutput = true;
+		}
+	}
 	//overrode methods
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player)
@@ -203,6 +232,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	{
 		super.onLoad();
 		LazyItemHandler = LazyOptional.of(() -> itemHandler);
+		this.CheckSlots();
+		if(this.itemInInput && this.itemInOutput)
+		{
+			this.enchantedItem = true;
+		}
 	}
 	
 	@Override

@@ -202,6 +202,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			itemInOutput = true;
 		}
 	}
+	
 	//overrode methods
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player)

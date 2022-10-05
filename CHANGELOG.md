@@ -1,3 +1,4 @@
+2022-10-05 132 - Started Implementation of touchstone: 
 2022-10-03 131 - Finished Tick logic for Touchstone: Still need to get the block to the implementation phase so it can be tested.
 
 2022-10-03 130 - More Touchstone Work: 

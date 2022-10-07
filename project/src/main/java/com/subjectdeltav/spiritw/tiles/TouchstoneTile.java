@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.subjectdeltav.spiritw.gui.TouchstoneMenu;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 
@@ -44,7 +45,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private boolean enchantedItem;
 	
 	//properties with a method
-	private final ItemStackHandler itemHandler = new ItemStackHandler(3) 
+	private final ItemStackHandler itemHandler = new ItemStackHandler(5) 
 	{
 		@Override
 		protected void onContentsChanged(int slot)
@@ -207,8 +208,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new TouchstoneMenu(id, inventory, this, this.data);
 	}
 
 	@Override

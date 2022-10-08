@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class TouchstoneScreen extends AbstractContainerScreen<TouchstoneMenu>
 {
 	//properties
-	private static final ResourceLocation TEXTURE = new ResourceLocation(spiritw.MODID, "textures/gui/touchstone_gui.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation(spiritw.MODID, "textures/gui/touchstone.png");
 	
 	//Constructor
 	public TouchstoneScreen(TouchstoneMenu menu, Inventory inv, Component comp) {

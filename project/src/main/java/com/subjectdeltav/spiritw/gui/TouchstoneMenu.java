@@ -3,6 +3,7 @@ package com.subjectdeltav.spiritw.gui;
 import javax.annotation.Nullable;
 
 import com.subjectdeltav.spiritw.init.BlockInit;
+import com.subjectdeltav.spiritw.init.MenuTypesInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -35,7 +36,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 	
 	public TouchstoneMenu(int id, Inventory inv, BlockEntity ent, ContainerData data)
 	{
-		super(MenuTypes.TOUCHSTONE_MENU.get(), id);
+		super(MenuTypesInit.TOUCHSTONE_MENU.get(), id);
 		checkContainerSize(inv, 5);
 		this.world = inv.player.level;
 		this.data = data;

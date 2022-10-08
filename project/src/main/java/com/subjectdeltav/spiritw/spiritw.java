@@ -8,6 +8,7 @@ import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
+import com.subjectdeltav.spiritw.init.MenuTypesInit;
 import com.subjectdeltav.spiritw.init.PotionInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 
@@ -74,6 +75,7 @@ public class spiritw
         EffectInit.EFFECTS.register(modEventBus);
         PotionInit.POTIONS.register(modEventBus);
         TileEntityInit.TILE_ENTITIES_TYPES.register(modEventBus);
+        MenuTypesInit.MENUS.register(modEventBus);
         
         //register events
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());
@@ -82,13 +84,7 @@ public class spiritw
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-        
-        //enumerate guis
-        enum GUI_ENUM
-        {
-        	TOUCHSTONE,
-        	LANTERN
-        }
+       
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

@@ -1,6 +1,7 @@
-package com.subjectdeltav.spiritw.gui;
+package com.subjectdeltav.spiritw.init;
 
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.gui.TouchstoneMenu;
 
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -10,7 +11,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class MenuTypes 
+public class MenuTypesInit 
 {
 	public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, spiritw.MODID);
 	

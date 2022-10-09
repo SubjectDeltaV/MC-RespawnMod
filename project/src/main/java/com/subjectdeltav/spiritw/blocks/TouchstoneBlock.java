@@ -35,18 +35,18 @@ public class TouchstoneBlock extends BaseEntityBlock
 
 	
 	//CONSTRUCTOR
-	public TouchstoneBlock(Properties properties) {
+	public TouchstoneBlock(Properties properties) 
+	{
 		super(properties);
-		// TODO Auto-generated constructor stub
 	}
 
 	//custom methods
 	//overrode methods
+	
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) //connect to TileEntity class
 	{
-		// TODO Auto-generated method stub
-		return TileEntityInit.TOUCHSTONE.get().create(pos, state);
+		return new TouchstoneTile(pos, state);
 	} 
 	
 	@Override
@@ -84,13 +84,13 @@ public class TouchstoneBlock extends BaseEntityBlock
 			}
 		}
 		
-		return null;
+		return InteractionResult.sidedSuccess(l.isClientSide());
 	}
 	
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState state, BlockEntityType<T> type)
 	{
-		return createTickerHelper(type, TileEntityInit.TOUCHSTONE.get(), TouchstoneTile::tick);
+		return createTickerHelper(type, TileEntityInit.TOUCHSTONE_TILE.get(), TouchstoneTile::tick);
 	}
 }

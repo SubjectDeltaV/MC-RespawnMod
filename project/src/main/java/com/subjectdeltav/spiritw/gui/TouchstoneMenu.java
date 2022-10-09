@@ -18,6 +18,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -31,7 +32,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 	//Constructors
 	public TouchstoneMenu(int id, Inventory inv, FriendlyByteBuf extraData)
 	{
-		this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
+		this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(3));
 	}
 	
 	public TouchstoneMenu(int id, Inventory inv, BlockEntity ent, ContainerData data)
@@ -43,10 +44,12 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 		addPlayerInventory(inv);
 		addPlayerHotbar(inv);
 		tileEntity = (TouchstoneTile) ent;
-		this.tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+		this.tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
 			this.addSlot(new SlotItemHandler(handler, 0, 12, 15));
-			this.addSlot(new SlotItemHandler(handler, 0, 86, 15));
-			this.addSlot(new SlotItemHandler(handler, 0, 86, 60));
+			this.addSlot(new SlotItemHandler(handler, 1, 86, 15));
+			this.addSlot(new SlotItemHandler(handler, 2, 86, 60));
+			this.addSlot(new SlotItemHandler(handler, 3, 88, 62));
+			this.addSlot(new SlotItemHandler(handler, 4, 90, 65));
 		});;
 		addDataSlots(data);
 	}

@@ -16,9 +16,9 @@ public class TileEntityInit
 	public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES_TYPES = 
 			DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, spiritw.MODID);
 	
-	public static final RegistryObject<BlockEntityType<TouchstoneTile>> TOUCHSTONE = 
+	public static final RegistryObject<BlockEntityType<TouchstoneTile>> TOUCHSTONE_TILE = 
 			TILE_ENTITIES_TYPES.register(
-					"touchstone", 
+					"touchstone_entity", 
 					() -> BlockEntityType.Builder.of(TouchstoneTile::new, 
 							BlockInit.TOUCHSTONE.get()).build(null));
 	

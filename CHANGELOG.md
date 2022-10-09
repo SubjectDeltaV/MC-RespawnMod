@@ -1,3 +1,5 @@
+2022-10-08 136 - Still broken: 
+2022-10-08 135 - Started Review of Code: 
 2022-10-08 134 - Tested Touchstone, Menu is not working: Can't get touchstone inventory to open, despite several rework attempts. Will need to go through the entire set of classes and locate the problem.
 
 2022-10-06 133 - wrapped up implementation on Touchstone: All required entities should be functional, but still need a gui texture.

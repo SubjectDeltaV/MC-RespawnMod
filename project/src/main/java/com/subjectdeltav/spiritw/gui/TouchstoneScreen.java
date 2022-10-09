@@ -1,4 +1,4 @@
-package com.subjectdeltav.spiritw.gui;
+ package com.subjectdeltav.spiritw.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,7 +31,7 @@ public class TouchstoneScreen extends AbstractContainerScreen<TouchstoneMenu>
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int x = (width - imageWidth) / 2;
 		int y = (height - imageHeight) / 2;
-		this.blit(stack, x, y, 0, 0, imageWidth, imageHeight);
+		blit(stack, x, y, 0, 0, imageWidth, imageHeight);
 	}
 	
 	@Override
@@ -40,6 +40,11 @@ public class TouchstoneScreen extends AbstractContainerScreen<TouchstoneMenu>
 		renderBackground(poseStack);
 		super.render(poseStack, mouseX, mouseY, delta);
 		renderTooltip(poseStack, mouseX, mouseY);
+	}
+	@Override
+	protected void init()
+	{
+		super.init();
 	}
 
 }

@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -57,7 +58,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	//CONSTRUCTOR
 	public TouchstoneTile(BlockPos pos, BlockState state) 
 	{
-		super(TileEntityInit.TOUCHSTONE.get(), pos, state);
+		super(TileEntityInit.TOUCHSTONE_TILE.get(), pos, state);
 		this.enchantedItem = false;
 		this.data = new ContainerData()
 				{
@@ -87,7 +88,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 					@Override
 					public int getCount()
 					{
-						return 2;
+						return 3;
 					}
 				};
 	}
@@ -122,7 +123,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			}
 		}else if(ent.enchantedItem && ent.itemInInput && ent.itemInOutput == false)
 		{
-			ent.itemHandler.setStackInSlot(1, ItemStack.EMPTY); //clear out the first slot if the player takes the enchanted item
+			ent.itemHandler.extractItem(0, 1, false); //clear out the first slot if the player takes the enchanted item
 			ent.enchantedItem = false;
 		}else if(ent.enchantedItem && ent.itemInInput == false && ent.itemInOutput)
 		{
@@ -213,13 +214,13 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 
 	@Override
 	public Component getDisplayName() {
-		return Component.literal("Touchstone");
+		return Component.literal("Touchstoner");
 	}
 	
 	@Override
 	public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side)
 	{
-		if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+		if(cap == ForgeCapabilities.ITEM_HANDLER)
 		{
 			return LazyItemHandler.cast();
 		}

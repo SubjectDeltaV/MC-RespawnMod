@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.subjectdeltav.spiritw.events.DeathHandler;
 import com.subjectdeltav.spiritw.events.InventoryHandler;
 import com.subjectdeltav.spiritw.events.WoundedProtectionHandler;
+import com.subjectdeltav.spiritw.gui.TouchstoneScreen;
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
@@ -13,6 +14,7 @@ import com.subjectdeltav.spiritw.init.PotionInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -112,6 +114,8 @@ public class spiritw
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+            
+            MenuScreens.register(MenuTypesInit.TOUCHSTONE_MENU.get(), TouchstoneScreen::new);
         }
     }
 }

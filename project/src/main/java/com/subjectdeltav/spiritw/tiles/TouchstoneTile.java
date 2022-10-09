@@ -213,8 +213,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 
 	@Override
 	public Component getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return Component.literal("Touchstone");
 	}
 	
 	@Override

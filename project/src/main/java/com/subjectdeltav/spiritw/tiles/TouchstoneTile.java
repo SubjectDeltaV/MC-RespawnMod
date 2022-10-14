@@ -38,7 +38,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private LazyOptional<IItemHandler> LazyItemHandler = LazyOptional.empty();
 	protected final ContainerData data;
 	private int currentSavedItemsQ;
-	private int maxSavedItems = 3;
+	private int maxSavedItems = 4;
 	private int maxItemsRemaining;
 	public UUID ownerPlayerID;
 	private boolean itemInInput;
@@ -46,7 +46,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private boolean enchantedItem;
 	
 	//properties with a method
-	private final ItemStackHandler itemHandler = new ItemStackHandler(5) 
+	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
 	{
 		@Override
 		protected void onContentsChanged(int slot)

@@ -38,18 +38,18 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 	public TouchstoneMenu(int id, Inventory inv, BlockEntity ent, ContainerData data)
 	{
 		super(MenuTypesInit.TOUCHSTONE_MENU.get(), id);
-		checkContainerSize(inv, 5);
+		checkContainerSize(inv, 10);
 		this.world = inv.player.level;
 		this.data = data;
 		addPlayerInventory(inv);
 		addPlayerHotbar(inv);
 		tileEntity = (TouchstoneTile) ent;
 		this.tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-			this.addSlot(new SlotItemHandler(handler, 0, 12, 15));
-			this.addSlot(new SlotItemHandler(handler, 1, 86, 15));
-			this.addSlot(new SlotItemHandler(handler, 2, 86, 60));
-			this.addSlot(new SlotItemHandler(handler, 3, 88, 62));
-			this.addSlot(new SlotItemHandler(handler, 4, 90, 65));
+			this.addSlot(new SlotItemHandler(handler, 0, 13, 30));
+			this.addSlot(new SlotItemHandler(handler, 1, 63, 30));
+			this.addSlot(new SlotItemHandler(handler, 2, 94, 30));
+			this.addSlot(new SlotItemHandler(handler, 3, 112, 30));
+			this.addSlot(new SlotItemHandler(handler, 4, 130, 30));
 		});;
 		addDataSlots(data);
 	}
@@ -57,7 +57,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 	//Custom Methods
 	private void addPlayerInventory(Inventory plInv)
 	{
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < 3; i++)
 		{
 			for(int x = 0; x < 9; x++)
 			{
@@ -93,7 +93,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 5;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = 10;  // must be the number of slots you have!
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {

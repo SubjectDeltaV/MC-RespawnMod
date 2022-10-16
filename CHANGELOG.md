@@ -1,3 +1,5 @@
+2022-10-14 138 - Fixed Sizing Issue: UI is now correctly sized. Crashing after 5 slots for some reason.
+
 2022-10-11 137 - Unblocked: Fixed roadblock on Touchstone. Error in writing of cast. Block register was still set to cast to a new block instead of an instance of TouchstoneBlock class. UI for touchstone is not appropriately sized. Will need to correct.
 
 2022-10-08 136 - Still broken: 

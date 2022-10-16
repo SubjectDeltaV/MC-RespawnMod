@@ -50,6 +50,11 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 			this.addSlot(new SlotItemHandler(handler, 2, 94, 30));
 			this.addSlot(new SlotItemHandler(handler, 3, 112, 30));
 			this.addSlot(new SlotItemHandler(handler, 4, 130, 30));
+			this.addSlot(new SlotItemHandler(handler, 5, 148, 30));
+			this.addSlot(new SlotItemHandler(handler, 6, 94, 55));
+			this.addSlot(new SlotItemHandler(handler, 7, 112, 55));
+			this.addSlot(new SlotItemHandler(handler, 8, 130, 55));
+			this.addSlot(new SlotItemHandler(handler, 9, 148, 55));
 		});;
 		addDataSlots(data);
 	}

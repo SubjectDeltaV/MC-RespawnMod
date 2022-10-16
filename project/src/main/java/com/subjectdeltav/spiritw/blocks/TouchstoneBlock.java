@@ -94,6 +94,7 @@ public class TouchstoneBlock extends BaseEntityBlock
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState state, BlockEntityType<T> type)
 	{
+		System.out.println("Touchstone Ticked");
 		return createTickerHelper(type, TileEntityInit.TOUCHSTONE_TILE.get(), TouchstoneTile::tick);
 	}
 	

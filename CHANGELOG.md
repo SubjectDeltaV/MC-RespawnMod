@@ -1,3 +1,5 @@
+2022-10-17 140 - Touchstone enchanting behaving correctly: Items now enchant and make a copy into slots 3-6. Will need logic to destroy all items in slots 2-6 on Block.drosp(). Still need to fix toolbar.
+
 2022-10-15 139 - Addressed crash: 
 2022-10-14 138 - Fixed Sizing Issue: UI is now correctly sized. Crashing after 5 slots for some reason.
 

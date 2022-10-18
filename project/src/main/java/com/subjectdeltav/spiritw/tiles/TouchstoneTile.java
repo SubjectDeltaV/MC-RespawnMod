@@ -44,6 +44,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private boolean itemInInput;
 	private boolean itemInOutput;
 	private boolean enchantedItem;
+	private ItemStack lastEnchanted;
 	
 	//properties with a method
 	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
@@ -60,6 +61,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	{
 		super(TileEntityInit.TOUCHSTONE_TILE.get(), pos, state);
 		this.enchantedItem = false;
+		this.currentSavedItemsQ = 0;
 		this.data = new ContainerData()
 				{
 					@Override
@@ -106,6 +108,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	}	
 	public static void tick(Level l, BlockPos pos, BlockState state, TouchstoneTile ent) //logic for processing items, called every tick 
 	{
+		//System.out.println("Touchstone Ticked");
 		if(l.isClientSide()) //check if on server side
 		{
 			return;
@@ -116,22 +119,26 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			ItemStack item = CanEnchantItem(ent); //get the item in the first slot if it's enchantable
 			if(item != null)
 			{
+				System.out.println("Enchanting requirements met, enchanting item");
 				ItemStack enchantedResult = enchantInSlot(item); //enchant as applicable
-				ent.itemHandler.setStackInSlot(2, enchantedResult); // put enchanted result in second slot
-				ent.setCopiedItem(enchantedResult); //save the item in the noted slot
+				ent.itemHandler.insertItem(1, enchantedResult, false); // put enchanted result in second slot
+				//ent.setCopiedItem(enchantedResult.copy()); //save the item in the noted slot
 				ent.enchantedItem = true; //save the information that we have enchanted an item
+				ent.lastEnchanted = enchantedResult.copy(); //setup for saving if the player keeps the enchantment
 			}
-		}else if(ent.enchantedItem && ent.itemInInput && ent.itemInOutput == false)
+		}else if(ent.enchantedItem && ent.itemInOutput == false) //if we enchanted an item and the item in the output slot is missing
 		{
-			ent.itemHandler.extractItem(0, 1, false); //clear out the first slot if the player takes the enchanted item
-			ent.enchantedItem = false;
-		}else if(ent.enchantedItem && ent.itemInInput == false && ent.itemInOutput)
+			System.out.println("Player has removed the enchanted item, deleting the original, and saving the item with new information");
+			ent.itemHandler.extractItem(0, 1, false); //remove the item in the input slot
+			ItemStack enchantedResult = ent.lastEnchanted;
+			ent.setCopiedItem(enchantedResult); //save the item in the noted slot
+			ent.enchantedItem = false; //reset to false so we can enchant a new item
+		}else if(ent.enchantedItem && ent.itemInInput == false) //if we set an item to enchant but removed the root item
 		{
-			ent.itemHandler.setStackInSlot(2, ItemStack.EMPTY); //clear out the second slot if the player removes the item to enchant
-			ent.enchantedItem = false;
-		}else if(ent.enchantedItem && ent.itemInInput == false && ent.itemInOutput == false)
-		{
-			ent.enchantedItem = false; //for any edge cases
+			System.out.println("Player has removed the original, cancelling enchanted item, no item info has been saved!");
+			ent.itemHandler.extractItem(1, 1, false); //remove the enchanted item, since the player won't be enchanting it
+			ent.enchantedItem = false; //reset to false so we can enchant a new item;
+			ent.lastEnchanted = ItemStack.EMPTY;
 		}
 		return;
 	}
@@ -139,7 +146,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	@Nullable
 	private static ItemStack CanEnchantItem(TouchstoneTile ent) //check if the item in slot 1 can be enchanted
 	{
-		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(1);
+		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(0).copy(); //copy, don't set equal to!
 		boolean hasEnchantableInFirstSlot = firstSlotItem.isEnchantable();
 		if(hasEnchantableInFirstSlot && ent.currentSavedItemsQ >= ent.maxSavedItems) //also check if we have slots available
 		{
@@ -156,12 +163,13 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	@Nullable
 	private static ItemStack enchantInSlot(ItemStack item) //enchant item through method
 	{
+		ItemStack outputItem = item.copy();
 		if(item.isEnchantable())
 		{
 			if(!item.isEnchanted() || item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) == 0) //check if item has enchantment already
 			{
-				item.enchant(EnchantmentInit.SPIRITBOUND.get(), 1); //apply level 1 of enchantment
-				return item;
+				outputItem.enchant(EnchantmentInit.SPIRITBOUND.get(), 1); //apply level 1 of enchantment
+				return outputItem;
 			}else
 			{
 				return item; 
@@ -180,15 +188,16 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}else
 		{
 			int currentSlot = this.currentSavedItemsQ + 2;
-			this.itemHandler.setStackInSlot(currentSlot, item);
+			this.itemHandler.insertItem(currentSlot, item, false);
+			this.currentSavedItemsQ++;
 			return;
 		}
 	}
 	
 	private void CheckSlots()
 	{
-		ItemStack inputSlot = this.itemHandler.getStackInSlot(1);
-		ItemStack outputSlot = this.itemHandler.getStackInSlot(2);
+		ItemStack inputSlot = this.itemHandler.getStackInSlot(0);
+		ItemStack outputSlot = this.itemHandler.getStackInSlot(1);
 		if(inputSlot == ItemStack.EMPTY)
 		{
 			itemInInput = false;

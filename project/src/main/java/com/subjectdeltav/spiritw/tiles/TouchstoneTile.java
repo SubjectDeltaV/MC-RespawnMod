@@ -99,11 +99,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	public void drops()
 	{
 		SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-		for(int i = 0; i < itemHandler.getSlots(); i++)
+		for(int i = 6; i < itemHandler.getSlots(); i++) //only get items starting in slot 6
 		{
 			inventory.setItem(i, itemHandler.getStackInSlot(i));
 		}
-		
+		inventory.addItem(itemHandler.getStackInSlot(0)); //add item in input slot
 		Containers.dropContents(this.level, this.worldPosition, inventory);
 	}	
 	public static void tick(Level l, BlockPos pos, BlockState state, TouchstoneTile ent) //logic for processing items, called every tick 

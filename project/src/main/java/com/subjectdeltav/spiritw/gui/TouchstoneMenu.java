@@ -137,7 +137,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 	{
 		for(int i =0; i < 9; i++)
 		{
-			this.addSlot(new Slot(plInv, 1, 8 + i * 18, 144));
+			this.addSlot(new Slot(plInv, i, 8 + i * 18, 144));
 		}
 	}
 	

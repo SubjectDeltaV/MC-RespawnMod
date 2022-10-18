@@ -1,3 +1,5 @@
+2022-10-17 141 - Barred placing/taking: Can no longer freely take items from save spots, or place items in save spots OR the output slot.
+
 2022-10-17 140 - Touchstone enchanting behaving correctly: Items now enchant and make a copy into slots 3-6. Will need logic to destroy all items in slots 2-6 on Block.drosp(). Still need to fix toolbar.
 
 2022-10-15 139 - Addressed crash: 

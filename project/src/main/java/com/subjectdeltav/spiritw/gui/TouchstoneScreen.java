@@ -3,7 +3,10 @@
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -14,11 +17,12 @@ public class TouchstoneScreen extends AbstractContainerScreen<TouchstoneMenu>
 {
 	//properties
 	private static final ResourceLocation TEXTURE = new ResourceLocation(spiritw.MODID, "textures/gui/touchstone.png");
+	TouchstoneTile tile;
 	
 	//Constructor
 	public TouchstoneScreen(TouchstoneMenu menu, Inventory inv, Component comp) {
 		super(menu, inv, comp);
-		// TODO Auto-generated constructor stub
+		tile = this.getMenu().tileEntity;
 	}
 
 	
@@ -45,6 +49,8 @@ public class TouchstoneScreen extends AbstractContainerScreen<TouchstoneMenu>
 	protected void init()
 	{
 		super.init();
+		this.addRenderableWidget(new RegisterPlayerButton(15, 60, tile, tile.player));
+		this.addRenderableWidget(new RetrieveItemsButton(60, 60, tile, tile.player));
 	}
 
 }

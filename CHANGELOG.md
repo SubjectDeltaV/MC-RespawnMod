@@ -1,3 +1,5 @@
+2022-10-18 144 - Add logic for moving items to block: Added function to be called by a button by the player that moves items from the last death that have the correct enchantment and match items already stored in the touchstone.
+
 2022-10-17 143 - Drops now ignores remembered items: Drops will not eject items saved or enchanted, they will be destroyed with the block.
 
 2022-10-17 142 - Fixed Player Toolbar Loading: Toolbar now loads correctly when accessing Touchstones.

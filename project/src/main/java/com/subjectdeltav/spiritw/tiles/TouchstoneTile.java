@@ -47,12 +47,13 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private int maxSavedItems = 4;
 	private int maxItemsRemaining;
 	public UUID ownerPlayerID;
+	public Player player;
 	private boolean itemInInput;
 	private boolean itemInOutput;
 	private boolean enchantedItem;
 	private ItemStack lastEnchanted;
 	
-	//properties with a method
+	//properties with an override
 	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
 	{
 		@Override
@@ -223,9 +224,10 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	public void regsiterPlayer(Player player)
 	{
 		this.ownerPlayerID = player.getUUID();
+		this.player = player;
 	}
 	
-	public void scanForDeathItems(Player player, int itemsToRetrieveInd, int itemToRetireveInd)
+	public void scanForDeathItems(Player player)
 	{
 		//String plID = player.getStringUUID();
 		boolean isPlayerOwner = player.getUUID() == this.ownerPlayerID;
@@ -284,6 +286,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 						itemsToDeliver[outputInd] = itemInInv;
 						outputInd++;
 						restoreItems = true;
+						System.out.println("Calculated all items to return to player via the Touchstone");
 					}
 					itemToRetrieveInd++;
 				}
@@ -317,6 +320,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 					{
 						itemHandler.insertItem(9, itemsToDeliver[3], false);
 					}
+					System.out.println("Delivered all items to Touchstone");
 				}
 			}
 		}

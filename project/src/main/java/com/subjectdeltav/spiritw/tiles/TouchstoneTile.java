@@ -1,6 +1,9 @@
 package com.subjectdeltav.spiritw.tiles;
 
+import java.util.List;
 import java.util.UUID;
+
+import javax.swing.plaf.basic.BasicComboBoxUI.ItemHandler;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -31,6 +35,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+
+import de.maxhenkel.corpse.corelib.death.*;
 
 public class TouchstoneTile extends BlockEntity implements MenuProvider {
 
@@ -212,6 +218,154 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		{
 			itemInOutput = true;
 		}
+	}
+	
+	public void regsiterPlayer(Player player)
+	{
+		this.ownerPlayerID = player.getUUID();
+	}
+	
+	public void scanForDeathItems(Player player, int itemsToRetrieveInd, int itemToRetireveInd)
+	{
+		//String plID = player.getStringUUID();
+		boolean isPlayerOwner = player.getUUID() == this.ownerPlayerID;
+		if(isPlayerOwner) //check if the person requesting items is the blocks owner
+		{
+			Death death = DeathManager.getDeath((ServerPlayer) player, player.getUUID());
+			if(death == null)
+			{
+				System.out.println("Error, no deaths from player available. Unable to retrieve items.");
+			}else
+			{
+				System.out.println("Player has requested a return of valid enchanted items at block " + this.getDisplayName() + ", running checks");
+				List<ItemStack> deathItemsList = death.getAllItems();
+				int itemsToCheckQ = deathItemsList.size();
+				ItemStack[] itemsToRetrieve; // for all items with valid enchantment
+				ItemStack[] itemsInBlock = this.checkSavedItems(); //for all the items currently saved in the right slot
+				ItemStack[] itemsToDeliver = new ItemStack[4]; //for all items the player had with the valid enchantment that were also saved to the touchstone
+				int itemsToCheckInd = 0;
+				int enchantLvl = 0;
+				int itemsToRetrieveQ = 0;
+				boolean restoreItems = false;
+				for(ItemStack item : deathItemsList) //get the number of items we'll be adding to the output array
+				{
+					enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
+					if(enchantLvl > 1)
+					{
+						itemsToRetrieveQ++;
+					}
+				}
+				if(itemsToRetrieveQ == 0)
+				{
+					System.out.println("No items with matching enchantment on players body, ignorning request");
+					return;
+				}
+				itemsToRetrieve = new ItemStack[itemsToRetrieveQ]; //setup the array
+				int itemToRetrieveInd = 0;
+				for(ItemStack item : deathItemsList) //now we actually store the items with the valid enchantment
+				{
+					enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
+					if(enchantLvl > 1)
+					{
+						itemsToRetrieve[itemToRetrieveInd] = item;
+						itemToRetrieveInd++;
+					}
+				}
+				itemToRetrieveInd = 0;
+				ItemStack itemInInv;
+				ItemStack itemInBlock;
+				int outputInd = 0;
+				while(itemToRetrieveInd < itemsToRetrieveQ) //now put all items that match the items in the block into an array and remove them from the death
+				{
+					itemInInv = itemsToRetrieve[itemToRetrieveInd];
+					itemInBlock = itemsInBlock[itemToRetrieveInd];
+					if(itemInInv == itemInBlock)
+					{
+						itemsToDeliver[outputInd] = itemInInv;
+						outputInd++;
+						restoreItems = true;
+					}
+					itemToRetrieveInd++;
+				}
+				if(restoreItems)
+				{
+					if(itemsToDeliver[0].isEmpty())
+					{
+						itemHandler.setStackInSlot(6, ItemStack.EMPTY);
+					}else
+					{
+						itemHandler.insertItem(6, itemsToDeliver[0], false);
+					}
+					if(itemsToDeliver[1].isEmpty())
+					{
+						itemHandler.setStackInSlot(7, ItemStack.EMPTY);
+					} else
+					{
+						itemHandler.insertItem(7, itemsToDeliver[2], false);
+					}
+					if(itemsToDeliver[2].isEmpty())
+					{
+						itemHandler.setStackInSlot(8, ItemStack.EMPTY);
+					} else
+					{
+						itemHandler.insertItem(8, itemsToDeliver[2], false);
+					}
+					if(itemsToDeliver[3].isEmpty())
+					{
+						itemHandler.setStackInSlot(9, ItemStack.EMPTY);
+					} else
+					{
+						itemHandler.insertItem(9, itemsToDeliver[3], false);
+					}
+				}
+			}
+		}
+	}
+	
+	@Nullable
+	private ItemStack[] checkSavedItems() //scans all items currently in the saved items slots and returns an array of items for all saved items
+	{
+		ItemStack slot1 = itemHandler.getStackInSlot(2);
+		ItemStack slot2 = itemHandler.getStackInSlot(3); 
+		ItemStack slot3 = itemHandler.getStackInSlot(4);
+		ItemStack slot4 = itemHandler.getStackInSlot(5); 
+		int outputSize = 0;
+		if(slot1.isEmpty() == false)
+		{
+			outputSize++;
+			if(slot2.isEmpty() == false)
+			{
+				outputSize++;
+				if(slot3.isEmpty() == false)
+				{
+					outputSize++;
+					if(slot3.isEmpty() == false)
+					{
+						outputSize++;
+					}
+				}
+			}
+			System.out.println("There are " + outputSize + " items available from touchstone of owner " + this.ownerPlayerID);
+		}else
+		{
+			System.out.println("no items saved, ignoring request for array of saved items");
+			return null;
+		}
+		ItemStack[] outputStack = new ItemStack[outputSize];
+		outputStack[0] = slot1;
+		if(outputSize > 1)
+		{
+			outputStack[1] = slot2;
+			if(outputSize > 2)
+			{
+				outputStack[2] = slot3;
+				if(outputSize > 3)
+				{
+					outputStack[3] = slot4;
+				}
+			}
+		}
+		return outputStack;
 	}
 	
 	//overrode methods

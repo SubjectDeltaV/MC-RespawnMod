@@ -1,3 +1,5 @@
+2022-10-17 143 - Drops now ignores remembered items: Drops will not eject items saved or enchanted, they will be destroyed with the block.
+
 2022-10-17 142 - Fixed Player Toolbar Loading: Toolbar now loads correctly when accessing Touchstones.
 
 2022-10-17 141 - Barred placing/taking: Can no longer freely take items from save spots, or place items in save spots OR the output slot.

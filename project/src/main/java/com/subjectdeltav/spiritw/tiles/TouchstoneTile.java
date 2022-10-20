@@ -48,6 +48,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private int maxItemsRemaining;
 	public UUID ownerPlayerID;
 	public Player player;
+	public boolean playerIsSet = false;
 	private boolean itemInInput;
 	private boolean itemInOutput;
 	private boolean enchantedItem;

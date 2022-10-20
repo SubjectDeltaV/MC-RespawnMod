@@ -1,3 +1,7 @@
+2022-10-20 146 - Move Buttons on UI: Buttons are now closer to where they should be on ui. Players will now be automatically registered to Touchstone block. Buttons still causing CTD on use.
+
+2022-10-18 145 - Add Buttons: Added buttons for Touchstone UI
+
 2022-10-18 144 - Add logic for moving items to block: Added function to be called by a button by the player that moves items from the last death that have the correct enchantment and match items already stored in the touchstone.
 
 2022-10-17 143 - Drops now ignores remembered items: Drops will not eject items saved or enchanted, they will be destroyed with the block.

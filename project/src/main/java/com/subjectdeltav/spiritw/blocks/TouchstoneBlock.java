@@ -80,7 +80,24 @@ public class TouchstoneBlock extends BaseEntityBlock
 			BlockEntity entity = l.getBlockEntity(pos);
 			if(entity instanceof TouchstoneTile)
 			{
-				NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
+				TouchstoneTile tile = (TouchstoneTile) entity;
+				if(tile.playerIsSet)
+				{
+					if(tile.player == pl)
+					{
+						NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
+					}else
+					{
+						System.out.println("Player attempted to open Touchstone that isn't theirs...ignoring");
+					}
+				}else
+				{
+					System.out.println("No Player owner set for this touchstone, setting owner and opening UI");
+					tile.player = pl;
+					tile.ownerPlayerID = pl.getUUID();
+					NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
+				}
+
 			} else
 			{
 				throw new IllegalStateException("Our Container provider is missing!");

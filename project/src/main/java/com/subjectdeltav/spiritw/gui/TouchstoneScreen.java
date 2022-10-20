@@ -49,8 +49,8 @@ public class TouchstoneScreen extends AbstractContainerScreen<TouchstoneMenu>
 	protected void init()
 	{
 		super.init();
-		this.addRenderableWidget(new RegisterPlayerButton(15, 60, tile, tile.player));
-		this.addRenderableWidget(new RetrieveItemsButton(60, 60, tile, tile.player));
+		//this.addRenderableWidget(new RegisterPlayerButton(50, 100, tile, tile.player));
+		this.addRenderableWidget(new RetrieveItemsButton(100, 100, tile, tile.player));
 	}
 
 }

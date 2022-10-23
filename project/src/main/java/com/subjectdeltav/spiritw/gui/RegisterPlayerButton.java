@@ -27,6 +27,6 @@ public class RegisterPlayerButton extends Button {
 	@Override
 	public void onPress()
 	{
-		tileEnt.regsiterPlayer(player);
+		tileEnt.setPlayer(player);
 	}
 }

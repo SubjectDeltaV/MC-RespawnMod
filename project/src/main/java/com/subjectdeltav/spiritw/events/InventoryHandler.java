@@ -3,6 +3,7 @@ package com.subjectdeltav.spiritw.events;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,7 +13,11 @@ import java.util.Collection;
 
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
+import com.subjectdeltav.spiritw.init.ItemInit;
+import com.subjectdeltav.spiritw.init.TileEntityInit;
+import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -22,6 +27,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -39,6 +46,7 @@ import com.subjectdeltav.spiritw.enchants.SpiritBoundEnchantment;
 public class InventoryHandler
 	{
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
+		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
 		
 		@SubscribeEvent
 		public void drops(LivingDropsEvent event) 
@@ -49,6 +57,7 @@ public class InventoryHandler
 				System.out.println("Entity is a Player, Preparing to Check for Enchanted Items...");
 				Player player = (Player) event.getEntity(); //get player
 				boolean saveItemsForRespawn = false; //will change to true when we detect enchanted items
+				boolean saveItemsForTouchstone = false; //will change to true when a player has a lantern on death
 				Collection<ItemEntity> droppedItems = event.getDrops(); //obtain the list of items the player is about to drop
 				int droppedItemsQ = droppedItems.size();
 				ItemStack[] ItemsToCheck = new ItemStack[droppedItemsQ];
@@ -60,6 +69,7 @@ public class InventoryHandler
 					ItemsToCheck[itemInd] = item;
 				}
 				ItemStack[] ItemsToSave = new ItemStack[droppedItemsQ]; //we'll put the items to save in here
+				ItemStack[] ItemsForRespawn = new ItemStack[droppedItemsQ];
 				for(int itemIndex = 0; itemIndex < droppedItemsQ; itemIndex++) 
 				{
 					//check each item in the array for the right enchantment, 
@@ -68,14 +78,23 @@ public class InventoryHandler
 					if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
 					{
 						ItemsToSave[itemIndex] = itemToCheck;
-						saveItemsForRespawn = true;
+						saveItemsForTouchstone = true;
 						System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.getDisplayName());
 						event.getDrops().remove(itemToCheck);
 					}
+					if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
+					{
+						ItemsForRespawn[itemIndex] = itemToCheck;
+						saveItemsForRespawn = true;
+					}
+				}
+				if(saveItemsForTouchstone)
+				{
+					itemsToRestore.put(player.getStringUUID(), ItemsToSave);
 				}
 				if(saveItemsForRespawn)
 				{
-					itemsToRestore.put(player.getStringUUID(), ItemsToSave);
+					itemsOnRespawn.put(player.getStringUUID(), ItemsForRespawn);
 				}
 			}
 			else
@@ -91,13 +110,54 @@ public class InventoryHandler
 			if (event.isWasDeath() && itemsToRestore.containsKey(player.getUUID().toString())) 
 			{
 				spiritw.LOGGER.debug("Detected Items for Restoring to Player for Respawn with correct Enchantment Type 'Spiritbound'");
-				ItemStack[] itemsToReturn = itemsToRestore.get(player.getUUID().toString());
+				ItemStack[] itemsToReturn = itemsOnRespawn.get(player.getUUID().toString());
 				for(int itemIndex = 0; itemIndex < itemsToReturn.length; itemIndex++)
 				{
 					player.addItem(itemsToReturn[itemIndex]);
 				}
 				spiritw.LOGGER.debug("Restored correct Items to player, erasing...");
-				itemsToRestore.remove(player.getUUID().toString());
+				itemsOnRespawn.remove(player.getUUID().toString());
+			}
+		}
+		
+		@SubscribeEvent
+		public void interact(PlayerInteractEvent event)
+		{
+			BlockPos blockPos = event.getPos();
+			Level level = event.getLevel();
+			Player player = (Player) event.getEntity();
+			ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
+			ItemStack[] itemsToRestore = new ItemStack[4];
+			int toRestoreInd = 0;
+			boolean restoreItems = false;
+			Optional<TouchstoneTile> blEnt = level.getBlockEntity(blockPos, TileEntityInit.TOUCHSTONE_TILE.get());
+			if(blEnt != null && itemsOnRespawn.containsKey(player.getStringUUID()))
+			{
+				TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
+				ItemStack[] itemsFromTile = tile.getSavedItems();
+				for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
+				{
+					ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
+					for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
+					{
+						ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
+						if(checkItemFromTile == checkItemFromDeath)
+						{
+							itemsToRestore[toRestoreInd] = checkItemFromDeath;
+							toRestoreInd++;
+							restoreItems = true;
+						}
+					}
+					if(restoreItems)
+					{
+						for(int index = 0; index < itemsToRestore.length; index++)
+						{
+							ItemStack giveItem = itemsToRestore[index];
+							player.addItem(giveItem);
+						}
+					}
+				}
+				
 			}
 		}
 	}

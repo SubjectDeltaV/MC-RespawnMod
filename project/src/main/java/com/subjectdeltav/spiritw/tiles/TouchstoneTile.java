@@ -46,8 +46,8 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private int currentSavedItemsQ;
 	private int maxSavedItems = 4;
 	private int maxItemsRemaining;
-	public UUID ownerPlayerID;
-	public Player player;
+	protected UUID ownerPlayerID;
+	protected Player player;
 	public boolean playerIsSet = false;
 	private boolean itemInInput;
 	private boolean itemInOutput;
@@ -222,19 +222,25 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
-	public void regsiterPlayer(Player player)
+	public void setPlayer(Player player)
 	{
 		this.ownerPlayerID = player.getUUID();
 		this.player = player;
+		playerIsSet = true;
 	}
 	
-	public void scanForDeathItems(Player player)
+	public UUID getPlayerID()
+	{
+		return ownerPlayerID;
+	}
+	
+	public void scanForDeathItems(ServerPlayer player, Death death)
 	{
 		//String plID = player.getStringUUID();
 		boolean isPlayerOwner = player.getUUID() == this.ownerPlayerID;
 		if(isPlayerOwner) //check if the person requesting items is the blocks owner
 		{
-			Death death = DeathManager.getDeath((ServerPlayer) player, player.getUUID());
+			//Death death = DeathManager.getDeath(player, ownerPlayerID);
 			if(death == null)
 			{
 				System.out.println("Error, no deaths from player available. Unable to retrieve items.");
@@ -244,7 +250,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				List<ItemStack> deathItemsList = death.getAllItems();
 				int itemsToCheckQ = deathItemsList.size();
 				ItemStack[] itemsToRetrieve; // for all items with valid enchantment
-				ItemStack[] itemsInBlock = this.checkSavedItems(); //for all the items currently saved in the right slot
+				ItemStack[] itemsInBlock = this.getSavedItems(); //for all the items currently saved in the right slot
 				ItemStack[] itemsToDeliver = new ItemStack[4]; //for all items the player had with the valid enchantment that were also saved to the touchstone
 				int itemsToCheckInd = 0;
 				int enchantLvl = 0;
@@ -328,7 +334,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	}
 	
 	@Nullable
-	private ItemStack[] checkSavedItems() //scans all items currently in the saved items slots and returns an array of items for all saved items
+	public ItemStack[] getSavedItems() //scans all items currently in the saved items slots and returns an array of items for all saved items
 	{
 		ItemStack slot1 = itemHandler.getStackInSlot(2);
 		ItemStack slot2 = itemHandler.getStackInSlot(3); 

@@ -4,6 +4,10 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
+import com.subjectdeltav.spiritw.init.BlockInit;
+import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
@@ -13,6 +17,7 @@ import net.minecraft.world.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -83,7 +88,9 @@ public class TouchstoneBlock extends BaseEntityBlock
 				TouchstoneTile tile = (TouchstoneTile) entity;
 				if(tile.playerIsSet)
 				{
-					if(tile.player == pl)
+					ItemStack holdingMain = pl.getMainHandItem();
+					ItemStack holdingOff = pl.getOffhandItem();
+					if(tile.getPlayerID() == pl.getUUID())
 					{
 						NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
 					}else
@@ -93,8 +100,7 @@ public class TouchstoneBlock extends BaseEntityBlock
 				}else
 				{
 					System.out.println("No Player owner set for this touchstone, setting owner and opening UI");
-					tile.player = pl;
-					tile.ownerPlayerID = pl.getUUID();
+					tile.setPlayer(pl);
 					NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
 				}
 

@@ -4,6 +4,7 @@ import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class RetrieveItemsButton extends Button {
@@ -23,7 +24,7 @@ public class RetrieveItemsButton extends Button {
 	@Override
 	public void onPress()
 	{
-		tileEnt.scanForDeathItems(player);
+		tileEnt.scanForDeathItems((ServerPlayer) player);
 	}
 
 }

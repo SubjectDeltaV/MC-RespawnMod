@@ -110,10 +110,13 @@ public class DeathHandler
 					System.out.println("Mob was killed by his victim while it was downed, lifting wounded status");
 					MobEffectInstance woundEffect = killer.getEffect(EffectInit.WOUNDED.get());
 					int woundEffectAmplifier = woundEffect.getAmplifier();
-					killer.removeAllEffects();
-					MobEffectInstance sickness = new MobEffectInstance(EffectInit.REVIVAL_SICKNESS.get(), 2400, woundEffectAmplifier);
-					killer.addEffect(sickness);
-				    rememberKillers.remove(mobId);
+					if(killer != null) //to prevent CTD
+					{
+						killer.removeAllEffects();
+						MobEffectInstance sickness = new MobEffectInstance(EffectInit.REVIVAL_SICKNESS.get(), 2400, woundEffectAmplifier);
+						killer.addEffect(sickness);
+					    rememberKillers.remove(mobId);
+					}
 				}
 			}
 		}

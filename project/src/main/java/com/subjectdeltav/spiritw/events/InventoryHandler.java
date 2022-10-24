@@ -70,8 +70,9 @@ public class InventoryHandler
 				{
 					ItemStack item = itemEnt.getItem();
 					ItemsToCheck[itemInd] = item;
+					System.out.println("Added " + item.getDisplayName() + "to array");
 				}
-				System.out.println("Converted Drops Collection to ItemStack Array...");
+				System.out.println("Converted Drops Collection to ItemStack Array of size " + droppedItemsQ);
 				ItemStack[] ItemsToSave = new ItemStack[droppedItemsQ]; //we'll put the items to save in here
 				ItemStack[] ItemsForRespawn = new ItemStack[droppedItemsQ];
 				System.out.println("Checking for Enchanted Items");
@@ -79,24 +80,40 @@ public class InventoryHandler
 				{
 					System.out.println("Error, no items in Drops");
 				}
-				for(int itemIndex = 0; itemIndex < droppedItemsQ; itemIndex++) 
+				int itemIndex = 0;
+				while(itemIndex < droppedItemsQ) 
 				{
 					//check each item in the array for the right enchantment, 
 					//if it matches save it and remove it from the drop list
 					ItemStack itemToCheck = ItemsToCheck[itemIndex];
-					if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
+					if(itemToCheck != null)
 					{
-						ItemsToSave[itemIndex] = itemToCheck;
-						saveItemsForTouchstone = true;
-						System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.getDisplayName());
-						event.getDrops().remove(itemToCheck.getItem());
-					}
-					if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
+						System.out.println("Checking " + itemToCheck.toString());
+						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
+						{
+							ItemsToSave[itemIndex] = itemToCheck;
+							saveItemsForTouchstone = true;
+							System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.toString());
+							event.getDrops().remove(itemToCheck.getItem());
+						}else
+						{
+							System.out.println("Item does not have correct enchantment");
+						}
+						if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
+						{
+							ItemsForRespawn[itemIndex] = itemToCheck;
+							saveItemsForRespawn = true;
+							System.out.println("Found and Saved Spirit Lantern");
+							event.getDrops().remove(itemToCheck.getItem());
+						}else
+						{
+							System.out.println("Item is not a Spirit Lantern");
+						}
+					}else
 					{
-						ItemsForRespawn[itemIndex] = itemToCheck;
-						saveItemsForRespawn = true;
-						event.getDrops().remove(itemToCheck.getItem());
+						System.out.println("Item is null");
 					}
+					itemIndex++;
 				}
 				if(saveItemsForTouchstone)
 				{

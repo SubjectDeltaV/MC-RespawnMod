@@ -80,7 +80,7 @@ public class spiritw
         MenuTypesInit.MENUS.register(modEventBus);
         
         //register events
-        //MinecraftForge.EVENT_BUS.register(new InventoryHandler());
+        MinecraftForge.EVENT_BUS.register(new InventoryHandler());
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
         MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
 

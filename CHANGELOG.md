@@ -1,3 +1,7 @@
+2022-10-24 148 - More Work on Enchant: Event is firing but not recording items.
+
+2022-10-22 147 - Worked on Re-enabling Enchant: Reworked level 1 enchantment and added lantern to scanning list.
+
 2022-10-20 146 - Move Buttons on UI: Buttons are now closer to where they should be on ui. Players will now be automatically registered to Touchstone block. Buttons still causing CTD on use.
 
 2022-10-18 145 - Add Buttons: Added buttons for Touchstone UI

@@ -24,7 +24,7 @@ public class RetrieveItemsButton extends Button {
 	@Override
 	public void onPress()
 	{
-		tileEnt.scanForDeathItems((ServerPlayer) player);
+		//tileEnt.getSavedItems((ServerPlayer) player);
 	}
 
 }

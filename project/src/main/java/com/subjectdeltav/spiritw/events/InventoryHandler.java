@@ -17,6 +17,7 @@ import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
+import de.maxhenkel.corpse.entities.CorpseEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,6 +35,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -62,14 +64,21 @@ public class InventoryHandler
 				int droppedItemsQ = droppedItems.size();
 				ItemStack[] ItemsToCheck = new ItemStack[droppedItemsQ];
 				int itemInd = 0;
+				//CorpseEntity corpse = player.level.getEntit 
 				//convert the items to ItemStack from ItemEntity
 				for(ItemEntity itemEnt : droppedItems) //convert the dropped ItemEntities collection to an array of ItemStack
 				{
 					ItemStack item = itemEnt.getItem();
 					ItemsToCheck[itemInd] = item;
 				}
+				System.out.println("Converted Drops Collection to ItemStack Array...");
 				ItemStack[] ItemsToSave = new ItemStack[droppedItemsQ]; //we'll put the items to save in here
 				ItemStack[] ItemsForRespawn = new ItemStack[droppedItemsQ];
+				System.out.println("Checking for Enchanted Items");
+				if(ItemsToCheck.length == 0)
+				{
+					System.out.println("Error, no items in Drops");
+				}
 				for(int itemIndex = 0; itemIndex < droppedItemsQ; itemIndex++) 
 				{
 					//check each item in the array for the right enchantment, 
@@ -80,12 +89,13 @@ public class InventoryHandler
 						ItemsToSave[itemIndex] = itemToCheck;
 						saveItemsForTouchstone = true;
 						System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.getDisplayName());
-						event.getDrops().remove(itemToCheck);
+						event.getDrops().remove(itemToCheck.getItem());
 					}
 					if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
 					{
 						ItemsForRespawn[itemIndex] = itemToCheck;
 						saveItemsForRespawn = true;
+						event.getDrops().remove(itemToCheck.getItem());
 					}
 				}
 				if(saveItemsForTouchstone)
@@ -126,34 +136,38 @@ public class InventoryHandler
 			BlockPos blockPos = event.getPos();
 			Level level = event.getLevel();
 			Player player = (Player) event.getEntity();
-			ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
-			ItemStack[] itemsToRestore = new ItemStack[4];
+
+			ItemStack[] itemstoRestore = new ItemStack[4];
 			int toRestoreInd = 0;
 			boolean restoreItems = false;
 			Optional<TouchstoneTile> blEnt = level.getBlockEntity(blockPos, TileEntityInit.TOUCHSTONE_TILE.get());
-			if(blEnt != null && itemsOnRespawn.containsKey(player.getStringUUID()))
+			if(blEnt != null && itemsToRestore.containsKey(player.getStringUUID()) && event.getItemStack().getItem() == ItemInit.SPLANTERN.get())
 			{
-				TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
-				ItemStack[] itemsFromTile = tile.getSavedItems();
-				for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
+				ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
+				if(itemsFromDeath != null)
 				{
-					ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
-					for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
+					TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
+					ItemStack[] itemsFromTile = tile.getSavedItems();
+					for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
 					{
-						ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
-						if(checkItemFromTile == checkItemFromDeath)
+						ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
+						for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
 						{
-							itemsToRestore[toRestoreInd] = checkItemFromDeath;
-							toRestoreInd++;
-							restoreItems = true;
+							ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
+							if(checkItemFromTile == checkItemFromDeath)
+							{
+								itemstoRestore[toRestoreInd] = checkItemFromDeath;
+								toRestoreInd++;
+								restoreItems = true;
+							}
 						}
-					}
-					if(restoreItems)
-					{
-						for(int index = 0; index < itemsToRestore.length; index++)
+						if(restoreItems)
 						{
-							ItemStack giveItem = itemsToRestore[index];
-							player.addItem(giveItem);
+							for(int index = 0; index < itemstoRestore.length; index++)
+							{
+								ItemStack giveItem = itemstoRestore[index];
+								player.addItem(giveItem);
+							}
 						}
 					}
 				}

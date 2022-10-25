@@ -174,30 +174,48 @@ public class InventoryHandler
 				ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
 				if(itemsFromDeath != null)
 				{
+					spiritw.LOGGER.debug("A player has interacted with the touchstone with a lantern in hand, checking for any items to restore...");
 					TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
 					ItemStack[] itemsFromTile = tile.getSavedItems();
-					for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
+					if(!(itemsFromTile == null))
 					{
-						ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
-						for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
+						for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
 						{
-							ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
-							if(checkItemFromTile == checkItemFromDeath)
+							ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
+							if(checkItemFromDeath != null)
 							{
-								itemstoRestore[toRestoreInd] = checkItemFromDeath;
-								toRestoreInd++;
-								restoreItems = true;
+								spiritw.LOGGER.debug("Comparing " + checkItemFromDeath.toString() + " against items in touchstone...");
+								for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
+								{
+									ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
+									if(checkItemFromTile.equals(checkItemFromDeath))
+									{
+										spiritw.LOGGER.debug("Item Matches, adding it to list to restore items.");
+										itemstoRestore[toRestoreInd] = checkItemFromDeath;
+										toRestoreInd++;
+										restoreItems = true;
+									}
+								}
+							} else
+							{
+								spiritw.LOGGER.error("Item to check against touuchstone is null, ignoring...");
 							}
+							
 						}
 						if(restoreItems)
 						{
 							for(int index = 0; index < itemstoRestore.length; index++)
 							{
+								spiritw.LOGGER.debug("Giving Items to Player...");
 								ItemStack giveItem = itemstoRestore[index];
 								player.addItem(giveItem);
 							}
 						}
+					} else
+					{
+						spiritw.LOGGER.error("items from Touchstone are null, unable to copy");
 					}
+					
 				}
 				
 			}

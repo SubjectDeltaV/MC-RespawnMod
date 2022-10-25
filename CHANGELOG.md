@@ -1,3 +1,8 @@
+2022-10-24 151 - Enchantment is kind of working: No more crashes, touchstone still not reacting to memorized items. Items are getting memorized correctly, issue is with how the program is comparing the objects.
+
+2022-10-24 150 - Respawning working now: 
+2022-10-24 149 - Attempting to Fix Enchant: For Some Reason, most of the items are coming through as null
+
 2022-10-24 148 - More Work on Enchant: Event is firing but not recording items.
 
 2022-10-22 147 - Worked on Re-enabling Enchant: Reworked level 1 enchantment and added lantern to scanning list.

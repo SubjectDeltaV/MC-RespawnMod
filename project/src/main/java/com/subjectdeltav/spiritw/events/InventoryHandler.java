@@ -50,7 +50,7 @@ public class InventoryHandler
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
 		
-		@SubscribeEvent
+		@SubscribeEvent(priority = EventPriority.HIGH)
 		public void drops(LivingDropsEvent event) 
 		{
 			System.out.println("Entity has died...");
@@ -66,11 +66,13 @@ public class InventoryHandler
 				int itemInd = 0;
 				//CorpseEntity corpse = player.level.getEntit 
 				//convert the items to ItemStack from ItemEntity
+				
 				for(ItemEntity itemEnt : droppedItems) //convert the dropped ItemEntities collection to an array of ItemStack
 				{
 					ItemStack item = itemEnt.getItem();
 					ItemsToCheck[itemInd] = item;
-					System.out.println("Added " + item.getDisplayName() + "to array");
+					System.out.println("Added " + item.toString() + " to array");
+					itemInd++;
 				}
 				System.out.println("Converted Drops Collection to ItemStack Array of size " + droppedItemsQ);
 				ItemStack[] ItemsToSave = new ItemStack[droppedItemsQ]; //we'll put the items to save in here
@@ -91,7 +93,7 @@ public class InventoryHandler
 						System.out.println("Checking " + itemToCheck.toString());
 						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
 						{
-							ItemsToSave[itemIndex] = itemToCheck;
+							ItemsToSave[itemIndex] = itemToCheck.copy();
 							saveItemsForTouchstone = true;
 							System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.toString());
 							event.getDrops().remove(itemToCheck.getItem());
@@ -101,7 +103,7 @@ public class InventoryHandler
 						}
 						if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
 						{
-							ItemsForRespawn[itemIndex] = itemToCheck;
+							ItemsForRespawn[itemIndex] = itemToCheck.copy();
 							saveItemsForRespawn = true;
 							System.out.println("Found and Saved Spirit Lantern");
 							event.getDrops().remove(itemToCheck.getItem());
@@ -140,7 +142,16 @@ public class InventoryHandler
 				ItemStack[] itemsToReturn = itemsOnRespawn.get(player.getUUID().toString());
 				for(int itemIndex = 0; itemIndex < itemsToReturn.length; itemIndex++)
 				{
-					player.addItem(itemsToReturn[itemIndex]);
+					if(player == null)
+					{
+						spiritw.LOGGER.debug("Error, player is null!");
+					}else if(itemsToReturn[itemIndex] == null)
+					{
+						spiritw.LOGGER.debug("Error, Item is null");
+					}else 
+					{
+						player.addItem(itemsToReturn[itemIndex]);
+					}
 				}
 				spiritw.LOGGER.debug("Restored correct Items to player, erasing...");
 				itemsOnRespawn.remove(player.getUUID().toString());

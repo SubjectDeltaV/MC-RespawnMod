@@ -53,6 +53,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private boolean itemInOutput;
 	private boolean enchantedItem;
 	private ItemStack lastEnchanted;
+	private int[] savedItemIDs;
 	
 	//properties with an override
 	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
@@ -377,6 +378,14 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			}
 		}
 		return outputStack;
+	}
+	
+	public void restoreItems(ItemStack item, int slotN)
+	{
+		if(item != null)
+		{
+			this.itemHandler.insertItem(slotN, item, false);
+		}
 	}
 	
 	//overrode methods

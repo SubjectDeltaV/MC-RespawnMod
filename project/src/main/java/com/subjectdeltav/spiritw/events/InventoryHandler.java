@@ -17,6 +17,8 @@ import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
+import de.maxhenkel.corpse.corelib.death.Death;
+import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
 import de.maxhenkel.corpse.entities.CorpseEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -51,25 +53,26 @@ public class InventoryHandler
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
 		
 		@SubscribeEvent(priority = EventPriority.HIGH)
-		public void drops(LivingDropsEvent event) 
+		public void drops(PlayerDeathEvent event) 
 		{
 			System.out.println("Entity has died...");
-			if(event.getEntity() instanceof Player)
+			if(event.getPlayer() instanceof Player)
 			{
 				System.out.println("Entity is a Player, Preparing to Check for Enchanted Items...");
-				Player player = (Player) event.getEntity(); //get player
+				Player player = (Player) event.getPlayer(); //get player
 				boolean saveItemsForRespawn = false; //will change to true when we detect enchanted items
 				boolean saveItemsForTouchstone = false; //will change to true when a player has a lantern on death
-				Collection<ItemEntity> droppedItems = event.getDrops(); //obtain the list of items the player is about to drop
+				Death death = event.getDeath();
+				Collection<ItemStack> droppedItems = death.getAllItems(); //obtain the list of items the player is about to drop
 				int droppedItemsQ = droppedItems.size();
 				ItemStack[] ItemsToCheck = new ItemStack[droppedItemsQ];
 				int itemInd = 0;
 				//CorpseEntity corpse = player.level.getEntit 
 				//convert the items to ItemStack from ItemEntity
 				
-				for(ItemEntity itemEnt : droppedItems) //convert the dropped ItemEntities collection to an array of ItemStack
+				for(ItemStack itemSt : droppedItems) //convert the dropped ItemStack collection to an array
 				{
-					ItemStack item = itemEnt.getItem();
+					ItemStack item = itemSt;
 					ItemsToCheck[itemInd] = item;
 					System.out.println("Added " + item.toString() + " to array");
 					itemInd++;
@@ -96,7 +99,7 @@ public class InventoryHandler
 							ItemsToSave[itemIndex] = itemToCheck.copy();
 							saveItemsForTouchstone = true;
 							System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.toString());
-							event.getDrops().remove(itemToCheck.getItem());
+							death.getAllItems().remove(itemToCheck);
 						}else
 						{
 							System.out.println("Item does not have correct enchantment");
@@ -106,7 +109,9 @@ public class InventoryHandler
 							ItemsForRespawn[itemIndex] = itemToCheck.copy();
 							saveItemsForRespawn = true;
 							System.out.println("Found and Saved Spirit Lantern");
-							event.getDrops().remove(itemToCheck.getItem());
+							death.getAllItems().remove(itemToCheck);
+							Level world = player.level;
+							
 						}else
 						{
 							System.out.println("Item is not a Spirit Lantern");
@@ -188,7 +193,7 @@ public class InventoryHandler
 								for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
 								{
 									ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
-									if(checkItemFromTile.equals(checkItemFromDeath))
+									if(checkItemFromDeath.is(checkItemFromTile.getItem()))
 									{
 										spiritw.LOGGER.debug("Item Matches, adding it to list to restore items.");
 										itemstoRestore[toRestoreInd] = checkItemFromDeath;
@@ -209,6 +214,7 @@ public class InventoryHandler
 								spiritw.LOGGER.debug("Giving Items to Player...");
 								ItemStack giveItem = itemstoRestore[index];
 								player.addItem(giveItem);
+								itemsToRestore.remove(player.getStringUUID());
 							}
 						}
 					} else

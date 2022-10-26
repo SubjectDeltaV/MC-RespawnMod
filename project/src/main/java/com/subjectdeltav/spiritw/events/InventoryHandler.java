@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -37,6 +38,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -51,6 +53,7 @@ public class InventoryHandler
 	{
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
+		private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>();
 		
 		@SubscribeEvent(priority = EventPriority.HIGH)
 		public void drops(PlayerDeathEvent event) 
@@ -99,7 +102,7 @@ public class InventoryHandler
 							ItemsToSave[itemIndex] = itemToCheck.copy();
 							saveItemsForTouchstone = true;
 							System.out.println("Found and Saved Item of Correct Enchantment " + itemToCheck.toString());
-							death.getAllItems().remove(itemToCheck);
+							death.getAllItems().remove(itemToCheck.copy());
 						}else
 						{
 							System.out.println("Item does not have correct enchantment");
@@ -109,8 +112,7 @@ public class InventoryHandler
 							ItemsForRespawn[itemIndex] = itemToCheck.copy();
 							saveItemsForRespawn = true;
 							System.out.println("Found and Saved Spirit Lantern");
-							death.getAllItems().remove(itemToCheck);
-							Level world = player.level;
+							death.getAllItems().remove(itemToCheck.copy());
 							
 						}else
 						{
@@ -184,6 +186,7 @@ public class InventoryHandler
 					ItemStack[] itemsFromTile = tile.getSavedItems();
 					if(!(itemsFromTile == null))
 					{
+						ItemStack[] removeItemsFromCorpse = new ItemStack[itemsFromTile.length];
 						for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
 						{
 							ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
@@ -224,6 +227,24 @@ public class InventoryHandler
 					
 				}
 				
+			}
+		}
+		
+		@SubscribeEvent
+		public void corpseInteract(EntityInteractSpecific event)
+		{
+			Entity ent = event.getTarget();
+			if(ent instanceof CorpseEntity)
+			{
+				System.out.println("Player has interacted with a corpse, chec king if any valid items for this death");
+				CorpseEntity body = (CorpseEntity) event.getTarget();
+				Death death = body.getDeath();
+				UUID corpseOwnerID = death.getPlayerUUID();
+				if(itemsToRestore.containsKey(corpseOwnerID.toString()))
+				{
+					spiritw.LOGGER.debug("Corpse Owner has items with correct enchantment, removing them from Hash Map, player must now recover items from Body");
+					itemsToRestore.remove(corpseOwnerID.toString());
+				}
 			}
 		}
 	}

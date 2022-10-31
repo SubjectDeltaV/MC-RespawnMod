@@ -1,3 +1,8 @@
+2022-10-30 154 - Fixed Enchant and Event: Items are now correctly transferring to player. WARNING: Items can currently be lost if you log out before retrieving them from the Touchstone.
+
+2022-10-26 153 - Sort of Working: Enchant is restoring items from touchstone, but not removing them from corpse.
+
+2022-10-26 152 - Work on Enchant: 
 2022-10-24 151 - Enchantment is kind of working: No more crashes, touchstone still not reacting to memorized items. Items are getting memorized correctly, issue is with how the program is comparing the objects.
 
 2022-10-24 150 - Respawning working now: 

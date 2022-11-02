@@ -174,7 +174,7 @@ public class InventoryHandler
 			}
 		}
 		
-		@SubscribeEvent
+		@SubscribeEvent(priority = EventPriority.LOW)
 		public void interact(PlayerInteractEvent event)
 		{
 			BlockPos blockPos = event.getPos();

@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.init.PotionInit;
+import com.subjectdeltav.spiritw.item.SpLantern;
 
-import item.SpLantern;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -23,7 +23,6 @@ public class Ghost extends MobEffect
 	//Should drain XP and apply invisibility
 	
 	//Properties
-	protected MobEffect invis;
 	protected MobEffect blind;
 	protected SpLantern lantern;
 	protected int currentXP;
@@ -36,7 +35,6 @@ public class Ghost extends MobEffect
 	public Ghost() 
 	{
 		super(MobEffectCategory.NEUTRAL, 2039587);
-		invis = MobEffects.INVISIBILITY;
 		blind = MobEffects.DARKNESS;
 	}
 	
@@ -58,8 +56,11 @@ public class Ghost extends MobEffect
 	
 	private void addEffects(Player player)
 	{
-		player.addEffect(new MobEffectInstance(invis, effectLength * 20));
 		player.addEffect(new MobEffectInstance(blind, effectLength * 20, 3));
+		if(!player.isInvisible())
+		{
+			player.setInvisible(true);
+		}
 	}
 	
 	//Overrode Methods

@@ -1,8 +1,8 @@
 package com.subjectdeltav.spiritw.init;
 
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.item.SpLantern;
 
-import item.SpLantern;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

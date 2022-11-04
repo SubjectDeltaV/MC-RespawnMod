@@ -48,6 +48,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.enchants.SpiritBoundEnchantment;
 
 
@@ -141,6 +142,11 @@ public class InventoryHandler
 					setDrops.add(drop);
 				}
 				death.processDrops(setDrops);
+				if(player.hasEffect(ModEffects.ENTER_GHOST_STATE))
+				{
+					event.setCanceled(true);
+					player.respawn();
+				}
 			}
 			else
 			{

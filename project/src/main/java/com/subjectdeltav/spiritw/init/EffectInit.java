@@ -3,6 +3,7 @@ package com.subjectdeltav.spiritw.init;
 import com.subjectdeltav.spiritw.SpiritwMobEffect;
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.Cureall;
+import com.subjectdeltav.spiritw.effects.EnterGhostState;
 import com.subjectdeltav.spiritw.effects.Ghost;
 import com.subjectdeltav.spiritw.effects.ResurrectionSickness;
 import com.subjectdeltav.spiritw.effects.Revival_Sickness;
@@ -26,4 +27,5 @@ public class EffectInit
 	public static final RegistryObject<MobEffect> CUREALL = EFFECTS.register("cure_all", Cureall::new);
 	public static final RegistryObject<MobEffect> GHOST = EFFECTS.register("ghost", Ghost::new);
 	public static final RegistryObject<MobEffect> RESURRECTION_SICKNESS = EFFECTS.register("resurrection_sickness", ResurrectionSickness::new);
+	public static final RegistryObject<MobEffect> ENTER_GHOST_STATE = EFFECTS.register("enter_ghost_state", EnterGhostState::new);
 }

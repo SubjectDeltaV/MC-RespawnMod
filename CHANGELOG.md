@@ -1,3 +1,10 @@
+2022-11-04 156 - Ghost State Online: Ghost State is working. To keep the enchantment working will need to re-implement inside the lantern.
+
+2022-11-02 Merge branch '100-Phase-II-Functional' of https://github.com/SubjectDeltaV/MC-RespawnMod into 100-Phase-II-Functional: 
+2022-11-02 155 - Started Spirit Walking: Began Work on actual spirit walking implementation. Added new "Ghost" Mob Effect and "Resurrection Sickness" Mob Effect Also changed Lantern Init to include new Lantern Class. All Mob Effects are now included in ModEffects for easier access. This will be an improvement on accessing the init file directly.
+
+2022-10-30 154 - Fixed Enchant and Event: Items are now correctly transferring to player. WARNING: Items can currently be lost if you log out before retrieving them from the Touchstone.
+
 2022-10-30 154 - Fixed Enchant and Event: Items are now correctly transferring to player. WARNING: Items can currently be lost if you log out before retrieving them from the Touchstone.
 
 2022-10-26 153 - Sort of Working: Enchant is restoring items from touchstone, but not removing them from corpse.

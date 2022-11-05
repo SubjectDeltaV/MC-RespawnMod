@@ -3,12 +3,14 @@ package com.subjectdeltav.spiritw.init;
 import java.util.function.Supplier;
 
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.blocks.TouchstoneBlock;
 import com.subjectdeltav.spiritw.init.ItemInit.ModCreativeTab;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
@@ -21,7 +23,8 @@ public class BlockInit {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, spiritw.MODID);
 	
 	public static final RegistryObject<Block> TOUCHSTONE = BLOCKS.register("touchstone", 
-			() -> new Block(Block.Properties.of(Material.STONE).strength(4f, 1200f).lightLevel((state) -> 15)));
+			() -> new TouchstoneBlock(Block.Properties.of(Material.STONE).strength(4f, 1200f).lightLevel((state) -> 15)));
+	
 	
 	//automatically create items for blocks
 	@SubscribeEvent
@@ -35,5 +38,8 @@ public class BlockInit {
 			});
 		}
 	}
-	
+	public static void register(IEventBus eventBus)
+	{
+		BLOCKS.register(eventBus);
+	}
 }

@@ -8,7 +8,7 @@ public class Cureall extends InstantenousMobEffect{
 
 	public Cureall() {
 		super(MobEffectCategory.BENEFICIAL, 2039587);
-		// TODO Auto-generated constructor stub
+		//Auto-generated constructor stub
 	}
 	
 	@Override

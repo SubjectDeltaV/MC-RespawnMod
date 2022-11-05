@@ -3,61 +3,36 @@ package com.subjectdeltav.spiritw.events;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
-import com.subjectdeltav.spiritw.init.TileEntityInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import de.maxhenkel.corpse.corelib.death.Death;
 import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
-import de.maxhenkel.corpse.entities.CorpseEntity;
-import de.maxhenkel.corpse.gui.CorpseInventoryContainer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
-import com.subjectdeltav.spiritw.enchants.SpiritBoundEnchantment;
 
 
 
 public class InventoryHandler
 	{
+		//this handler moves ensure the lantern stays with the player after respawn and also enables the spiritbound enchantment works in certain case
+	
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
-		private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>();
+		//private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>();
 		
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void drops(PlayerDeathEvent event) 
@@ -100,7 +75,7 @@ public class InventoryHandler
 					if(itemToCheck != null)
 					{
 						System.out.println("Checking " + itemToCheck.toString());
-						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
+						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && !player.hasEffect(ModEffects.ENTER_GHOST_STATE))
 						{
 							ItemsToSave[itemIndex] = itemToCheck;
 							saveItemsForTouchstone = true;
@@ -141,12 +116,7 @@ public class InventoryHandler
 					ItemEntity drop = (ItemEntity) itemSt.getEntityRepresentation();
 					setDrops.add(drop);
 				}
-				death.processDrops(setDrops);
-				if(player.hasEffect(ModEffects.ENTER_GHOST_STATE))
-				{
-					event.setCanceled(true);
-					player.respawn();
-				}
+				//death.processDrops(setDrops);
 			}
 			else
 			{
@@ -241,7 +211,7 @@ public class InventoryHandler
 									player.addItem(giveItem);
 								}
 							}
-							itemsRemoveFromCorpse.put(player.getStringUUID(), itemsToRestore.get(player.getStringUUID()).clone());
+							//itemsRemoveFromCorpse.put(player.getStringUUID(), itemsToRestore.get(player.getStringUUID()).clone());
 							itemsToRestore.remove(player.getStringUUID());
 
 						}

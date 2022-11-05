@@ -1,11 +1,8 @@
 package com.subjectdeltav.spiritw.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 

@@ -2,32 +2,30 @@ package com.subjectdeltav.spiritw.events;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import com.subjectdeltav.spiritw.spiritw;
-import com.subjectdeltav.spiritw.effects.wounded;
+import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EffectInit;
 
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DeathHandler 
 {
-	//public MobEffectInstance downedplayer = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
+	//This handler is for reacting to deaths, it currently initiates the wounded status effect and allows for "second wind"
+	
+	//public MobEffectInstance downed player = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 	//boolean diedAlready = false;
 	private Map<String, String> rememberKillers = new HashMap<String, String>();
+	private Map<String, Vec3> rememberDeath = new HashMap<String, Vec3>();
 	
 	@SubscribeEvent
 	public void Death(LivingDeathEvent event) 
@@ -73,11 +71,17 @@ public class DeathHandler
 					src == DamageSource.OUT_OF_WORLD ||
 					src == DamageSource.STARVE)
 			{
-				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ignoring...");
+				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ghost Effect will be initiated on respawn");
+				rememberDeath.put(pl.getStringUUID(), pl.position());
+				
 			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
 			{
 				System.out.println("Player was in a wounded state, the event will not be cancelled");
 				src.setIsFall();
+			}else if(pl.hasEffect(ModEffects.ENTER_GHOST_STATE))
+			{
+				System.out.println("Lantern has this player marked as starting a spirit walk, player will enter ghost state on respawn");
+				rememberDeath.put(pl.getStringUUID(), pl.position());
 			} else 
 			{
 				System.out.println("Player wasn't wounded when they died, puting into wounded state and cancelling event");
@@ -119,6 +123,18 @@ public class DeathHandler
 					}
 				}
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void Respawn(PlayerEvent.Clone event)
+	{
+		Player player = event.getEntity();
+		if(event.isWasDeath() && rememberDeath.containsKey(player.getStringUUID()))
+		{
+			Vec3 vec = rememberDeath.get(player.getStringUUID()); //get death loc
+			player.teleportTo(vec.x, vec.y, vec.z); //teleport player to there death
+			player.addEffect(new MobEffectInstance(ModEffects.GHOST, 35000)); //put into ghost state
 		}
 	}
 

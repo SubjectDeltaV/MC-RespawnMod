@@ -2,12 +2,9 @@ package com.subjectdeltav.spiritw.events;
 
 import com.subjectdeltav.spiritw.effects.ModEffects;
 
-import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent.Pre;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -18,6 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class GhostEventHandler 
 {
 	//for any events related to the Ghost Mob Effect
+	//this handler only maintains the status effect, it does NOT put players into the ghost state. see the death handler and the lantern for that!
 	private Minecraft minecraft = Minecraft.getInstance();
 	MobEffect ghost = ModEffects.GHOST;
 	

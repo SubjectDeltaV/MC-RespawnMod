@@ -6,29 +6,22 @@ import java.util.List;
 import java.util.UUID;
 
 import com.subjectdeltav.spiritw.spiritw;
-import com.subjectdeltav.spiritw.effects.Ghost;
 import com.subjectdeltav.spiritw.effects.ModEffects;
-import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
-import de.maxhenkel.corpse.corelib.death.Death;
-import de.maxhenkel.corpse.corelib.death.DeathManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
@@ -113,6 +106,7 @@ public class SpLantern extends Item
 			player.removeAllEffects(); //remove the ghost and any related effects
 			player.setHealth(20);
 			player.setInvisible(false); //remove the invisibility granted from the effect
+			player.addEffect(new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600));
 		}
 		return super.use(world, player, hand);
 	}

@@ -1,3 +1,5 @@
+2022-11-05 Update Documentation: Created a flowchart for understanding and mapping out ghost status and remembering items.
+
 2022-11-04 156 - Ghost State Online: Ghost State is working. To keep the enchantment working will need to re-implement inside the lantern.
 
 2022-11-02 Merge branch '100-Phase-II-Functional' of https://github.com/SubjectDeltaV/MC-RespawnMod into 100-Phase-II-Functional: 

@@ -1,7 +1,5 @@
 package com.subjectdeltav.spiritw.gui;
 
-import javax.annotation.Nullable;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.subjectdeltav.spiritw.init.BlockInit;
@@ -14,14 +12,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class TouchstoneMenu extends AbstractContainerMenu {

@@ -5,8 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;

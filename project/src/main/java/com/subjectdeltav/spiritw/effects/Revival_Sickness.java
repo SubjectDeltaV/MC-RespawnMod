@@ -14,8 +14,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
-public class Revival_Sickness extends MobEffect {
+public class Revival_Sickness extends MobEffect 
+{
 
+	//This effect is for when a player is revived from a downed state (via potion or second wind)
+	//TODO needs icon//
+	
 	public Revival_Sickness() 
 	{
 		super(MobEffectCategory.HARMFUL, 2039587);

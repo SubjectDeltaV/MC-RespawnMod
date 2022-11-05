@@ -1,21 +1,18 @@
 package com.subjectdeltav.spiritw.effects;
 
 import com.subjectdeltav.spiritw.init.EffectInit;
-import com.subjectdeltav.spiritw.init.PotionInit;
-
 import net.minecraft.world.effect.InstantenousMobEffect;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
 
 public class Revive extends InstantenousMobEffect
 {
-
+	//This effect is to cure the player from the wounded effect
+	
+	
 	public Revive() 
 	{
 		super(MobEffectCategory.BENEFICIAL, 2039587);

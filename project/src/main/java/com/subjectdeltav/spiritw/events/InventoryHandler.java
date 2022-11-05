@@ -145,7 +145,7 @@ public class InventoryHandler
 				if(player.hasEffect(ModEffects.ENTER_GHOST_STATE))
 				{
 					event.setCanceled(true);
-					player.respawn();
+					
 				}
 			}
 			else

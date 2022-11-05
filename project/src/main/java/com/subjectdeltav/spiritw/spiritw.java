@@ -1,14 +1,24 @@
 package com.subjectdeltav.spiritw;
 
 import com.mojang.logging.LogUtils;
+import com.subjectdeltav.spiritw.events.DeathHandler;
+import com.subjectdeltav.spiritw.events.InventoryHandler;
+import com.subjectdeltav.spiritw.events.WoundedProtectionHandler;
+import com.subjectdeltav.spiritw.gui.TouchstoneScreen;
 import com.subjectdeltav.spiritw.init.BlockInit;
+import com.subjectdeltav.spiritw.init.EffectInit;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
+import com.subjectdeltav.spiritw.init.MenuTypesInit;
+import com.subjectdeltav.spiritw.init.PotionInit;
+import com.subjectdeltav.spiritw.init.TileEntityInit;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -36,11 +46,12 @@ public class spiritw
     // Define mod id in a common place for everything to reference
     public static final String MODID = "spiritw";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+
 
     // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
     //public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)));
@@ -59,12 +70,23 @@ public class spiritw
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
         
+        //register normal items and effects
         ItemInit.ITEMS.register(modEventBus);
         BlockInit.BLOCKS.register(modEventBus);
         EnchantmentInit.ENCHANTMENTS.register(modEventBus);
+        EffectInit.EFFECTS.register(modEventBus);
+        PotionInit.POTIONS.register(modEventBus);
+        TileEntityInit.TILE_ENTITIES_TYPES.register(modEventBus);
+        MenuTypesInit.MENUS.register(modEventBus);
+        
+        //register events
+        MinecraftForge.EVENT_BUS.register(new InventoryHandler());
+        MinecraftForge.EVENT_BUS.register(new DeathHandler());
+        MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+       
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -92,6 +114,8 @@ public class spiritw
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+            
+            MenuScreens.register(MenuTypesInit.TOUCHSTONE_MENU.get(), TouchstoneScreen::new);
         }
     }
 }

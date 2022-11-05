@@ -12,5 +12,5 @@ import net.minecraftforge.registries.RegistryObject;
 public class EnchantmentInit {
 	public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, spiritw.MODID);
 	
-	public static final RegistryObject<SpiritBoundEnchantment> SPIRITBOUND = ENCHANTMENTS.register("spiritbound", SpiritBoundEnchantment::new);
+	public static final RegistryObject<Enchantment> SPIRITBOUND = ENCHANTMENTS.register("spiritbound", SpiritBoundEnchantment::new);
 }

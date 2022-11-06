@@ -28,11 +28,11 @@ import com.subjectdeltav.spiritw.effects.ModEffects;
 
 public class InventoryHandler
 	{
-		//this handler moves ensure the lantern stays with the player after respawn and also enables the spiritbound enchantment works in certain case
+		//this handler ensures the lantern stays with the player after respawn and also enables the spiritbound enchantment works in certain case
 	
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
-		//private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>();
+		//private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>(); //removed, tracking items with this was never implemented
 		
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void drops(PlayerDeathEvent event) 

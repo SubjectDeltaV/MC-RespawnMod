@@ -1,3 +1,5 @@
+2022-11-05 201 - Register GhostHandler: Ghost Event Handler was not registered until now. Encountering issues with launching. Eclipse reports build path is set up incorrectly.
+
 2022-11-05 Update InventoryHandler.java: 
 2022-11-05 Merge pull request #3 from SubjectDeltaV/100-Phase-II-Functional: Fix Missing Commits
 2022-11-05 Delete CHANGELOG.md: 

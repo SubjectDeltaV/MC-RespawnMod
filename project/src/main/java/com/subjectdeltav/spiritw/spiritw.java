@@ -75,7 +75,7 @@ public class spiritw
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
         MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
-        MinecraftForge.EVENT_BUS.register(new GhostEventHandler());
+        //MinecraftForge.EVENT_BUS.register(new GhostEventHandler()); //Causing crash, disabled until issue is resolved
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

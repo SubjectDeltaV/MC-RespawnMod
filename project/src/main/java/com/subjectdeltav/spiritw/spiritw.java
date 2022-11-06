@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.subjectdeltav.spiritw.events.DeathHandler;
 import com.subjectdeltav.spiritw.events.InventoryHandler;
 import com.subjectdeltav.spiritw.events.WoundedProtectionHandler;
+import com.subjectdeltav.spiritw.events.GhostEventHandler;
 import com.subjectdeltav.spiritw.gui.TouchstoneScreen;
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
@@ -74,6 +75,7 @@ public class spiritw
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
         MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
+        MinecraftForge.EVENT_BUS.register(new GhostEventHandler());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

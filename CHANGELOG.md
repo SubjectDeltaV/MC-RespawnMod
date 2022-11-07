@@ -1,3 +1,5 @@
+2022-11-06 206 - Fixed Lantern Issue: Can now fully spirit walk. Protections for spirit walking are not yet implemented properly.
+
 2022-11-06 205 - Fixed looping issue: No longer stuck in deathloop on first death. Lantern doesn't exit ghost mode when clicking on touchstone however, may need to move the handling of that to DeathHandler. Also encountered strange bug where recovering items from body and then right clicking on touchstone with lantern deletes enchanted items. Need to reproduce.
 
 2022-11-06 204 - Loop Error: Player gets stuck in respawn loop after death.

@@ -20,6 +20,8 @@ public class GhostEventHandler
 	
 	private Minecraft minecraft = Minecraft.getInstance();
 	
+	
+	
 	@SubscribeEvent
 	protected void hudSupress(Pre event) //cancel health and food hud elements
 	{

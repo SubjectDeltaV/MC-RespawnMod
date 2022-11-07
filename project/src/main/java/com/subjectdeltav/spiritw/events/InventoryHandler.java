@@ -161,6 +161,7 @@ public class InventoryHandler
 				player.removeAllEffects(); //this will cancel the ghost effect
 				player.setHealth(Player.MAX_HEALTH);
 				player.setInvisible(false);
+				player.setInvulnerable(false);
 				player.addEffect(new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600));
 			}
 			if(tile != null && itemsToRestore.containsKey(player.getStringUUID()) && event.getItemStack().getItem().equals(ItemInit.SPLANTERN.get()))

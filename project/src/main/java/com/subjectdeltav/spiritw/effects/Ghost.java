@@ -62,6 +62,10 @@ public class Ghost extends MobEffect
 		{
 			player.setInvisible(true);
 		}
+		if(!player.isInvulnerable())
+		{
+			player.setInvulnerable(true);
+		}
 	}
 	
 	//Overrode Methods

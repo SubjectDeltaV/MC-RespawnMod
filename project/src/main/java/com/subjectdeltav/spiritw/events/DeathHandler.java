@@ -26,6 +26,7 @@ public class DeathHandler
 	//boolean diedAlready = false;
 	private Map<String, String> rememberKillers = new HashMap<String, String>();
 	private Map<String, Vec3> rememberDeath = new HashMap<String, Vec3>();
+	private Map<String, Integer> rememberXP = new HashMap<String, Integer>(); 
 	
 	@SubscribeEvent
 	public void Death(LivingDeathEvent event) 
@@ -73,6 +74,7 @@ public class DeathHandler
 			{
 				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ghost Effect will be initiated on respawn");
 				rememberDeath.put(pl.getStringUUID(), pl.position());
+				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
 				
 			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
 			{
@@ -133,8 +135,12 @@ public class DeathHandler
 		if(event.isWasDeath() && rememberDeath.containsKey(player.getStringUUID()))
 		{
 			Vec3 vec = rememberDeath.get(player.getStringUUID()); //get death loc
+			int xp = rememberXP.get(player.getStringUUID());
 			player.teleportTo(vec.x, vec.y, vec.z); //teleport player to there death
+			player.giveExperiencePoints(xp);
 			player.addEffect(new MobEffectInstance(ModEffects.GHOST, 35000)); //put into ghost state
+			rememberDeath.remove(player.getStringUUID()); //remove the entry so players don't get stuck in a death loop
+			rememberXP.remove(player.getStringUUID());
 		}
 	}
 

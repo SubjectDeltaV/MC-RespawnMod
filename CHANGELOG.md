@@ -1,3 +1,4 @@
+2022-11-06 Update Documentation: 
 2022-11-06 Fix missing notes?: 
 2022-11-06 Update Documentation: 
 2022-11-06 203 - Fixed CTD on startup: Crash was caused by shorthanding effects before they're loaded. Fixed by referring to effects directly instead of creating variables. NOTE: Hud Suppression from the ghost effect is still leading to a crash. This object is still disabled until I address that issue.

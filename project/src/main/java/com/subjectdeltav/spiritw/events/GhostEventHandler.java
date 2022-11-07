@@ -16,17 +16,18 @@ public class GhostEventHandler
 {
 	//for any events related to the Ghost Mob Effect
 	//this handler only maintains the status effect, it does NOT put players into the ghost state. see the death handler and the lantern for that!
+	//TODO This is currently causing CTD on load (Currently not init until resolved)
+	
 	private Minecraft minecraft = Minecraft.getInstance();
-	MobEffect ghost = ModEffects.GHOST;
 	
 	@SubscribeEvent
 	protected void hudSupress(Pre event) //cancel health and food hud elements
 	{
 		Player player = minecraft.player;
-		if(event.getOverlay().equals(VanillaGuiOverlay.PLAYER_HEALTH.type()) && player.hasEffect(ghost))
+		if(event.getOverlay().equals(VanillaGuiOverlay.PLAYER_HEALTH.type()) && player.hasEffect(ModEffects.GHOST))
 		{
 			event.setCanceled(true);
-		}else if(event.getOverlay().equals(VanillaGuiOverlay.FOOD_LEVEL.type()) && player.hasEffect(ghost))
+		}else if(event.getOverlay().equals(VanillaGuiOverlay.FOOD_LEVEL.type()) && player.hasEffect(ModEffects.GHOST))
 		{
 			event.setCanceled(true);
 		}
@@ -37,7 +38,7 @@ public class GhostEventHandler
 	{
 		Player player = minecraft.player;
 		InventoryScreen screen = new InventoryScreen(player);
-		if(event.getNewScreen().equals(screen) && player.hasEffect(ghost))
+		if(event.getNewScreen().equals(screen) && player.hasEffect(ModEffects.GHOST))
 		{
 			event.setCanceled(true);
 		}
@@ -47,7 +48,7 @@ public class GhostEventHandler
 	protected void pickup(EntityItemPickupEvent event) //prevent item pickup
 	{
 		Player player  = event.getEntity();
-		if(player.hasEffect(ghost))
+		if(player.hasEffect(ModEffects.GHOST))
 		{
 			event.setCanceled(true);
 		}

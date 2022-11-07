@@ -1,3 +1,7 @@
+2022-11-06 203 - Fixed CTD on startup: Crash was caused by shorthanding effects before they're loaded. Fixed by referring to effects directly instead of creating variables. NOTE: Hud Suppression from the ghost effect is still leading to a crash. This object is still disabled until I address that issue.
+
+2022-11-06 202 - Investigating CTD: Disabled GhostEvent Handler, need to find the source of CTD.
+
 2022-11-05 201 - Register GhostHandler: Ghost Event Handler was not registered until now. Encountering issues with launching. Eclipse reports build path is set up incorrectly.
 
 2022-11-05 Update InventoryHandler.java: 

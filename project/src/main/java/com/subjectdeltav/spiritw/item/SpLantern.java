@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
+import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import net.minecraft.core.BlockPos;
@@ -38,26 +39,14 @@ public class SpLantern extends Item
 	protected TouchstoneTile boundTouchstone; //the Touchstone this lantern is bound to
 	public boolean isActive; //only on during SpiritWalking
 	protected int playerXP; //will auto-update through a method when being held
-	private final MobEffectInstance ressurectSick;
-	private final MobEffectInstance ghostInst;
-	private final MobEffectInstance beginGhost;
-	private final MobEffect ghost;
-	private final MobEffect wounded;
-	private final Enchantment bound;
 	private List<ItemStack> boundItems_L1;
 	
 	
 	
 	//Constructor
-	public SpLantern(Properties prop) 
+	public SpLantern() 
 	{
-		super(prop);
-		this.wounded = ModEffects.WOUNDED;
-		this.ghostInst = new MobEffectInstance(ModEffects.GHOST, 360000);
-		this.ressurectSick = new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600);
-		this.ghost = ModEffects.GHOST;
-		this.beginGhost = new MobEffectInstance(ModEffects.ENTER_GHOST_STATE, 36000);
-		this.bound = EnchantmentInit.SPIRITBOUND.get();
+		super(new Item.Properties().tab(ItemInit.ModCreativeTab.instance));
 	}
 	
 	//Custom Methods
@@ -73,7 +62,7 @@ public class SpLantern extends Item
 		for(ItemStack item : allItems)
 		{
 			spiritw.LOGGER.debug("checking item " + item.toString());
-			if(item.getEnchantmentLevel(bound) == 0)
+			if(item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) == 0)
 			{
 				spiritw.LOGGER.debug("item has correct enchantment, saving");
 				boundItems_L1.add(item);
@@ -93,15 +82,15 @@ public class SpLantern extends Item
 		BlockState block = world.getBlockState(blPos);
 		Material blockMat = block.getMaterial();
 		TouchstoneTile touchstone = (TouchstoneTile) world.getBlockEntity(blPos);
-		if(!blockMat.isSolid() && player.hasEffect(wounded))
+		if(!blockMat.isSolid() && player.hasEffect(ModEffects.WOUNDED))
 		{
 			//if player is downed and uses the lantern they will die and turn into a ghost
 			spiritw.LOGGER.debug("Player has used a lantern while downed, putting into ghost state");
-			int xp = player.totalExperience;
+			//int xp = player.totalExperience;
 			player.removeAllEffects();
-			player.addEffect(beginGhost);
+			player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
 			player.kill();
-		} else if(touchstone != null && player.hasEffect(ghost))
+		} else if(touchstone != null && player.hasEffect(ModEffects.GHOST))
 		{
 			player.removeAllEffects(); //remove the ghost and any related effects
 			player.setHealth(20);

@@ -15,7 +15,7 @@ public class ItemInit {
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, spiritw.MODID);
 	
 	public static final RegistryObject<Item> SPLANTERN = ITEMS.register("splantern", 
-			() -> new SpLantern(new Item.Properties().tab(ModCreativeTab.instance)));
+			SpLantern::new);
 
 	public static class ModCreativeTab extends CreativeModeTab {
 		public static final ModCreativeTab instance = new ModCreativeTab(CreativeModeTab.TABS.length, "spiritwalker");

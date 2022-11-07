@@ -132,15 +132,18 @@ public class DeathHandler
 	public void Respawn(PlayerEvent.Clone event)
 	{
 		Player player = event.getEntity();
-		if(event.isWasDeath() && rememberDeath.containsKey(player.getStringUUID()))
+		if(event.isWasDeath() && rememberDeath.containsKey(player.getStringUUID()) && !player.hasEffect(ModEffects.GHOST))
 		{
-			Vec3 vec = rememberDeath.get(player.getStringUUID()); //get death loc
-			int xp = rememberXP.get(player.getStringUUID());
-			player.teleportTo(vec.x, vec.y, vec.z); //teleport player to there death
-			player.giveExperiencePoints(xp);
-			player.addEffect(new MobEffectInstance(ModEffects.GHOST, 35000)); //put into ghost state
-			rememberDeath.remove(player.getStringUUID()); //remove the entry so players don't get stuck in a death loop
-			rememberXP.remove(player.getStringUUID());
+			if(rememberXP.get(player.getStringUUID()) > 3) //make sure the player has enough xp to prevent instant death loops
+			{
+				Vec3 vec = rememberDeath.get(player.getStringUUID()); //get death loc
+				int xp = rememberXP.get(player.getStringUUID());
+				player.teleportTo(vec.x, vec.y, vec.z); //teleport player to there death
+				player.giveExperiencePoints(xp);
+				player.addEffect(new MobEffectInstance(ModEffects.GHOST, 35000)); //put into ghost state
+				rememberDeath.remove(player.getStringUUID()); //remove the entry so players don't get stuck in a death loop
+				rememberXP.remove(player.getStringUUID());
+			}
 		}
 	}
 

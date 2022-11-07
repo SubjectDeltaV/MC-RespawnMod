@@ -1,3 +1,5 @@
+2022-11-06 204 - Loop Error: Player gets stuck in respawn loop after death.
+
 2022-11-06 Update Documentation: 
 2022-11-06 Fix missing notes?: 
 2022-11-06 Update Documentation: 

@@ -3,6 +3,7 @@ package com.subjectdeltav.spiritw.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EffectInit;
 
@@ -75,6 +76,7 @@ public class DeathHandler
 				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ghost Effect will be initiated on respawn");
 				rememberDeath.put(pl.getStringUUID(), pl.position());
 				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
+				pl.giveExperiencePoints(-pl.totalExperience);
 				
 			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
 			{
@@ -84,7 +86,9 @@ public class DeathHandler
 			{
 				System.out.println("Lantern has this player marked as starting a spirit walk, player will enter ghost state on respawn");
 				rememberDeath.put(pl.getStringUUID(), pl.position());
-			} else 
+				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
+				pl.giveExperiencePoints(-pl.totalExperience); //remove xp so it doesn't drop with body
+			} else if(!pl.hasEffect(ModEffects.GHOST))
 			{
 				System.out.println("Player wasn't wounded when they died, puting into wounded state and cancelling event");
 				pl.setForcedPose(Pose.DYING);
@@ -100,6 +104,9 @@ public class DeathHandler
 					System.out.println("Wounded Amplifier is set to " + woundseverity);
 					pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 6000, woundseverity));
 				}
+			} else
+			{
+				spiritw.LOGGER.debug("Player was in a spirit walk, the event will not be cancelled");
 			}
 		}
 		else if(event.getEntity() instanceof Mob)

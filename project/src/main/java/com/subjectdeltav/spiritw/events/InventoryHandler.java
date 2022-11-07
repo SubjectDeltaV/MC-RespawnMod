@@ -13,6 +13,7 @@ import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 import de.maxhenkel.corpse.corelib.death.Death;
 import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +76,7 @@ public class InventoryHandler
 					if(itemToCheck != null)
 					{
 						System.out.println("Checking " + itemToCheck.toString());
-						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && !player.hasEffect(ModEffects.ENTER_GHOST_STATE))
+						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
 						{
 							ItemsToSave[itemIndex] = itemToCheck;
 							saveItemsForTouchstone = true;
@@ -87,7 +88,7 @@ public class InventoryHandler
 						}
 						if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
 						{
-							ItemsForRespawn[itemIndex] = itemToCheck.copy();
+							ItemsForRespawn[itemIndex] = itemToCheck;
 							saveItemsForRespawn = true;
 							System.out.println("Found and Saved Spirit Lantern");
 							droppedItems.remove(itemToCheck);
@@ -109,12 +110,6 @@ public class InventoryHandler
 				if(saveItemsForRespawn)
 				{
 					itemsOnRespawn.put(player.getStringUUID(), ItemsForRespawn);
-				}
-				List<ItemEntity> setDrops = Collections.emptyList();
-				for(ItemStack itemSt : droppedItems)
-				{
-					ItemEntity drop = (ItemEntity) itemSt.getEntityRepresentation();
-					setDrops.add(drop);
 				}
 				//death.processDrops(setDrops);
 			}
@@ -161,7 +156,14 @@ public class InventoryHandler
 			int toRestoreInd = 0;
 			boolean restoreItems = false;
 			TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
-			if(tile != null && itemsToRestore.containsKey(player.getStringUUID()) && event.getItemStack().getItem() == ItemInit.SPLANTERN.get())
+			if(tile != null && event.getItemStack().getItem().equals(ItemInit.SPLANTERN.get()) && player.hasEffect(ModEffects.GHOST))
+			{
+				player.removeAllEffects(); //this will cancel the ghost effect
+				player.setHealth(Player.MAX_HEALTH);
+				player.setInvisible(false);
+				player.addEffect(new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600));
+			}
+			if(tile != null && itemsToRestore.containsKey(player.getStringUUID()) && event.getItemStack().getItem().equals(ItemInit.SPLANTERN.get()))
 			{
 				ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
 				if(itemsFromDeath != null)

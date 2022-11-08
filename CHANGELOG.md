@@ -1,3 +1,5 @@
+2022-11-07 208 - Added Crafting Recipes: Added jsons to resources folder for crafting, as well as a few intermediary items for the recipes. Need assets for them still.
+
 2022-11-06 207 - Added Invulnerability while ghost: 
 2022-11-06 206 - Fixed Lantern Issue: Can now fully spirit walk. Protections for spirit walking are not yet implemented properly.
 

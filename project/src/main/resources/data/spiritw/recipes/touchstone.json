@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " # ",
+        "*/*",
+        "*/*"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:flint"
+        },
+        "/": {
+          "item": "spiritw:soul_sand"
+        },
+        "*": { 
+          "item": "minecraft:bone"
+          }
+    },
+    "result": {
+        "item": "firstmod:pink_pickaxe"
+    }
+}

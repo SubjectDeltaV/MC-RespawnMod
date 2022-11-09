@@ -36,17 +36,6 @@ public class GhostEventHandler
 	}
 	
 	@SubscribeEvent
-	protected void openGUI(ScreenEvent.Opening event) // block the inventory from opening
-	{
-		Player player = minecraft.player;
-		InventoryScreen screen = new InventoryScreen(player);
-		if(event.getNewScreen().equals(screen) && player.hasEffect(ModEffects.GHOST))
-		{
-			event.setCanceled(true);
-		}
-	}
-	
-	@SubscribeEvent
 	protected void pickup(EntityItemPickupEvent event) //prevent item pickup
 	{
 		Player player  = event.getEntity();

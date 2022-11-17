@@ -13,6 +13,7 @@ import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.init.MenuTypesInit;
 import com.subjectdeltav.spiritw.init.PotionInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
+import com.subjectdeltav.spiritw.loot.ModLootModifiers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -79,6 +80,9 @@ public class spiritw
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        
+        //Register Loot Modifiers
+        ModLootModifiers.LOOT_MODIFER_SERIALIZERS.register(modEventBus);
        
     }
 

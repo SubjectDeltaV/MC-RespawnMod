@@ -1,3 +1,6 @@
+2022-11-16 211 - Continue work on loot tables: 
+2022-11-09 210 - Address GhostEventHandler crash: Removed function to disable inventory as it was causing a crash. GhostEventHandler is re-enabled.
+
 2022-11-07 209 - Started work on loot tables: 
 2022-11-07 208 - Added Crafting Recipes: Added jsons to resources folder for crafting, as well as a few intermediary items for the recipes. Need assets for them still.
 

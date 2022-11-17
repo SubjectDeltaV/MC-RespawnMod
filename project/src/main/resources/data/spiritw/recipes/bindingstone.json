@@ -10,7 +10,7 @@
             "item": "spiritw:soul_gem"
         },
         "/": {
-          "tag": "minecraft:stone"
+          "item": "minecraft:stone"
       }
     },
     "result": {

@@ -82,7 +82,7 @@ public class spiritw
         MinecraftForge.EVENT_BUS.register(this);
         
         //Register Loot Modifiers
-        ModLootModifiers.LOOT_MODIFER_SERIALIZERS.register(modEventBus);
+        ModLootModifiers.LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
        
     }
 

@@ -3,18 +3,21 @@
     "pattern": [
         " # ",
         "*/*",
-        "*/*"
+        "%%%"
     ],
     "key": {
         "#": {
             "item": "minecraft:flint"
         },
         "/": {
-          "item": "spiritw:soul_sand"
+          "item": "spiritw:bindingstone"
         },
         "*": { 
           "item": "minecraft:bone"
-          }
+        },
+        "%":{ 
+          "item":"spiritw:soul_stone"
+        }
     },
     "result": {
         "item": "spiritw:touchstone"

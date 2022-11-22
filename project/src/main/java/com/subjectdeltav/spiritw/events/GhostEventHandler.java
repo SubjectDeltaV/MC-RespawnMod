@@ -16,7 +16,6 @@ public class GhostEventHandler
 {
 	//for any events related to the Ghost Mob Effect
 	//this handler only maintains the status effect, it does NOT put players into the ghost state. see the death handler and the lantern for that!
-	//TODO This is currently causing CTD on load (Currently not init until resolved)
 	
 	private Minecraft minecraft = Minecraft.getInstance();
 	

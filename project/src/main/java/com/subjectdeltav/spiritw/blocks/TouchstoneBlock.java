@@ -2,6 +2,7 @@ package com.subjectdeltav.spiritw.blocks;
 
 import javax.annotation.Nullable;
 
+import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
@@ -29,11 +30,13 @@ public class TouchstoneBlock extends BaseEntityBlock
 {
 	//properties
 	private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 10, 16);
+	public int tier;
 	
 	//CONSTRUCTOR
-	public TouchstoneBlock(Properties properties) 
+	public TouchstoneBlock(Properties properties, int tier) 
 	{
 		super(properties);
+		this.tier = tier;
 	}
 
 	//custom methods
@@ -77,11 +80,17 @@ public class TouchstoneBlock extends BaseEntityBlock
 				TouchstoneTile tile = (TouchstoneTile) entity;
 				if(tile.playerIsSet)
 				{
-					ItemStack holdingMain = pl.getMainHandItem();
-					ItemStack holdingOff = pl.getOffhandItem();
+					//ItemStack holdingMain = pl.getMainHandItem();
+					//ItemStack holdingOff = pl.getOffhandItem();
 					if(tile.getPlayerID() == pl.getUUID())
 					{
-						NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
+						if(tier == 1)
+						{
+							NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);							
+						}else
+						{
+							spiritw.LOGGER.debug("Touchstone has invalid tier presnet, ignoring request to open");
+						}
 					}else
 					{
 						System.out.println("Player attempted to open Touchstone that isn't theirs...ignoring");

@@ -1,3 +1,6 @@
+2022-11-21 213 - Asset Creation: 
+2022-11-16 212 - Crafting Recipes Functioning: Still need assets for in inventory
+
 2022-11-16 211 - Continue work on loot tables: 
 2022-11-09 210 - Address GhostEventHandler crash: Removed function to disable inventory as it was causing a crash. GhostEventHandler is re-enabled.
 

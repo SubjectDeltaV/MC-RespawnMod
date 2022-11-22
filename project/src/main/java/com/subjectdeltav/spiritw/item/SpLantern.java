@@ -38,13 +38,14 @@ public class SpLantern extends Item
 	public boolean isActive; //only on during SpiritWalking
 	protected int playerXP; //will auto-update through a method when being held
 	private List<ItemStack> boundItems_L1;
-	
+	int tier;
 	
 	
 	//Constructor
-	public SpLantern() 
+	public SpLantern(int tier) 
 	{
 		super(new Item.Properties().tab(ItemInit.ModCreativeTab.instance));
+		this.tier = tier;
 	}
 	
 	//Custom Methods

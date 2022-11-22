@@ -15,7 +15,7 @@ public class ItemInit {
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, spiritw.MODID);
 	
 	public static final RegistryObject<Item> SPLANTERN = ITEMS.register("splantern", 
-			SpLantern::new); //see SpLantern class
+			() -> new SpLantern(1)); //see SpLantern class
 	
 	public static final RegistryObject<Item> SOUL_GEM = ITEMS.register("soul_gem", 
 			() -> new Item( new Item.Properties().tab(ModCreativeTab.instance).stacksTo(16))); //crafting ingredient for bindingstone
@@ -25,6 +25,8 @@ public class ItemInit {
 	
 	public static final RegistryObject<Item> SOUL_STONE = ITEMS.register("soul_stone",
 			() -> new Item(new Item.Properties().tab(ModCreativeTab.instance).stacksTo(8))); //crafting ingredient for Touchstone
+
+	public static final RegistryObject<Item> SPLANTERN_2 = ITEMS.register("splanten_2", () -> new SpLantern(2)); //create second tier of Spirit Lantern
 
 	public static class ModCreativeTab extends CreativeModeTab {
 		public static final ModCreativeTab instance = new ModCreativeTab(CreativeModeTab.TABS.length, "spiritwalker");

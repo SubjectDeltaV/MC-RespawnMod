@@ -2,6 +2,7 @@ package com.subjectdeltav.spiritw.init;
 
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
+import com.subjectdeltav.spiritw.tiles.TouchstoneTile_2;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -19,6 +20,10 @@ public class TileEntityInit
 					"touchstone_entity", 
 					() -> BlockEntityType.Builder.of(TouchstoneTile::new, 
 							BlockInit.TOUCHSTONE.get()).build(null));
+	public static final RegistryObject<BlockEntityType<TouchstoneTile_2>> TOUCHSTONE_TILE_2 =
+			TILE_ENTITIES_TYPES.register("touchstone_entity_2", 
+					() -> BlockEntityType.Builder.of(TouchstoneTile_2::new, 
+							BlockInit.TOUCHSTONE_2.get()).build(null));
 	
 	public static void register(IEventBus eventBus)
 	{

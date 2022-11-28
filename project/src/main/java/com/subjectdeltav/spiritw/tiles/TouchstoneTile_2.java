@@ -12,7 +12,7 @@ public class TouchstoneTile_2 extends TouchstoneTile implements MenuProvider{
 	//constructor
 	public TouchstoneTile_2(BlockPos pos, BlockState state) 
 	{
-		super(TileEntityInit.TOUCHSTONE_TILE_2.get(), pos, state);
+		super(pos, state);
 		this.enchantedItem = false;
 		this.currentSavedItemsQ = 0;
 		this.data = new ContainerData()

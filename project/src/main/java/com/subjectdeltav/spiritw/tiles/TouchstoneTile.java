@@ -38,7 +38,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 
 	//Properties
 	private LazyOptional<IItemHandler> LazyItemHandler = LazyOptional.empty();
-	protected final ContainerData data;
+	protected ContainerData data;
 	protected int currentSavedItemsQ;
 	int maxSavedItems = 4;
 	int maxItemsRemaining;

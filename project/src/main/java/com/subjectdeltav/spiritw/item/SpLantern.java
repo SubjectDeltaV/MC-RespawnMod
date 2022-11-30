@@ -38,7 +38,8 @@ public class SpLantern extends Item
 	public boolean isActive; //only on during SpiritWalking
 	protected int playerXP; //will auto-update through a method when being held
 	private List<ItemStack> boundItems_L1;
-	int tier;
+	private int tier;
+	private BlockPos lastDeathLoc;
 	
 	
 	//Constructor
@@ -46,6 +47,7 @@ public class SpLantern extends Item
 	{
 		super(new Item.Properties().tab(ItemInit.ModCreativeTab.instance));
 		this.tier = tier;
+		lastDeathLoc = new BlockPos(0, 0, 0);
 	}
 	
 	//Custom Methods
@@ -70,6 +72,11 @@ public class SpLantern extends Item
 				spiritw.LOGGER.debug("Item missing correct enchantment, ignoring");
 			}
 		}
+	}
+	
+	public void SetLastDeathLoc(BlockPos pos)
+	{
+		this.lastDeathLoc = pos;
 	}
 	
 	//Overrode Methods

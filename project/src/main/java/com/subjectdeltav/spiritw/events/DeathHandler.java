@@ -7,16 +7,21 @@ import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EffectInit;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DeathHandler 
@@ -26,7 +31,7 @@ public class DeathHandler
 	//public MobEffectInstance downed player = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 	//boolean diedAlready = false;
 	private Map<String, String> rememberKillers = new HashMap<String, String>();
-	private Map<String, Vec3> rememberDeath = new HashMap<String, Vec3>();
+	private Map<String, BlockPos> rememberDeath = new HashMap<String, BlockPos>();
 	private Map<String, Integer> rememberXP = new HashMap<String, Integer>(); 
 	
 	@SubscribeEvent
@@ -66,7 +71,11 @@ public class DeathHandler
 			}
 			System.out.println("A Player has died, checking for wounded status...");
 			//MobEffectInstance playerEffect = pl.getEffect(EffectInit.WOUNDED.get());
-			if(
+			if(pl.hasEffect(EffectInit.WOUNDED.get()))
+			{
+				System.out.println("Player was in a wounded state, the event will not be cancelled");
+				src.setIsFall();
+			}else if(
 					src == DamageSource.DROWN || 
 					src == DamageSource.IN_WALL || 
 					src == DamageSource.LAVA || 
@@ -74,18 +83,13 @@ public class DeathHandler
 					src == DamageSource.STARVE)
 			{
 				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ghost Effect will be initiated on respawn");
-				rememberDeath.put(pl.getStringUUID(), pl.position());
+				rememberDeath.put(pl.getStringUUID(), pl.blockPosition());
 				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
 				pl.giveExperiencePoints(-pl.totalExperience);
-				
-			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
-			{
-				System.out.println("Player was in a wounded state, the event will not be cancelled");
-				src.setIsFall();
 			}else if(pl.hasEffect(ModEffects.ENTER_GHOST_STATE))
 			{
 				System.out.println("Lantern has this player marked as starting a spirit walk, player will enter ghost state on respawn");
-				rememberDeath.put(pl.getStringUUID(), pl.position());
+				rememberDeath.put(pl.getStringUUID(), pl.blockPosition());
 				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
 				pl.giveExperiencePoints(-pl.totalExperience); //remove xp so it doesn't drop with body
 			} else if(!pl.hasEffect(ModEffects.GHOST))
@@ -118,13 +122,17 @@ public class DeathHandler
 			{
 				String mobId = String.valueOf(mob.getEncodeId());
 				System.out.println("Mob has killed players, checking if killer was the original victim");
+				if(killer == null) //prevent ctd
+				{
+					return;
+				}
 				if(killer.getEncodeId() == rememberKillers.get(mobId) && killer.hasEffect(EffectInit.WOUNDED.get()));
 				{
 					System.out.println("Mob was killed by his victim while it was downed, lifting wounded status");
 					MobEffectInstance woundEffect = killer.getEffect(EffectInit.WOUNDED.get());
-					int woundEffectAmplifier = woundEffect.getAmplifier();
-					if(killer != null) //to prevent CTD
+					if(killer != null && woundEffect != null) //to prevent CTD
 					{
+						int woundEffectAmplifier = woundEffect.getAmplifier();
 						killer.removeAllEffects();
 						MobEffectInstance sickness = new MobEffectInstance(EffectInit.REVIVAL_SICKNESS.get(), 2400, woundEffectAmplifier);
 						killer.addEffect(sickness);
@@ -139,15 +147,19 @@ public class DeathHandler
 	public void Respawn(PlayerEvent.Clone event)
 	{
 		Player player = event.getEntity();
-		if(event.isWasDeath() && rememberDeath.containsKey(player.getStringUUID()) && !player.hasEffect(ModEffects.GHOST))
+		Level level = player.level;
+		spiritw.LOGGER.debug("Player respawn detected");
+		if(event.isWasDeath() && rememberDeath.containsKey(player.getStringUUID()))
 		{
 			if(rememberXP.get(player.getStringUUID()) > 3) //make sure the player has enough xp to prevent instant death loops
 			{
-				Vec3 vec = rememberDeath.get(player.getStringUUID()); //get death loc
+				spiritw.LOGGER.debug("Player has enough for a spiritwalk and was marked for such, teleporting to death");
+				Player old = event.getOriginal();
+				BlockPos pos = rememberDeath.get(player.getStringUUID()); //get death loc
 				int xp = rememberXP.get(player.getStringUUID());
-				player.teleportTo(vec.x, vec.y, vec.z); //teleport player to there death
 				player.giveExperiencePoints(xp);
 				player.addEffect(new MobEffectInstance(ModEffects.GHOST, 35000)); //put into ghost state
+				player.setPos(old.getX(), old.getY(), old.getZ());
 				rememberDeath.remove(player.getStringUUID()); //remove the entry so players don't get stuck in a death loop
 				rememberXP.remove(player.getStringUUID());
 			}

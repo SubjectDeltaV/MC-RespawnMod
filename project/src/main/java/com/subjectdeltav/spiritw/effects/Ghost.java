@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.phys.Vec3;
 
 public class Ghost extends MobEffect
 {
@@ -67,6 +68,7 @@ public class Ghost extends MobEffect
 			player.setInvulnerable(true);
 		}
 	}
+	
 	
 	//Overrode Methods
 	@Override //apply effect every 10 seconds, related effects are applied just short of this to ensure they are re-applied

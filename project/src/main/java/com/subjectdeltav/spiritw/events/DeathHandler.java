@@ -8,6 +8,7 @@ import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EffectInit;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -23,6 +24,11 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import de.maxhenkel.corpse.Main;
+import de.maxhenkel.corpse.corelib.death.Death;
+import de.maxhenkel.corpse.corelib.death.DeathManager;
+import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
+import de.maxhenkel.corpse.entities.CorpseEntity;
 
 public class DeathHandler 
 {
@@ -71,11 +77,7 @@ public class DeathHandler
 			}
 			System.out.println("A Player has died, checking for wounded status...");
 			//MobEffectInstance playerEffect = pl.getEffect(EffectInit.WOUNDED.get());
-			if(pl.hasEffect(EffectInit.WOUNDED.get()))
-			{
-				System.out.println("Player was in a wounded state, the event will not be cancelled");
-				src.setIsFall();
-			}else if(
+			if(
 					src == DamageSource.DROWN || 
 					src == DamageSource.IN_WALL || 
 					src == DamageSource.LAVA || 
@@ -86,13 +88,12 @@ public class DeathHandler
 				rememberDeath.put(pl.getStringUUID(), pl.blockPosition());
 				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
 				pl.giveExperiencePoints(-pl.totalExperience);
-			}else if(pl.hasEffect(ModEffects.ENTER_GHOST_STATE))
+			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
 			{
-				System.out.println("Lantern has this player marked as starting a spirit walk, player will enter ghost state on respawn");
-				rememberDeath.put(pl.getStringUUID(), pl.blockPosition());
-				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
-				pl.giveExperiencePoints(-pl.totalExperience); //remove xp so it doesn't drop with body
-			} else if(!pl.hasEffect(ModEffects.GHOST))
+				System.out.println("Player was in a wounded state, the event will not be cancelled");
+				src.setIsFall();
+			}
+			else if(!pl.hasEffect(ModEffects.GHOST))
 			{
 				System.out.println("Player wasn't wounded when they died, puting into wounded state and cancelling event");
 				pl.setForcedPose(Pose.DYING);
@@ -143,7 +144,7 @@ public class DeathHandler
 		}
 	}
 	
-	@SubscribeEvent
+	//@SubscribeEvent
 	public void Respawn(PlayerEvent.Clone event)
 	{
 		Player player = event.getEntity();
@@ -165,5 +166,39 @@ public class DeathHandler
 			}
 		}
 	}
+	
+	public boolean DropCorpse(Player player, DamageSource src)
+	{
+		Death death = Death.fromPlayer(player);
+		PlayerDeathEvent deathEvent = new PlayerDeathEvent(death, (ServerPlayer) player, src);
+		if(Main.SERVER_CONFIG.maxDeathAge.get() != 0)
+		{
+			deathEvent.storeDeath();
+		}
+		deathEvent.removeDrops();
+		player.level.addFreshEntity(CorpseEntity.createFromDeath(player, death));
+		
+		new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
+		
+		return true;
+	}
+	
+	public boolean SetGhostEffect(Player player, int xp)
+	{
+		player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
+		player.giveExperiencePoints(xp);
+		return true;
+	}
+	
+	//Method copied from Corpse Mod
+    public static void deleteOldDeaths(ServerLevel serverWorld) {
+        int ageInDays = Main.SERVER_CONFIG.maxDeathAge.get();
+        if (ageInDays < 0) {
+            return;
+        }
+        long ageInMillis = ((long) ageInDays) * 24L * 60L * 60L * 1000L;
+
+        DeathManager.removeDeathsOlderThan(serverWorld, ageInMillis);
+    }
 
 }

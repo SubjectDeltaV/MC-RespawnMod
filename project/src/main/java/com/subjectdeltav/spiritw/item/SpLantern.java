@@ -11,9 +11,17 @@ import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
+import de.maxhenkel.corpse.Main;
+import de.maxhenkel.corpse.corelib.death.Death;
+import de.maxhenkel.corpse.corelib.death.DeathManager;
+import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
+import de.maxhenkel.corpse.entities.CorpseEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -79,6 +87,45 @@ public class SpLantern extends Item
 		this.lastDeathLoc = pos;
 	}
 	
+	public boolean DropCorpse(Player player)
+	{
+		if(player.level.isClientSide)
+		{
+			return false;
+		}
+		Death death = Death.fromPlayer(player);
+		PlayerDeathEvent deathEvent = new PlayerDeathEvent(death, (ServerPlayer) player, DamageSource.OUT_OF_WORLD);
+		if(Main.SERVER_CONFIG.maxDeathAge.get() != 0)
+		{
+			deathEvent.storeDeath();
+		}
+		deathEvent.removeDrops();
+		player.level.addFreshEntity(CorpseEntity.createFromDeath(player, death));
+		
+		new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
+		
+		return true;
+	}
+	
+	protected boolean SetGhostEffect(Player player, int xp)
+	{
+		player.removeAllEffects();
+		player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
+		player.giveExperiencePoints(xp);
+		return true;
+	}
+	
+	//Method copied from Corpse Mod
+    protected static void deleteOldDeaths(ServerLevel serverWorld) {
+        int ageInDays = Main.SERVER_CONFIG.maxDeathAge.get();
+        if (ageInDays < 0) {
+            return;
+        }
+        long ageInMillis = ((long) ageInDays) * 24L * 60L * 60L * 1000L;
+
+        DeathManager.removeDeathsOlderThan(serverWorld, ageInMillis);
+    }
+	
 	//Overrode Methods
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
@@ -93,9 +140,18 @@ public class SpLantern extends Item
 			//if player is downed and uses the lantern they will die and turn into a ghost
 			spiritw.LOGGER.debug("Player has used a lantern while downed, putting into ghost state");
 			//int xp = player.totalExperience;
-			player.removeAllEffects();
-			player.addEffect(new MobEffectInstance(ModEffects.ENTER_GHOST_STATE, 3600));
-			player.kill();
+			boolean didDropCorpse = DropCorpse(player);
+			if(didDropCorpse)
+			{
+				spiritw.LOGGER.debug("Dropped Corpse at player location?");
+			}
+			int xp = player.totalExperience;
+			player.giveExperiencePoints(-xp);
+			boolean ghostEnabled = SetGhostEffect(player, xp);
+			if(ghostEnabled)
+			{
+				spiritw.LOGGER.debug("Added ghost effect to dead player");
+			}	
 		}
 		return super.use(world, player, hand);
 	}

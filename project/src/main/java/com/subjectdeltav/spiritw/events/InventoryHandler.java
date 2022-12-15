@@ -79,7 +79,7 @@ public class InventoryHandler
 					if(itemToCheck != null)
 					{
 						System.out.println("Checking " + itemToCheck.toString());
-						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0)
+						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 2)
 						{
 							ItemsToSave[itemIndex] = itemToCheck;
 							saveItemsForTouchstone = true;

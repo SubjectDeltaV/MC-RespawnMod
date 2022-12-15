@@ -6,6 +6,8 @@ import java.util.Map;
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EffectInit;
+import com.subjectdeltav.spiritw.init.ItemInit;
+import com.subjectdeltav.spiritw.item.SpLantern;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -17,7 +19,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -84,10 +89,21 @@ public class DeathHandler
 					src == DamageSource.OUT_OF_WORLD ||
 					src == DamageSource.STARVE)
 			{
-				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, Ghost Effect will be initiated on respawn");
-				rememberDeath.put(pl.getStringUUID(), pl.blockPosition());
-				rememberXP.put(pl.getStringUUID(), pl.totalExperience);
-				pl.giveExperiencePoints(-pl.totalExperience);
+				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, attempting to locate lantern to apply ghost effect");
+				int xp = pl.totalExperience;
+				Inventory plInv = pl.getInventory();
+				HashMap hasLantern = ContainsLantern(plInv);
+				if(hasLantern.containsKey(true))
+				{
+					spiritw.LOGGER.debug("Player has lantern. Using Lantern Functions to begin spiritwalk.");
+					SpLantern lantern = (SpLantern) hasLantern.get(true);
+					lantern.scanAndSaveItems(pl);
+					lantern.DropCorpse(pl, true);
+					event.setCanceled(true);
+				}else
+				{
+					spiritw.LOGGER.debug("Player does not have lantern, unable to start spiritwalk. Player will need to respawn");
+				}
 			}else if(pl.hasEffect(EffectInit.WOUNDED.get()))
 			{
 				System.out.println("Player was in a wounded state, the event will not be cancelled");
@@ -188,6 +204,30 @@ public class DeathHandler
 		player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
 		player.giveExperiencePoints(xp);
 		return true;
+	}
+	
+	protected HashMap<Boolean, SpLantern> ContainsLantern(Inventory inv)
+	{
+		HashMap<Boolean, SpLantern> output = new HashMap<Boolean, SpLantern>();
+		boolean keepChecking = true;
+		while(keepChecking)
+		{
+			for(ItemStack itemStack : inv.items)
+			{
+				if(itemStack.getItem() instanceof SpLantern)
+				{
+					SpLantern lantern = (SpLantern) itemStack.getItem();
+					output.put(true, lantern);
+					keepChecking = false;
+				}
+			}
+			keepChecking = false;
+		}
+		if(!output.containsKey(true))
+		{
+			output.put(false, null);
+		}
+		return output;
 	}
 	
 	//Method copied from Corpse Mod

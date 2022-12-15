@@ -1,3 +1,8 @@
+2022-12-13 216 - BodyDrop Breathrough!: No TP. Managed to replicated body drop. Need to purge inventory. Currently only working on lantern to enter ghost state. Need to add to DeathManager.
+
+2022-11-30 215 - Trying to get TP working: Player still not teleporting after respawn. May need to look at avoiding respawn all together.
+
+2022-11-28 214 - Repair Tier 2 Touchstone: 
 2022-11-21 213 - Asset Creation: 
 2022-11-16 212 - Crafting Recipes Functioning: Still need assets for in inventory
 

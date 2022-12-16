@@ -1,3 +1,7 @@
+2022-12-16 218 - More Work on Enchantment Logic: Inventory update problem related to code only running server side. Re-arranged code to fix. ScanAndSaveItems function is hanging up when it runs. Related to storing items as a list. Will try as an array.
+
+2022-12-14 217 - Need to finish importing logic into lantern: Worked on merging remember item logic with lantern. Inventory not getting cleared atm, also need to refer to death inventory items, NOT player inventory items.
+
 2022-12-13 216 - BodyDrop Breathrough!: No TP. Managed to replicated body drop. Need to purge inventory. Currently only working on lantern to enter ghost state. Need to add to DeathManager.
 
 2022-11-30 215 - Trying to get TP working: Player still not teleporting after respawn. May need to look at avoiding respawn all together.

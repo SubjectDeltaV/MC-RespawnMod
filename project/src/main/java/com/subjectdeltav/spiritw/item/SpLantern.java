@@ -65,15 +65,14 @@ public class SpLantern extends Item
 	//Custom Methods
 	public void scanAndSaveItems(Player player)
 	{
-		Inventory inv = player.getInventory();
-		Collection<ItemStack> drops = inv.items;
+		List<ItemStack> drops = player.getInventory().items;
 		for(ItemStack item : drops)
 		{
 			spiritw.LOGGER.debug("checking item " + item.toString());
-			if(item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) == 0 && item != null)
+			if(item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && item != null)
 			{
 				spiritw.LOGGER.debug("item has correct enchantment, saving");
-				itemsOnDeath.add(item);
+				this.itemsOnDeath.add(item);
 				hasItemsToReturn = true;
 			}else
 			{
@@ -89,20 +88,18 @@ public class SpLantern extends Item
 	
 	public boolean DropCorpse(Player player, boolean setGhost)
 	{
-		if(player.level.isClientSide)
-		{
-			return false;
-		}
+
 		Death death = Death.fromPlayer(player);
-		PlayerDeathEvent deathEvent = new PlayerDeathEvent(death, (ServerPlayer) player, DamageSource.OUT_OF_WORLD);
-		if(Main.SERVER_CONFIG.maxDeathAge.get() != 0)
+		if(!player.level.isClientSide)
 		{
-			deathEvent.storeDeath();
+			PlayerDeathEvent deathEvent = new PlayerDeathEvent(death, (ServerPlayer) player, DamageSource.OUT_OF_WORLD);
+			if(Main.SERVER_CONFIG.maxDeathAge.get() != 0) {
+				deathEvent.storeDeath();
+			}
+			new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
 		}
-		deathEvent.removeDrops();
 		player.level.addFreshEntity(CorpseEntity.createFromDeath(player, death));
-		
-		new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
+		//player.getInventory().clearContent(); 
 		
 		if(setGhost)
 		{
@@ -154,10 +151,6 @@ public class SpLantern extends Item
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
 	{
-		if(world.isClientSide)//only operate server side (code has been getting run twice!)
-		{
-			return super.use(world, player, hand);
-		}
 		BlockHitResult ray = getPlayerPOVHitResult(world, player, ClipContext.Fluid.NONE);
 		BlockPos blPos = ray.getBlockPos();
 		BlockState block = world.getBlockState(blPos);
@@ -168,10 +161,11 @@ public class SpLantern extends Item
 			//if player is downed and uses the lantern they will die and turn into a ghost
 			spiritw.LOGGER.debug("Player has used a lantern while downed, putting into ghost state");
 			int xp = player.totalExperience;
+			scanAndSaveItems(player);
 			boolean didDropCorpse = DropCorpse(player, false);
 			if(didDropCorpse)
 			{
-				spiritw.LOGGER.debug("Dropped Corpse at player location?");
+				spiritw.LOGGER.debug("Dropped Corpse at player location");
 				player.giveExperiencePoints(-xp);
 				boolean ghostEnabled = SetGhostEffect(player, xp);
 				if(ghostEnabled)

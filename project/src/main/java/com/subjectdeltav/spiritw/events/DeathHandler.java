@@ -1,6 +1,7 @@
 package com.subjectdeltav.spiritw.events;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.subjectdeltav.spiritw.spiritw;
@@ -46,7 +47,7 @@ public class DeathHandler
 	private Map<String, Integer> rememberXP = new HashMap<String, Integer>(); 
 	
 	@SubscribeEvent
-	public void Death(LivingDeathEvent event) 
+	public void Death(LivingDeathEvent event) throws Exception 
 	{
 		System.out.println("Death of LivingEntity Detected, checking if Player...");
 
@@ -90,15 +91,15 @@ public class DeathHandler
 					src == DamageSource.STARVE)
 			{
 				System.out.println("No wounded status from Drowning, Suffocation, Lava, Falling out of World, or Starvation, attempting to locate lantern to apply ghost effect");
-				int xp = pl.totalExperience;
+				//int xp = pl.totalExperience;
 				Inventory plInv = pl.getInventory();
-				HashMap hasLantern = ContainsLantern(plInv);
+				HashMap<Boolean, SpLantern> hasLantern = ContainsLantern(plInv);
 				if(hasLantern.containsKey(true))
 				{
 					spiritw.LOGGER.debug("Player has lantern. Using Lantern Functions to begin spiritwalk.");
 					SpLantern lantern = (SpLantern) hasLantern.get(true);
-					lantern.scanAndSaveItems(pl);
-					lantern.DropCorpse(pl, true);
+					List<ItemStack> lanterns = lantern.scanAndSaveItems(pl);
+					lantern.DropCorpse(pl, lanterns, true);
 					event.setCanceled(true);
 				}else
 				{
@@ -119,7 +120,7 @@ public class DeathHandler
 				if(woundseverity == 0)
 				{
 					pl.addEffect(new MobEffectInstance(EffectInit.WOUNDED.get(), 6000, 1));
-					System.out.println("Wounded Amplifier is set to 1");
+					spiritw.LOGGER.debug("Wounded Amplifier is set to 1");
 				}else
 				{
 					System.out.println("Wounded Amplifier is set to " + woundseverity);
@@ -132,13 +133,13 @@ public class DeathHandler
 		}
 		else if(event.getEntity() instanceof Mob)
 		{
-			System.out.println("Mob has died, checking to see if it killed any players");
+			spiritw.LOGGER.debug("Mob has died, checking to see if it killed any players");
 			LivingEntity mob = event.getEntity();
 			LivingEntity killer = mob.getLastHurtByMob();
 			if(rememberKillers.containsKey(mob.getEncodeId()))
 			{
 				String mobId = String.valueOf(mob.getEncodeId());
-				System.out.println("Mob has killed players, checking if killer was the original victim");
+				spiritw.LOGGER.debug("Mob has killed players, checking if killer was the original victim");
 				if(killer == null) //prevent ctd
 				{
 					return;

@@ -6,9 +6,11 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.gui.TouchstoneMenu;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
+import com.subjectdeltav.spiritw.item.SpLantern;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -49,7 +51,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private boolean itemInOutput;
 	protected boolean enchantedItem;
 	private ItemStack lastEnchanted;
-	private int[] savedItemIDs;
+	//private int[] savedItemIDs;
 	
 	//properties with an override
 	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
@@ -111,6 +113,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		inventory.addItem(itemHandler.getStackInSlot(0)); //add item in input slot
 		Containers.dropContents(this.level, this.worldPosition, inventory);
 	}	
+	
 	public static void tick(Level l, BlockPos pos, BlockState state, TouchstoneTile ent) //logic for processing items, called every tick 
 	{
 		//System.out.println("Touchstone Ticked");
@@ -231,103 +234,75 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		return ownerPlayerID;
 	}
 	
-	public void scanForDeathItems(ServerPlayer player, Death death)
+	public boolean scanForAndReturnItems(Player player, SpLantern lantern) throws Exception
 	{
-		//String plID = player.getStringUUID();
-		boolean isPlayerOwner = player.getUUID() == this.ownerPlayerID;
-		if(isPlayerOwner) //check if the person requesting items is the blocks owner
+		//import arrays and configure variables
+		ItemStack[] itemsFromBlock = this.getSavedItems();
+		ItemStack[] itemsFromLantern = null;
+		boolean didTransferItems = false;
+		if(lantern.getSavedStatus())
 		{
-			//Death death = DeathManager.getDeath(player, ownerPlayerID);
-			if(death == null)
+			try {
+				itemsFromLantern = lantern.getItemsToReturn();
+			} catch (Exception e) {
+				spiritw.LOGGER.error("Error trying to get items from Lantern");
+				e.printStackTrace();
+			}
+		}else
+		{
+			spiritw.LOGGER.debug("Lantern has no saved items, unable to return anything");
+			return false;
+		}
+		
+		//scan for items
+		try 
+		{
+			for(ItemStack item : itemsFromLantern)
 			{
-				System.out.println("Error, no deaths from player available. Unable to retrieve items.");
-			}else
-			{
-				System.out.println("Player has requested a return of valid enchanted items at block " + this.getDisplayName() + ", running checks");
-				List<ItemStack> deathItemsList = death.getAllItems();
-				int itemsToCheckQ = deathItemsList.size();
-				ItemStack[] itemsToRetrieve; // for all items with valid enchantment
-				ItemStack[] itemsInBlock = this.getSavedItems(); //for all the items currently saved in the right slot
-				ItemStack[] itemsToDeliver = new ItemStack[4]; //for all items the player had with the valid enchantment that were also saved to the touchstone
-				int itemsToCheckInd = 0;
 				int enchantLvl = 0;
-				int itemsToRetrieveQ = 0;
-				boolean restoreItems = false;
-				for(ItemStack item : deathItemsList) //get the number of items we'll be adding to the output array
+				if(item != null)
 				{
-					enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
-					if(enchantLvl > 1)
+					try
 					{
-						itemsToRetrieveQ++;
+						enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("Error occurred when trying to get Bound Items Enchantment Level");
 					}
-				}
-				if(itemsToRetrieveQ == 0)
-				{
-					System.out.println("No items with matching enchantment on players body, ignorning request");
-					return;
-				}
-				itemsToRetrieve = new ItemStack[itemsToRetrieveQ]; //setup the array
-				int itemToRetrieveInd = 0;
-				for(ItemStack item : deathItemsList) //now we actually store the items with the valid enchantment
-				{
-					enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
-					if(enchantLvl > 1)
+					if(enchantLvl > 0)
 					{
-						itemsToRetrieve[itemToRetrieveInd] = item;
-						itemToRetrieveInd++;
+						for(ItemStack itemCompare : itemsFromBlock)
+						{
+							if(item.is(itemCompare.getItem()))
+							{
+								player.addItem(item);
+								spiritw.LOGGER.debug("Returned Item" + item.toString() + "to player");
+							}
+						}
 					}
-				}
-				itemToRetrieveInd = 0;
-				ItemStack itemInInv;
-				ItemStack itemInBlock;
-				int outputInd = 0;
-				while(itemToRetrieveInd < itemsToRetrieveQ) //now put all items that match the items in the block into an array and remove them from the death
-				{
-					itemInInv = itemsToRetrieve[itemToRetrieveInd];
-					itemInBlock = itemsInBlock[itemToRetrieveInd];
-					if(itemInInv == itemInBlock)
-					{
-						itemsToDeliver[outputInd] = itemInInv;
-						outputInd++;
-						restoreItems = true;
-						System.out.println("Calculated all items to return to player via the Touchstone");
-					}
-					itemToRetrieveInd++;
-				}
-				if(restoreItems)
-				{
-					if(itemsToDeliver[0].isEmpty())
-					{
-						itemHandler.setStackInSlot(6, ItemStack.EMPTY);
-					}else
-					{
-						itemHandler.insertItem(6, itemsToDeliver[0], false);
-					}
-					if(itemsToDeliver[1].isEmpty())
-					{
-						itemHandler.setStackInSlot(7, ItemStack.EMPTY);
-					} else
-					{
-						itemHandler.insertItem(7, itemsToDeliver[2], false);
-					}
-					if(itemsToDeliver[2].isEmpty())
-					{
-						itemHandler.setStackInSlot(8, ItemStack.EMPTY);
-					} else
-					{
-						itemHandler.insertItem(8, itemsToDeliver[2], false);
-					}
-					if(itemsToDeliver[3].isEmpty())
-					{
-						itemHandler.setStackInSlot(9, ItemStack.EMPTY);
-					} else
-					{
-						itemHandler.insertItem(9, itemsToDeliver[3], false);
-					}
-					System.out.println("Delivered all items to Touchstone");
 				}
 			}
+			didTransferItems = true;
+		}catch(Exception e)
+		{
+			spiritw.LOGGER.error("Unkown Error occured comparing items from death to saved items in Touchstone");
+			throw(e);
 		}
+		
+		//clear out lantern if applicable
+		if(didTransferItems)
+		{
+			boolean clearedlantern = lantern.clearSavedItems();
+			if(clearedlantern)
+			{
+				spiritw.LOGGER.debug("Cleared the lantern of its saved items");
+			}else
+			{
+				throw new Exception("Error Clearing Items from the Lantern");
+			}
+		}
+		
+		return true;
 	}
 	
 	@Nullable

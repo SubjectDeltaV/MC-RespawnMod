@@ -1,3 +1,5 @@
+2022-12-16 219 - Import Success: Code for returning items to player now working from lantern. Need to fine tune and test code for death without wounded status.
+
 2022-12-16 218 - More Work on Enchantment Logic: Inventory update problem related to code only running server side. Re-arranged code to fix. ScanAndSaveItems function is hanging up when it runs. Related to storing items as a list. Will try as an array.
 
 2022-12-14 217 - Need to finish importing logic into lantern: Worked on merging remember item logic with lantern. Inventory not getting cleared atm, also need to refer to death inventory items, NOT player inventory items.

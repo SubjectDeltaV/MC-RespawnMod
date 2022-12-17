@@ -3,8 +3,11 @@ package com.subjectdeltav.spiritw.blocks;
 import javax.annotation.Nullable;
 
 import com.subjectdeltav.spiritw.spiritw;
+import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
+import com.subjectdeltav.spiritw.item.SpLantern;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
+import com.subjectdeltav.spiritw.Tools;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -75,9 +78,50 @@ public class TouchstoneBlock extends BaseEntityBlock
 		if (!l.isClientSide())
 		{
 			BlockEntity entity = l.getBlockEntity(pos);
+			ItemStack item = pl.getItemInHand(hand);
+			SpLantern lantern = null;
+			TouchstoneTile tile = null;
+			if(entity instanceof TouchstoneTile && pl.hasEffect(ModEffects.GHOST))
+			{
+				spiritw.LOGGER.debug("Player interacted with Touchstone while a ghost, Checking if need to restore Items");
+				try
+				{
+					lantern = (SpLantern) item.getItem();
+					tile = (TouchstoneTile) entity;
+					
+				}catch(ClassCastException e)
+				{
+					spiritw.LOGGER.error("Casting Error");
+					e.printStackTrace();
+				}
+				if(lantern.getSavedStatus())
+				{
+					spiritw.LOGGER.debug("Lantern has items bound to it, attempting to restore...");
+					try
+					{
+						boolean didReturn = tile.scanForAndReturnItems(pl, lantern);
+						if(didReturn)
+						{
+							spiritw.LOGGER.debug("Success!");
+						}
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("Error. Unable to return items.");
+						e.printStackTrace();
+					}
+				}
+			}
 			if(entity instanceof TouchstoneTile)
 			{
-				TouchstoneTile tile = (TouchstoneTile) entity;
+				try
+				{
+					tile = (TouchstoneTile) entity;
+				}catch(Exception e)
+				{
+					spiritw.LOGGER.error("Casting Error");
+					e.printStackTrace();
+				}
+				
 				if(tile.playerIsSet)
 				{
 					//ItemStack holdingMain = pl.getMainHandItem();
@@ -93,11 +137,11 @@ public class TouchstoneBlock extends BaseEntityBlock
 						}
 					}else
 					{
-						System.out.println("Player attempted to open Touchstone that isn't theirs...ignoring");
+						spiritw.LOGGER.debug("Player attempted to open Touchstone that isn't theirs...ignoring");
 					}
 				}else
 				{
-					System.out.println("No Player owner set for this touchstone, setting owner and opening UI");
+					spiritw.LOGGER.debug("No Player owner set for this touchstone, setting owner and opening UI");
 					tile.setPlayer(pl);
 					NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);
 				}

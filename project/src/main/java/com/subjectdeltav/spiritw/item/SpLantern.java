@@ -1,5 +1,6 @@
 package com.subjectdeltav.spiritw.item;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,10 +47,11 @@ public class SpLantern extends Item
 	protected TouchstoneTile boundTouchstone; //the Touchstone this lantern is bound to
 	public boolean isActive; //only on during SpiritWalking
 	protected int playerXP; //will auto-update through a method when being held
-	private List<ItemStack> itemsOnDeath;
-	public boolean hasItemsToReturn;
+	private ItemStack[] itemsOnDeath;
+	protected boolean hasItemsToReturn;
 	private int tier;
 	private BlockPos lastDeathLoc;
+	public ItemStack thisStack;
 	
 	
 	//Constructor
@@ -58,27 +60,46 @@ public class SpLantern extends Item
 		super(new Item.Properties().tab(ItemInit.ModCreativeTab.instance));
 		this.tier = tier;
 		lastDeathLoc = new BlockPos(0, 0, 0);
-		itemsOnDeath = Collections.emptyList();
 		hasItemsToReturn = false;
+		itemsOnDeath = new ItemStack[4];
 	}
 	
 	//Custom Methods
-	public void scanAndSaveItems(Player player)
+	public List<ItemStack> scanAndSaveItems(Player player)
 	{
-		List<ItemStack> drops = player.getInventory().items;
-		for(ItemStack item : drops)
+		if(!player.level.isClientSide)
 		{
-			spiritw.LOGGER.debug("checking item " + item.toString());
-			if(item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && item != null)
+			List<ItemStack> drops = player.getInventory().items;
+			itemsOnDeath = new ItemStack[drops.size()];
+			List<ItemStack> lanterns = new ArrayList();
+			int index = 0;
+			for(ItemStack item : drops)
 			{
-				spiritw.LOGGER.debug("item has correct enchantment, saving");
-				this.itemsOnDeath.add(item);
-				hasItemsToReturn = true;
-			}else
-			{
-				spiritw.LOGGER.debug("Item missing correct enchantment, ignoring");
+				try
+				{
+					spiritw.LOGGER.debug("checking item " + item.toString());
+					if(item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && item != null)
+					{
+						spiritw.LOGGER.debug("item has correct enchantment, saving");
+						itemsOnDeath[index] = item;
+						hasItemsToReturn = true;
+					}else if(item.getItem() instanceof SpLantern)
+					{
+						lanterns.add(item);
+					}else
+					{
+						spiritw.LOGGER.debug("Item missing correct enchantment, ignoring");
+					}
+					index++;
+				}catch(Exception e)
+				{
+					spiritw.LOGGER.error("Exception Caught: propable cause is trying to store items from death in array but array is too small");
+					e.printStackTrace();
+				}
 			}
+			return lanterns;
 		}
+		return null;
 	}
 	
 	public void SetLastDeathLoc(BlockPos pos)
@@ -86,7 +107,7 @@ public class SpLantern extends Item
 		this.lastDeathLoc = pos;
 	}
 	
-	public boolean DropCorpse(Player player, boolean setGhost)
+	public boolean DropCorpse(Player player, List<ItemStack> lanterns, boolean setGhost) throws Exception
 	{
 
 		Death death = Death.fromPlayer(player);
@@ -98,20 +119,25 @@ public class SpLantern extends Item
 			}
 			new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
 		}
+		player.getInventory().clearContent(); 
 		player.level.addFreshEntity(CorpseEntity.createFromDeath(player, death));
-		//player.getInventory().clearContent(); 
 		
+		//give lanterns back
+		for(ItemStack lantern : lanterns)
+		{
+			player.addItem(lantern);
+		}
+		
+		this.SetLastDeathLoc(player.blockPosition()); 
 		if(setGhost)
 		{
 			int exp = player.totalExperience;
 			boolean didSetGhost = SetGhostEffect(player, exp);
 			if(!didSetGhost)
 			{
-				spiritw.LOGGER.debug("An error occurred adding the ghost effect to player");
-				return false;
+				throw new Exception("Error Adding Ghost Effect to Player");
 			}
 		}
-		
 		return true;
 	}
 	
@@ -123,17 +149,27 @@ public class SpLantern extends Item
 		return true;
 	}
 	
-	public List<ItemStack> getItemsToReturn() //throws Throwable
+	public ItemStack[] getItemsToReturn() throws Exception
 	{
 		if(hasItemsToReturn)
 		{
 			return this.itemsOnDeath;
 		}else
 		{
-			//TODO insert exception
-			spiritw.LOGGER.warn("Attempt to return empty list of items from lantern!");
-			return this.itemsOnDeath;
+			throw new Exception("Tryed to restore ItemsOnDeath to player while array is empty");
 		}
+	}
+	
+	public boolean getSavedStatus()
+	{
+		return hasItemsToReturn;
+	}
+	
+	public boolean clearSavedItems()
+	{
+		itemsOnDeath = null; //empty out the array
+		hasItemsToReturn = false;
+		return true;
 	}
 	
 	//Method copied from Corpse Mod
@@ -161,8 +197,23 @@ public class SpLantern extends Item
 			//if player is downed and uses the lantern they will die and turn into a ghost
 			spiritw.LOGGER.debug("Player has used a lantern while downed, putting into ghost state");
 			int xp = player.totalExperience;
+			List<ItemStack> lanterns = Collections.emptyList();
+			try
+			{
+				lanterns = scanAndSaveItems(player);
+			}catch(Exception e)
+			{
+				spiritw.LOGGER.error("Unkown error occured scanning player items");
+				e.printStackTrace();
+			}
 			scanAndSaveItems(player);
-			boolean didDropCorpse = DropCorpse(player, false);
+			boolean didDropCorpse = false;
+			try {
+				didDropCorpse = DropCorpse(player, lanterns, false);
+			} catch (Exception e) {
+				spiritw.LOGGER.error("Error! Corpse not dropped, cannot put into ghost state!");
+				e.printStackTrace();
+			}
 			if(didDropCorpse)
 			{
 				spiritw.LOGGER.debug("Dropped Corpse at player location");
@@ -173,70 +224,9 @@ public class SpLantern extends Item
 					spiritw.LOGGER.debug("Added ghost effect to dead player");
 				}else
 				{
-					spiritw.LOGGER.debug("An Error occured while adding Ghost Effect");
+					spiritw.LOGGER.error("An Error occured while adding Ghost Effect");
 				}
-			}else
-			{
-				spiritw.LOGGER.debug("Error! Corpse not dropped, cannot put into ghost state!");
 			}
-			
-		}else if(touchstone != null && this.hasItemsToReturn)
-		{
-			ItemStack[] itemsFromDeath = (ItemStack[]) itemsOnDeath.toArray();
-			boolean restoreItems = false;
-			ItemStack[] itemstoRestore = new ItemStack[4];
-			if(itemsFromDeath != null)
-			{
-				spiritw.LOGGER.debug("A player has interacted with the touchstone with a lantern in hand, checking for any items to restore...");
-				ItemStack[] itemsFromTile = touchstone.getSavedItems();
-
-				int toRestoreInd = 0;
-				//ItemStack[] removeItemsFromCorpse = new ItemStack[itemsFromTile.length];
-				for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
-				{
-					ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
-					if(checkItemFromDeath != null)
-					{
-						spiritw.LOGGER.debug("Comparing " + checkItemFromDeath.toString() + " against items in touchstone...");
-						for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
-						{
-							ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
-							if(checkItemFromDeath.is(checkItemFromTile.getItem()))
-							{
-								spiritw.LOGGER.debug("Item Matches, adding it to list to restore items.");
-								if(toRestoreInd < itemstoRestore.length)
-								{
-									itemstoRestore[toRestoreInd] = checkItemFromDeath;
-									toRestoreInd++;
-									restoreItems = true;
-									itemsOnDeath.remove(checkItemFromDeath);
-								}else
-								{
-									spiritw.LOGGER.error("Maximum number of items to restore has been exceeded, not restoring further items");
-								}
-							}
-						}
-					} else
-					
-						spiritw.LOGGER.error("Item to check against touchstone is null, ignoring...");
-					}
-				}
-				if(restoreItems)
-				{
-					for(int index = 0; index < itemstoRestore.length; index++)
-					{
-						spiritw.LOGGER.debug("Giving Items to Player...");
-						ItemStack giveItem = itemstoRestore[index];
-						if(giveItem != null)
-						{
-							player.addItem(giveItem);
-						}
-					}
-					//itemsRemoveFromCorpse.put(player.getStringUUID(), itemsToRestore.get(player.getStringUUID()).clone());
-					//itemsToRestore.remove(player.getStringUUID());
-
-				}
-
 		}
 		return super.use(world, player, hand);
 	}

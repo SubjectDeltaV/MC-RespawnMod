@@ -144,7 +144,9 @@ public class SpLantern extends Item
 	protected boolean SetGhostEffect(Player player, int xp)
 	{
 		player.removeAllEffects();
+		player.setSecondsOnFire(0);
 		player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
+		player.setSecondsOnFire(0);
 		player.giveExperiencePoints(xp);
 		return true;
 	}

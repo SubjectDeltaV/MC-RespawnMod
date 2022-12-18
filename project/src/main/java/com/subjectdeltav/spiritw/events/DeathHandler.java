@@ -97,10 +97,34 @@ public class DeathHandler
 				if(hasLantern.containsKey(true))
 				{
 					spiritw.LOGGER.debug("Player has lantern. Using Lantern Functions to begin spiritwalk.");
-					SpLantern lantern = (SpLantern) hasLantern.get(true);
-					List<ItemStack> lanterns = lantern.scanAndSaveItems(pl);
-					lantern.DropCorpse(pl, lanterns, true);
-					event.setCanceled(true);
+					SpLantern lantern = null;
+					boolean lanternobtained = false;
+					try
+					{
+						lantern = (SpLantern) hasLantern.get(true);
+						if(lantern != null)
+						{
+							lanternobtained = true;
+						}else
+						{
+							spiritw.LOGGER.debug("Unkown Error occured, Lantern is null");
+						}
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("Error occured getting lantern. Unable to begin spiritwalk");
+						e.printStackTrace();
+					}
+					if(lanternobtained && pl.experienceLevel > 1)
+					{
+						List<ItemStack> lanterns = lantern.scanAndSaveItems(pl);
+						lantern.DropCorpse(pl, lanterns, true);
+						event.setCanceled(true);
+						pl.setHealth(1);
+						spiritw.LOGGER.debug("Set Spiritwalk");
+					}else
+					{
+						spiritw.LOGGER.debug("Unable to initate spiritwalk, either an error occured or the player doesn't have enought experience");
+					}
 				}else
 				{
 					spiritw.LOGGER.debug("Player does not have lantern, unable to start spiritwalk. Player will need to respawn");
@@ -184,28 +208,7 @@ public class DeathHandler
 		}
 	}
 	
-	public boolean DropCorpse(Player player, DamageSource src)
-	{
-		Death death = Death.fromPlayer(player);
-		PlayerDeathEvent deathEvent = new PlayerDeathEvent(death, (ServerPlayer) player, src);
-		if(Main.SERVER_CONFIG.maxDeathAge.get() != 0)
-		{
-			deathEvent.storeDeath();
-		}
-		deathEvent.removeDrops();
-		player.level.addFreshEntity(CorpseEntity.createFromDeath(player, death));
-		
-		new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
-		
-		return true;
-	}
 	
-	public boolean SetGhostEffect(Player player, int xp)
-	{
-		player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
-		player.giveExperiencePoints(xp);
-		return true;
-	}
 	
 	protected HashMap<Boolean, SpLantern> ContainsLantern(Inventory inv)
 	{

@@ -1,3 +1,5 @@
+2022-12-17 220 - StraightDeathtoGhsot Working: Tested ghost effect from DeathHandler is working. SetGhost from the Lantern will also cancel fire effects now.
+
 2022-12-16 219 - Import Success: Code for returning items to player now working from lantern. Need to fine tune and test code for death without wounded status.
 
 2022-12-16 218 - More Work on Enchantment Logic: Inventory update problem related to code only running server side. Re-arranged code to fix. ScanAndSaveItems function is hanging up when it runs. Related to storing items as a list. Will try as an array.

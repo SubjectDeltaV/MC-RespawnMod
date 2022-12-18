@@ -7,7 +7,6 @@ import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
 import com.subjectdeltav.spiritw.item.SpLantern;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
-import com.subjectdeltav.spiritw.Tools;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;

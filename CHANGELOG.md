@@ -1,3 +1,4 @@
+2022-12-17 221 - Update Localization: 
 2022-12-17 220 - StraightDeathtoGhsot Working: Tested ghost effect from DeathHandler is working. SetGhost from the Lantern will also cancel fire effects now.
 
 2022-12-16 219 - Import Success: Code for returning items to player now working from lantern. Need to fine tune and test code for death without wounded status.

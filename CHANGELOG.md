@@ -1,3 +1,5 @@
+2022-12-20 222 - Create Textures and ResSick effect: Created Resurrection Sickness programming and a texture for the Ghost Effect.
+
 2022-12-17 221 - Update Localization: 
 2022-12-17 220 - StraightDeathtoGhsot Working: Tested ghost effect from DeathHandler is working. SetGhost from the Lantern will also cancel fire effects now.
 

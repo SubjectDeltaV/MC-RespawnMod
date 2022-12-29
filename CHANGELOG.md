@@ -1,3 +1,6 @@
+2022-12-28 225 - Create Bindingstone image: Made a texture for the bindingstone, texture is a compressed image generated from blender. Source model in matsrc.
+
+2022-12-27 224 - Create Wounded Effect Symbol: 
 2022-12-27 223 - Enhance Ressickness Image: 
 2022-12-20 222 - Create Textures and ResSick effect: Created Resurrection Sickness programming and a texture for the Ghost Effect.
 

@@ -19,7 +19,6 @@ public class wounded extends MobEffect
 	//This Effect is the "downed" state that the player goes into when they die
 	//application of the wounded effect is handled by the DeathHandler event handler
 	//upkeep of this effect is handled by the WoundedProtectionHandler event handler
-	//TODO needs icon//
 	
 	public wounded() 
 	{

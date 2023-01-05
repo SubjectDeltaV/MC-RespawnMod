@@ -26,7 +26,7 @@ public class ItemInit {
 	public static final RegistryObject<Item> SOUL_STONE = ITEMS.register("soul_stone",
 			() -> new Item(new Item.Properties().tab(ModCreativeTab.instance).stacksTo(8))); //crafting ingredient for Touchstone
 
-	public static final RegistryObject<Item> SPLANTERN_2 = ITEMS.register("splanten_2", () -> new SpLantern(2)); //create second tier of Spirit Lantern
+	//public static final RegistryObject<Item> SPLANTERN_2 = ITEMS.register("splanten_2", () -> new SpLantern(2)); //create second tier of Spirit Lantern
 
 	public static class ModCreativeTab extends CreativeModeTab {
 		public static final ModCreativeTab instance = new ModCreativeTab(CreativeModeTab.TABS.length, "spiritwalker");
@@ -36,7 +36,7 @@ public class ItemInit {
 		
 		@Override
 		public ItemStack makeIcon() {
-			return new ItemStack(Items.BOOK);
+			return new ItemStack(SPLANTERN.get());
 		}
 	}
 }

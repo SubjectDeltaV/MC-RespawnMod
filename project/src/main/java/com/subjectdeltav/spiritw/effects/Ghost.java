@@ -22,7 +22,6 @@ public class Ghost extends MobEffect
 {
 	//Effect for when you are Spirit Walking
 	//Should drain XP and apply invisibility
-	//TODO needs icon
 	
 	//Properties
 	protected MobEffect blind;

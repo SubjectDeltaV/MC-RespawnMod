@@ -1,3 +1,4 @@
+2023-01-04 226 - Finish Resource Prep: 
 2022-12-28 225 - Create Bindingstone image: Made a texture for the bindingstone, texture is a compressed image generated from blender. Source model in matsrc.
 
 2022-12-27 224 - Create Wounded Effect Symbol: 

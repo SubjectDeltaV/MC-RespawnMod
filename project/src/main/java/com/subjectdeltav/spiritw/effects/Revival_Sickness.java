@@ -18,7 +18,6 @@ public class Revival_Sickness extends MobEffect
 {
 
 	//This effect is for when a player is revived from a downed state (via potion or second wind)
-	//TODO needs icon//
 	
 	public Revival_Sickness() 
 	{

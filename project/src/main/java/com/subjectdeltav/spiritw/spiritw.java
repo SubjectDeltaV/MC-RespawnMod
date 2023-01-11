@@ -1,10 +1,12 @@
 package com.subjectdeltav.spiritw;
 
 import com.mojang.logging.LogUtils;
+import com.subjectdeltav.spiritw.events.AnvilRecipeHandler;
 import com.subjectdeltav.spiritw.events.DeathHandler;
-import com.subjectdeltav.spiritw.events.InventoryHandler;
 import com.subjectdeltav.spiritw.events.WoundedProtectionHandler;
 import com.subjectdeltav.spiritw.events.GhostEventHandler;
+import com.subjectdeltav.spiritw.events.InventoryHandler;
+import com.subjectdeltav.spiritw.events.PotionRecipeHandler;
 import com.subjectdeltav.spiritw.gui.TouchstoneScreen;
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
@@ -73,10 +75,12 @@ public class spiritw
         MenuTypesInit.MENUS.register(modEventBus);
         
         //register events
+        
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
         MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
-        MinecraftForge.EVENT_BUS.register(new GhostEventHandler()); //Causing crash, disabled until issue is resolved
+        MinecraftForge.EVENT_BUS.register(new GhostEventHandler());
+        MinecraftForge.EVENT_BUS.register(new PotionRecipeHandler());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -91,6 +95,8 @@ public class spiritw
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
         LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
+        //add Anvil Recipes
+        AnvilRecipeHandler.initAnvilRecipes();
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

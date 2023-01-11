@@ -2,15 +2,12 @@
     "type": "minecraft:crafting_shaped",
     "pattern": [
         " # ",
-        "*/*",
+        "*#*",
         "%%%"
     ],
     "key": {
         "#": {
             "item": "minecraft:flint"
-        },
-        "/": {
-          "item": "spiritw:bindingstone"
         },
         "*": { 
           "item": "minecraft:bone"

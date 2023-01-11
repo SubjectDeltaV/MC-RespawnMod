@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "/$ ",
+        "*  ",
+        "   "
+    ],
+    "key":{
+        "/": {
+          "potion": "minecraft:emptypotion"
+      	},
+      	"*": { 
+      		"item": "minecraft:bone"
+      	},
+      	"$": { 
+      		"item": "minecraft:gunpowder"
+      }
+    },
+    "result": {
+        "item": "spiritw:inactive_revived"
+    }
+}

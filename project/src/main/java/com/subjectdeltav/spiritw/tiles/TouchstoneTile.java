@@ -25,6 +25,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,19 +45,24 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private LazyOptional<IItemHandler> LazyItemHandler = LazyOptional.empty();
 	protected ContainerData data;
 	protected int currentSavedItemsQ;
-	int maxSavedItems = 4;
+	int maxSavedItems = 3;
 	int maxItemsRemaining;
 	protected UUID ownerPlayerID;
 	protected Player player;
 	public boolean playerIsSet = false;
-	private boolean itemInInput;
-	private boolean itemInOutput;
+	private boolean[] itemInInput;
+	private boolean[] itemInOutput;
 	protected boolean enchantedItem;
 	private ItemStack lastEnchanted;
+	public  int playerXpLvl; //XP level of most recent player
+	private boolean canEnchant;
+	private boolean canBrew;
+	private static int levelsToEnchant = 5;
+	private static int levelsToBrew = 3;
 	//private int[] savedItemIDs;
 	
 	//properties with an override
-	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
+	private final ItemStackHandler itemHandler = new ItemStackHandler(11) 
 	{
 		@Override
 		protected void onContentsChanged(int slot)
@@ -69,6 +77,8 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		super(TileEntityInit.TOUCHSTONE_TILE.get(), pos, state);
 		this.enchantedItem = false;
 		this.currentSavedItemsQ = 0;
+		itemInInput = new boolean[3];
+		itemInOutput = new boolean[2];
 		this.data = new ContainerData()
 				{
 					@Override
@@ -122,10 +132,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			return;
 		}
 		ent.CheckSlots();
-		if(ent.itemInInput && ent.itemInOutput == false && ent.enchantedItem == false)
+		ent.checkXP();
+		if(ent.itemInInput[0] && ent.itemInOutput[0] == false && ent.enchantedItem == false)
 		{
 			ItemStack item = CanEnchantItem(ent); //get the item in the first slot if it's enchantable
-			if(item != null)
+			if(item != null && ent.player.totalExperience > levelsToEnchant)
 			{
 				System.out.println("Enchanting requirements met, enchanting item");
 				ItemStack enchantedResult = enchantInSlot(item); //enchant as applicable
@@ -134,21 +145,25 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				ent.enchantedItem = true; //save the information that we have enchanted an item
 				ent.lastEnchanted = enchantedResult.copy(); //setup for saving if the player keeps the enchantment
 			}
-		}else if(ent.enchantedItem && ent.itemInOutput == false) //if we enchanted an item and the item in the output slot is missing
+		}else if(ent.enchantedItem && ent.itemInOutput[0] == false) //if we enchanted an item and the item in the output slot is missing
 		{
 			System.out.println("Player has removed the enchanted item, deleting the original, and saving the item with new information");
 			ent.itemHandler.extractItem(0, 1, false); //remove the item in the input slot
 			ItemStack enchantedResult = ent.lastEnchanted;
 			ent.setCopiedItem(enchantedResult); //save the item in the noted slot
 			ent.enchantedItem = false; //reset to false so we can enchant a new item
-		}else if(ent.enchantedItem && ent.itemInInput == false) //if we set an item to enchant but removed the root item
+		}else if(ent.enchantedItem && ent.itemInInput[0] == false) //if we set an item to enchant but removed the root item
 		{
 			System.out.println("Player has removed the original, cancelling enchanted item, no item info has been saved!");
 			ent.itemHandler.extractItem(1, 1, false); //remove the enchanted item, since the player won't be enchanting it
 			ent.enchantedItem = false; //reset to false so we can enchant a new item;
 			ent.lastEnchanted = ItemStack.EMPTY;
 		}
-		return;
+		if(ent.itemInInput[1] && ent.itemInInput[2] && ent.itemInOutput[1] == false)
+		{
+			spiritw.LOGGER.debug("Items detected for brewing in brewing slots...");
+			ItemStack inputBottle = ent.itemHandler.getStackInSlot(9);
+		}
 	}
 	
 	@Nullable
@@ -206,22 +221,73 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	{
 		ItemStack inputSlot = this.itemHandler.getStackInSlot(0);
 		ItemStack outputSlot = this.itemHandler.getStackInSlot(1);
+		ItemStack potionInput = this.itemHandler.getStackInSlot(9);
+		ItemStack potionAdditive = this.itemHandler.getStackInSlot(10);
+		ItemStack potionOutput = this.itemHandler.getStackInSlot(11);
 		if(inputSlot == ItemStack.EMPTY)
 		{
-			itemInInput = false;
+			itemInInput[0] = false;
 		}else
 		{
-			itemInInput = true;
+			itemInInput[0] = true;
+		}
+		if(potionInput == ItemStack.EMPTY)
+		{
+			itemInInput[1] = false;
+		}else
+		{
+			itemInInput[0] = true;
+		}
+		if(potionAdditive == ItemStack.EMPTY)
+		{
+			itemInInput[2] = false;
+		}else
+		{
+			itemInInput[2] = true;
 		}
 		if(outputSlot == ItemStack.EMPTY)
 		{
-			itemInOutput = false;
+			itemInOutput[0] = false;
 		}else
 		{
-			itemInOutput = true;
+			itemInOutput[0] = true;
+		}
+		if(potionOutput.equals(ItemStack.EMPTY))
+		{
+			itemInOutput[1] = false;
+		}else
+		{
+			itemInOutput[1] = false;
 		}
 	}
 	
+	private void checkXP()
+	{
+		if(playerXpLvl > levelsToBrew)
+		{
+			this.canBrew = true;
+			if(playerXpLvl > levelsToEnchant)
+			{
+				this.canEnchant = true;
+			}else
+			{
+				this.canEnchant = false;
+			}
+		}else
+		{
+			this.canBrew = false;
+		}
+	}
+
+	private void checkAndReturnBrewables(ItemStack bottle, ItemStack sand)
+	{
+		if(bottle.equals(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER))
+				&& sand.equals(new ItemStack(Items.SOUL_SAND)))
+		{
+			
+		}
+	}
+
 	public void setPlayer(Player player)
 	{
 		this.ownerPlayerID = player.getUUID();
@@ -358,6 +424,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			this.itemHandler.insertItem(slotN, item, false);
 		}
 	}
+
 	
 	//overrode methods
 	@Override
@@ -388,7 +455,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		super.onLoad();
 		LazyItemHandler = LazyOptional.of(() -> itemHandler);
 		this.CheckSlots();
-		if(this.itemInInput && this.itemInOutput)
+		if(this.itemInInput[0] && this.itemInOutput[0])
 		{
 			this.enchantedItem = true;
 		}

@@ -129,6 +129,8 @@ public class TouchstoneBlock extends BaseEntityBlock
 					{
 						if(tier == 1)
 						{
+							spiritw.LOGGER.debug("Player Owner is trying to open Touchstone, Setting XP and opening UI...");
+							tile.playerXpLvl = pl.experienceLevel;
 							NetworkHooks.openScreen(((ServerPlayer) pl), (TouchstoneTile) entity, pos);							
 						}else
 						{

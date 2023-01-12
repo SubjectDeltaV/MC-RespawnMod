@@ -28,6 +28,10 @@ public class ItemInit {
 
 	//public static final RegistryObject<Item> SPLANTERN_2 = ITEMS.register("splanten_2", () -> new SpLantern(2)); //create second tier of Spirit Lantern
 
+	public static final RegistryObject<Item> SOUL_DUST = ITEMS.register("soul_dust", 
+			() -> new Item( new Item.Properties().tab(ModCreativeTab.instance).stacksTo(64))); 
+	//this will be an ingredient to use in the brewing stand once implemented (soul sand can't go into the stand for some reason)
+	
 	public static class ModCreativeTab extends CreativeModeTab {
 		public static final ModCreativeTab instance = new ModCreativeTab(CreativeModeTab.TABS.length, "spiritwalker");
 		private ModCreativeTab(int index, String label) {

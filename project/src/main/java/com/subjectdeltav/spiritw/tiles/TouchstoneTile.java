@@ -67,9 +67,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	private static int brewInputSlot1 = 2;
 	private static int brewInputSlot2 = 3;
 	private static int brewOutputSlot = 4;
-	private static int savedItem1 = 5;
-	private static int savedItem2 = 6;
-	private static int savedItem3 = 7;
+	//slots 5-7 are auto assigned, they are for storing saved items only
 	
 	//properties with an override
 	private final ItemStackHandler itemHandler = new ItemStackHandler(8) 
@@ -167,6 +165,8 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				}catch(Exception e)
 				{
 					spiritw.LOGGER.debug("An error occurred trying to subtract levels for enchant!");
+					e.printStackTrace();
+					return;
 				}
 				ent.itemHandler.extractItem(enchantInputSlot, 1, false); //remove the item in the input slot
 				ItemStack enchantedResult = ent.lastEnchanted;
@@ -186,21 +186,27 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			spiritw.LOGGER.debug("Items detected for brewing in brewing slots...");
 			if(ent.player.experienceLevel > 3)
 			{
-				spiritw.LOGGER.debug("Player has enough XP to activate the potion, brewing...");
+				spiritw.LOGGER.debug("Player has enough XP to activate the potion, attempting a brew...");
 				ItemStack inputBottle = ent.itemHandler.getStackInSlot(brewInputSlot1);
 				ItemStack material = ent.itemHandler.getStackInSlot(brewInputSlot2);
 				ItemStack potion = ent.checkAndReturnBrewables(inputBottle, material);
-				try 
+				if(inputBottle != null)
 				{
-					ent.itemHandler.insertItem(brewOutputSlot, potion, false);
-					brewedPotion = potion.getItem();
-					ent.activatedPotion = 1;
-				}catch(Exception e)
+					try 
+					{
+						ent.itemHandler.insertItem(brewOutputSlot, potion, false);
+						brewedPotion = potion.getItem();
+						ent.activatedPotion = 1;
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("An error occured while the touchstone was brewing. Printing stacktrace...");
+						e.printStackTrace();
+						return;
+					}
+				}else
 				{
-					spiritw.LOGGER.error("An error occured while the touchstone was brewing. Printing stacktrace...");
-					e.printStackTrace();
+					spiritw.LOGGER.debug("Invalid objects in input slots, ignoring brew");
 				}
-
 			}else
 			{
 				spiritw.LOGGER.debug("Player has insufficent experience levels, unable to brew potion");
@@ -220,6 +226,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				{
 					spiritw.LOGGER.error("An error occurred deducting levels");
 					e.printStackTrace();
+					return;
 				}
 			}else if(ent.activatedPotion == 2 && ent.player.experienceLevel > 5)
 			{
@@ -232,6 +239,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				{
 					spiritw.LOGGER.error("An error occurred deducting levels");
 					e.printStackTrace();
+					return;
 				}
 			}else
 			{
@@ -350,15 +358,14 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
-
 	private ItemStack checkAndReturnBrewables(ItemStack bottle, ItemStack sand)
 	{
 		ItemStack output = null;
-		if(bottle.equals(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER))
-				&& sand.equals(new ItemStack(Items.SOUL_SAND)))
+		if(PotionUtils.getPotion(bottle).equals(Potions.WATER)
+				&& sand.getItem().equals(Items.SOUL_SAND))
 		{
 			output = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), PotionInit.REVIVE_POTION.get());
-		}else if(bottle.equals(PotionUtils.setPotion(new ItemStack(Items.POTION), PotionInit.INACTIVE_REVIVE.get())))
+		}else if(PotionUtils.getPotion(bottle).equals(Potions.WATER))
 		{
 			output = PotionUtils.setPotion(new ItemStack(Items.POTION), PotionInit.REVIVE_POTION.get());
 		}

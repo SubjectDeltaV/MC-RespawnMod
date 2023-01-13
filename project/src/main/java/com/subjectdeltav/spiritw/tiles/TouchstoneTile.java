@@ -258,7 +258,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	@Nullable
 	private static ItemStack CanEnchantItem(TouchstoneTile ent) //check if the item in slot 1 can be enchanted
 	{
-		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(0).copy(); //copy, don't set equal to!
+		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(enchantInputSlot).copy(); //copy, don't set equal to!
 		boolean hasEnchantableInFirstSlot = firstSlotItem.isEnchantable();
 		if(hasEnchantableInFirstSlot && ent.currentSavedItemsQ >= ent.maxSavedItems) //also check if we have slots available
 		{
@@ -299,7 +299,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			return;
 		}else
 		{
-			int currentSlot = this.currentSavedItemsQ + 2;
+			int currentSlot = this.currentSavedItemsQ + 5;
 			this.itemHandler.insertItem(currentSlot, item, false);
 			this.currentSavedItemsQ++;
 			return;
@@ -308,11 +308,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	
 	private void CheckSlots()
 	{
-		ItemStack inputSlot = this.itemHandler.getStackInSlot(0);
-		ItemStack outputSlot = this.itemHandler.getStackInSlot(1);
-		ItemStack potionInput = this.itemHandler.getStackInSlot(2);
-		ItemStack potionAdditive = this.itemHandler.getStackInSlot(3);
-		ItemStack potionOutput = this.itemHandler.getStackInSlot(4);
+		ItemStack inputSlot = this.itemHandler.getStackInSlot(enchantInputSlot);
+		ItemStack outputSlot = this.itemHandler.getStackInSlot(enchantOutputSlot);
+		ItemStack potionInput = this.itemHandler.getStackInSlot(brewInputSlot1);
+		ItemStack potionAdditive = this.itemHandler.getStackInSlot(brewInputSlot2);
+		ItemStack potionOutput = this.itemHandler.getStackInSlot(brewOutputSlot);
 		if(inputSlot == ItemStack.EMPTY)
 		{
 			itemInInput[0] = false;

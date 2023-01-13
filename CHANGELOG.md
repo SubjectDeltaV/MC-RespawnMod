@@ -1,3 +1,5 @@
+2023-01-12 230 - Wrapping up Touchstone Rework: Removed a number of slots from the touchstone. Added in slots for brewing. Brewing is not working, going to take a second look at comparison logic. Enchanting is sticking stuff in the wrong slot.
+
 2023-01-12 229 - More Work on Crafting and Brewing: 
 2023-01-11 228 - Can't use table to craft: Will need to do a workaround, probably using the touchstone.
 

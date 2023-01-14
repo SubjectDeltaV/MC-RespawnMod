@@ -1,5 +1,6 @@
 package com.subjectdeltav.spiritw.item;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -8,18 +9,26 @@ import java.util.UUID;
 import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
+import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
+import de.maxhenkel.corpse.Main;
+import de.maxhenkel.corpse.corelib.death.Death;
+import de.maxhenkel.corpse.corelib.death.DeathManager;
+import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
+import de.maxhenkel.corpse.entities.CorpseEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,51 +47,143 @@ public class SpLantern extends Item
 	protected TouchstoneTile boundTouchstone; //the Touchstone this lantern is bound to
 	public boolean isActive; //only on during SpiritWalking
 	protected int playerXP; //will auto-update through a method when being held
-	private final MobEffectInstance ressurectSick;
-	private final MobEffectInstance ghostInst;
-	private final MobEffectInstance beginGhost;
-	private final MobEffect ghost;
-	private final MobEffect wounded;
-	private final Enchantment bound;
-	private List<ItemStack> boundItems_L1;
-	
+	private ItemStack[] itemsOnDeath;
+	protected boolean hasItemsToReturn;
+	private int tier;
+	private BlockPos lastDeathLoc;
+	public ItemStack thisStack;
 	
 	
 	//Constructor
-	public SpLantern(Properties prop) 
+	public SpLantern(int tier) 
 	{
-		super(prop);
-		this.wounded = ModEffects.WOUNDED;
-		this.ghostInst = new MobEffectInstance(ModEffects.GHOST, 360000);
-		this.ressurectSick = new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600);
-		this.ghost = ModEffects.GHOST;
-		this.beginGhost = new MobEffectInstance(ModEffects.ENTER_GHOST_STATE, 36000);
-		this.bound = EnchantmentInit.SPIRITBOUND.get();
+		super(new Item.Properties().tab(ItemInit.ModCreativeTab.instance));
+		this.tier = tier;
+		lastDeathLoc = new BlockPos(0, 0, 0);
+		hasItemsToReturn = false;
+		itemsOnDeath = new ItemStack[4];
 	}
 	
 	//Custom Methods
-	protected void scanAndSaveItems(Player player)
+	public List<ItemStack> scanAndSaveItems(Player player)
 	{
-		Collection<ItemEntity> drops = player.captureDrops();
-		List<ItemStack> allItems = Collections.emptyList();
-		for(ItemEntity ent : drops) //convert to list of ItemStack
+		if(!player.level.isClientSide)
 		{
-			ItemStack item = ent.getItem();
-			allItems.add(item);
+			List<ItemStack> drops = player.getInventory().items;
+			itemsOnDeath = new ItemStack[drops.size()];
+			List<ItemStack> lanterns = new ArrayList();
+			int index = 0;
+			for(ItemStack item : drops)
+			{
+				try
+				{
+					spiritw.LOGGER.debug("checking item " + item.toString());
+					if(item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && item != null)
+					{
+						spiritw.LOGGER.debug("item has correct enchantment, saving");
+						itemsOnDeath[index] = item;
+						hasItemsToReturn = true;
+					}else if(item.getItem() instanceof SpLantern)
+					{
+						lanterns.add(item);
+					}else
+					{
+						spiritw.LOGGER.debug("Item missing correct enchantment, ignoring");
+					}
+					index++;
+				}catch(Exception e)
+				{
+					spiritw.LOGGER.error("Exception Caught: propable cause is trying to store items from death in array but array is too small");
+					e.printStackTrace();
+				}
+			}
+			return lanterns;
 		}
-		for(ItemStack item : allItems)
+		return null;
+	}
+	
+	public void SetLastDeathLoc(BlockPos pos)
+	{
+		this.lastDeathLoc = pos;
+	}
+	
+	public boolean DropCorpse(Player player, List<ItemStack> lanterns, boolean setGhost) throws Exception
+	{
+
+		Death death = Death.fromPlayer(player);
+		if(!player.level.isClientSide)
 		{
-			spiritw.LOGGER.debug("checking item " + item.toString());
-			if(item.getEnchantmentLevel(bound) == 0)
+			PlayerDeathEvent deathEvent = new PlayerDeathEvent(death, (ServerPlayer) player, DamageSource.OUT_OF_WORLD);
+			if(Main.SERVER_CONFIG.maxDeathAge.get() != 0) {
+				deathEvent.storeDeath();
+			}
+			new Thread(() -> deleteOldDeaths(deathEvent.getPlayer().getLevel())).start();
+		}
+		player.getInventory().clearContent(); 
+		player.level.addFreshEntity(CorpseEntity.createFromDeath(player, death));
+		
+		//give lanterns back
+		for(ItemStack lantern : lanterns)
+		{
+			player.addItem(lantern);
+		}
+		
+		this.SetLastDeathLoc(player.blockPosition()); 
+		if(setGhost)
+		{
+			int exp = player.totalExperience;
+			boolean didSetGhost = SetGhostEffect(player, exp);
+			if(!didSetGhost)
 			{
-				spiritw.LOGGER.debug("item has correct enchantment, saving");
-				boundItems_L1.add(item);
-			}else
-			{
-				spiritw.LOGGER.debug("Item missing correct enchantment, ignoring");
+				throw new Exception("Error Adding Ghost Effect to Player");
 			}
 		}
+		return true;
 	}
+	
+	protected boolean SetGhostEffect(Player player, int xp)
+	{
+		player.removeAllEffects();
+		player.setSecondsOnFire(0);
+		player.addEffect(new MobEffectInstance(ModEffects.GHOST, 3600));
+		player.setSecondsOnFire(0);
+		player.giveExperiencePoints(xp);
+		return true;
+	}
+	
+	public ItemStack[] getItemsToReturn() throws Exception
+	{
+		if(hasItemsToReturn)
+		{
+			return this.itemsOnDeath;
+		}else
+		{
+			throw new Exception("Tryed to restore ItemsOnDeath to player while array is empty");
+		}
+	}
+	
+	public boolean getSavedStatus()
+	{
+		return hasItemsToReturn;
+	}
+	
+	public boolean clearSavedItems()
+	{
+		itemsOnDeath = null; //empty out the array
+		hasItemsToReturn = false;
+		return true;
+	}
+	
+	//Method copied from Corpse Mod
+    protected static void deleteOldDeaths(ServerLevel serverWorld) {
+        int ageInDays = Main.SERVER_CONFIG.maxDeathAge.get();
+        if (ageInDays < 0) {
+            return;
+        }
+        long ageInMillis = ((long) ageInDays) * 24L * 60L * 60L * 1000L;
+
+        DeathManager.removeDeathsOlderThan(serverWorld, ageInMillis);
+    }
 	
 	//Overrode Methods
 	@Override
@@ -93,20 +194,41 @@ public class SpLantern extends Item
 		BlockState block = world.getBlockState(blPos);
 		Material blockMat = block.getMaterial();
 		TouchstoneTile touchstone = (TouchstoneTile) world.getBlockEntity(blPos);
-		if(!blockMat.isSolid() && player.hasEffect(wounded))
+		if(!blockMat.isSolid() && player.hasEffect(ModEffects.WOUNDED))
 		{
 			//if player is downed and uses the lantern they will die and turn into a ghost
 			spiritw.LOGGER.debug("Player has used a lantern while downed, putting into ghost state");
 			int xp = player.totalExperience;
-			player.removeAllEffects();
-			player.addEffect(beginGhost);
-			player.kill();
-		} else if(touchstone != null && player.hasEffect(ghost))
-		{
-			player.removeAllEffects(); //remove the ghost and any related effects
-			player.setHealth(20);
-			player.setInvisible(false); //remove the invisibility granted from the effect
-			player.addEffect(new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600));
+			List<ItemStack> lanterns = Collections.emptyList();
+			try
+			{
+				lanterns = scanAndSaveItems(player);
+			}catch(Exception e)
+			{
+				spiritw.LOGGER.error("Unkown error occured scanning player items");
+				e.printStackTrace();
+			}
+			scanAndSaveItems(player);
+			boolean didDropCorpse = false;
+			try {
+				didDropCorpse = DropCorpse(player, lanterns, false);
+			} catch (Exception e) {
+				spiritw.LOGGER.error("Error! Corpse not dropped, cannot put into ghost state!");
+				e.printStackTrace();
+			}
+			if(didDropCorpse)
+			{
+				spiritw.LOGGER.debug("Dropped Corpse at player location");
+				player.giveExperiencePoints(-xp);
+				boolean ghostEnabled = SetGhostEffect(player, xp);
+				if(ghostEnabled)
+				{
+					spiritw.LOGGER.debug("Added ghost effect to dead player");
+				}else
+				{
+					spiritw.LOGGER.error("An Error occured while adding Ghost Effect");
+				}
+			}
 		}
 		return super.use(world, player, hand);
 	}

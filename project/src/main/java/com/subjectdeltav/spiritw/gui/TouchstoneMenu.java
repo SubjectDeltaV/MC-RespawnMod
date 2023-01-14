@@ -36,14 +36,14 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 	public TouchstoneMenu(int id, Inventory inv, BlockEntity ent, ContainerData data)
 	{
 		super(MenuTypesInit.TOUCHSTONE_MENU.get(), id);
-		checkContainerSize(inv, 10);
+		checkContainerSize(inv, 8);
 		this.world = inv.player.level;
 		this.data = data;
 		addPlayerInventory(inv);
 		addPlayerHotbar(inv);
 		tileEntity = (TouchstoneTile) ent;
 		this.tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-			SlotItemHandler outputItemSlot = new SlotItemHandler(handler, 1, 63, 30)
+			SlotItemHandler outputItemSlot = new SlotItemHandler(handler, 1, 61, 18)
 					{
 						@Override
 						public boolean mayPlace(@NotNull ItemStack item)
@@ -51,7 +51,15 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 							return false; //ensure players cannot place anything in this slot
 						}
 					};
-			SlotItemHandler itemSave1 = new SlotItemHandler(handler, 2, 94, 30)
+			SlotItemHandler potionOutputItemSlot = new SlotItemHandler(handler, 4, 88, 54)
+					{
+						@Override
+						public boolean mayPlace(@NotNull ItemStack item)
+						{
+							return false;
+						}
+					};
+			SlotItemHandler itemSave1 = new SlotItemHandler(handler, 5, 93, 30)
 					{
 						@Override
 						public boolean mayPlace(@NotNull ItemStack item)
@@ -64,7 +72,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 							return false;
 						}
 					};
-			SlotItemHandler itemSave2 = new SlotItemHandler(handler, 3, 112, 30)
+			SlotItemHandler itemSave2 = new SlotItemHandler(handler, 6, 111, 30)
 					{
 						@Override
 						public boolean mayPlace(@NotNull ItemStack item)
@@ -77,7 +85,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 							return false;
 						}
 					};
-			SlotItemHandler itemSave3 = new SlotItemHandler(handler, 4, 130, 30)
+			SlotItemHandler itemSave3 = new SlotItemHandler(handler, 7, 129, 30)
 			{
 				@Override
 				public boolean mayPlace(@NotNull ItemStack item)
@@ -90,29 +98,14 @@ public class TouchstoneMenu extends AbstractContainerMenu {
 					return false;
 				}
 			};
-			SlotItemHandler itemSave4 = new SlotItemHandler(handler, 5, 148, 30)
-			{
-				@Override
-				public boolean mayPlace(@NotNull ItemStack item)
-				{
-					return false;
-				}
-				@Override
-				public boolean mayPickup(Player pl)
-				{
-					return false;
-				}
-			};
-			this.addSlot(new SlotItemHandler(handler, 0, 13, 30));
+			this.addSlot(new SlotItemHandler(handler, 0, 12, 18));
 			this.addSlot(outputItemSlot);
+			this.addSlot(new SlotItemHandler(handler, 2, 13, 54));
+			this.addSlot(new SlotItemHandler(handler, 3, 39, 54));
+			this.addSlot(potionOutputItemSlot);
 			this.addSlot(itemSave1);
 			this.addSlot(itemSave2);
 			this.addSlot(itemSave3);
-			this.addSlot(itemSave4);
-			this.addSlot(new SlotItemHandler(handler, 6, 94, 55));
-			this.addSlot(new SlotItemHandler(handler, 7, 112, 55));
-			this.addSlot(new SlotItemHandler(handler, 8, 130, 55));
-			this.addSlot(new SlotItemHandler(handler, 9, 148, 55));
 		});
 		addDataSlots(data);
 	}
@@ -156,7 +149,7 @@ public class TouchstoneMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 10;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = 8;  // must be the number of slots you have!
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {

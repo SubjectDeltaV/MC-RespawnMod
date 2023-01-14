@@ -6,9 +6,12 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.gui.TouchstoneMenu;
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
+import com.subjectdeltav.spiritw.init.PotionInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
+import com.subjectdeltav.spiritw.item.SpLantern;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +25,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,21 +45,32 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 
 	//Properties
 	private LazyOptional<IItemHandler> LazyItemHandler = LazyOptional.empty();
-	protected final ContainerData data;
-	private int currentSavedItemsQ;
-	private int maxSavedItems = 4;
-	private int maxItemsRemaining;
+	protected ContainerData data;
+	protected int currentSavedItemsQ;
+	int maxSavedItems = 3;
+	int maxItemsRemaining;
 	protected UUID ownerPlayerID;
 	protected Player player;
 	public boolean playerIsSet = false;
-	private boolean itemInInput;
-	private boolean itemInOutput;
-	private boolean enchantedItem;
+	private boolean[] itemInInput; //0 is enchanting, 1 is bottle slot, 2 is sand slot
+	private boolean[] itemInOutput; //0 is enchanting, 1 is brewing
+	protected boolean enchantedItem;
 	private ItemStack lastEnchanted;
-	private int[] savedItemIDs;
+	private static int levelsToEnchant = 5;
+	private static int levelsToBrew = 3;
+	private int activatedPotion; //0 is no, 1 is throwable, 2 is drinkable
+	//private int[] savedItemIDs;
+	
+	//set slots for easy adjusting
+	private static int enchantInputSlot = 0;
+	private static int enchantOutputSlot = 1;
+	private static int brewInputSlot1 = 2;
+	private static int brewInputSlot2 = 3;
+	private static int brewOutputSlot = 4;
+	//slots 5-7 are auto assigned, they are for storing saved items only
 	
 	//properties with an override
-	private final ItemStackHandler itemHandler = new ItemStackHandler(10) 
+	private final ItemStackHandler itemHandler = new ItemStackHandler(8) 
 	{
 		@Override
 		protected void onContentsChanged(int slot)
@@ -67,6 +85,9 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		super(TileEntityInit.TOUCHSTONE_TILE.get(), pos, state);
 		this.enchantedItem = false;
 		this.currentSavedItemsQ = 0;
+		itemInInput = new boolean[3];
+		itemInOutput = new boolean[2];
+		this.activatedPotion = 0;
 		this.data = new ContainerData()
 				{
 					@Override
@@ -111,47 +132,160 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		inventory.addItem(itemHandler.getStackInSlot(0)); //add item in input slot
 		Containers.dropContents(this.level, this.worldPosition, inventory);
 	}	
+	
 	public static void tick(Level l, BlockPos pos, BlockState state, TouchstoneTile ent) //logic for processing items, called every tick 
 	{
-		//System.out.println("Touchstone Ticked");
 		if(l.isClientSide()) //check if on server side
 		{
 			return;
 		}
+		Item brewedPotion = null; //hopefully this won't cause a crash
+		int xpLevels = 0;
+		if(ent.playerIsSet)
+		{
+			try
+			{
+				xpLevels = ent.player.experienceLevel;
+			}catch(Exception e)
+			{
+				spiritw.LOGGER.warn("attempted to load info from player before it has loaded in!");
+				e.printStackTrace();
+			}
+		}
 		ent.CheckSlots();
-		if(ent.itemInInput && ent.itemInOutput == false && ent.enchantedItem == false)
+		if(ent.itemInInput[0] && ent.itemInOutput[0] == false && ent.enchantedItem == false)
 		{
 			ItemStack item = CanEnchantItem(ent); //get the item in the first slot if it's enchantable
-			if(item != null)
+			if(item != null && xpLevels > levelsToEnchant)
 			{
 				System.out.println("Enchanting requirements met, enchanting item");
 				ItemStack enchantedResult = enchantInSlot(item); //enchant as applicable
-				ent.itemHandler.insertItem(1, enchantedResult, false); // put enchanted result in second slot
+				ent.itemHandler.insertItem(enchantOutputSlot, enchantedResult, false); // put enchanted result in second slot
 				//ent.setCopiedItem(enchantedResult.copy()); //save the item in the noted slot
 				ent.enchantedItem = true; //save the information that we have enchanted an item
 				ent.lastEnchanted = enchantedResult.copy(); //setup for saving if the player keeps the enchantment
 			}
-		}else if(ent.enchantedItem && ent.itemInOutput == false) //if we enchanted an item and the item in the output slot is missing
+		}else if(ent.enchantedItem && ent.itemInOutput[0] == false) //if we enchanted an item and the item in the output slot is missing
 		{
 			System.out.println("Player has removed the enchanted item, deleting the original, and saving the item with new information");
-			ent.itemHandler.extractItem(0, 1, false); //remove the item in the input slot
-			ItemStack enchantedResult = ent.lastEnchanted;
-			ent.setCopiedItem(enchantedResult); //save the item in the noted slot
-			ent.enchantedItem = false; //reset to false so we can enchant a new item
-		}else if(ent.enchantedItem && ent.itemInInput == false) //if we set an item to enchant but removed the root item
+			if(xpLevels > levelsToEnchant)
+			{
+				try
+				{
+					ent.player.experienceLevel = ent.player.experienceLevel - levelsToEnchant;
+				}catch(Exception e)
+				{
+					spiritw.LOGGER.debug("An error occurred trying to subtract levels for enchant!");
+					e.printStackTrace();
+					return;
+				}
+				ent.itemHandler.extractItem(enchantInputSlot, 1, false); //remove the item in the input slot
+				ItemStack enchantedResult = ent.lastEnchanted;
+				ent.setCopiedItem(enchantedResult); //save the item in the noted slot
+				ent.enchantedItem = false; //reset to false so we can enchant a new item
+				spiritw.LOGGER.debug("removed original, and decucted xp levels");
+			}
+		}else if(ent.enchantedItem && ent.itemInInput[0] == false) //if we set an item to enchant but removed the root item
 		{
 			System.out.println("Player has removed the original, cancelling enchanted item, no item info has been saved!");
-			ent.itemHandler.extractItem(1, 1, false); //remove the enchanted item, since the player won't be enchanting it
+			ent.itemHandler.extractItem(enchantOutputSlot, 1, false); //remove the enchanted item, since the player won't be enchanting it
 			ent.enchantedItem = false; //reset to false so we can enchant a new item;
 			ent.lastEnchanted = ItemStack.EMPTY;
 		}
-		return;
+		if(ent.itemInInput[1] && ent.itemInOutput[1] == false && ent.activatedPotion == 0) //check for new items, and see if we can output a valid potion
+		{
+			//spiritw.LOGGER.debug("Items detected for brewing in brewing slots...");
+			if(xpLevels > levelsToBrew)
+			{
+				spiritw.LOGGER.debug("Player has enough XP to activate the potion, attempting a brew...");
+				ItemStack inputBottle = ent.itemHandler.getStackInSlot(brewInputSlot1);
+				ItemStack material = ent.itemHandler.getStackInSlot(brewInputSlot2);
+				ItemStack potion = ent.checkAndReturnBrewables(inputBottle, material);
+				if(potion != null)
+				{
+					boolean throwable = potion.getItem().equals(Items.SPLASH_POTION);
+					try 
+					{
+						ent.itemHandler.insertItem(brewOutputSlot, potion, false);
+						brewedPotion = potion.getItem();
+						if(throwable)
+						{
+							ent.activatedPotion = 1;
+						}else
+						{
+							ent.activatedPotion = 2;
+						}
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("An error occured while the touchstone was brewing. Printing stacktrace...");
+						e.printStackTrace();
+						return;
+					}
+				}else
+				{
+					spiritw.LOGGER.debug("Invalid objects in input slots, ignoring brew");
+				}
+			}else
+			{
+				spiritw.LOGGER.debug("Player has insufficent experience levels, unable to brew potion");
+			}
+		}else if(ent.activatedPotion > 0 && ent.itemInOutput[1] == false) //if player removes potion, deduct the levels, if they no longer have the levels, destroy the potion
+		{
+			spiritw.LOGGER.debug("Player has removed potion, deducting experience levels");
+			if(ent.activatedPotion == 1 && xpLevels > levelsToBrew)
+			{
+				ent.itemHandler.extractItem(brewInputSlot1, 1, false);
+				ent.itemHandler.extractItem(brewInputSlot2, 1, false);
+				ent.activatedPotion = 0;
+				try 
+				{
+					ent.player.giveExperienceLevels(-levelsToBrew);		
+				}catch(Exception e)
+				{
+					spiritw.LOGGER.error("An error occurred deducting levels");
+					e.printStackTrace();
+					return;
+				}
+			}else if(ent.activatedPotion == 2 && xpLevels > 5)
+			{
+				ent.itemHandler.extractItem(brewInputSlot1, 1, false);
+				ent.activatedPotion = 0;
+				try 
+				{
+					ent.player.giveExperienceLevels(-levelsToEnchant);		
+				}catch(Exception e)
+				{
+					spiritw.LOGGER.error("An error occurred deducting levels");
+					e.printStackTrace();
+					return;
+				}
+			}else
+			{
+				spiritw.LOGGER.debug("Error: Either  the touchstone block is in an incorrect state or the player no longer has enough levels to brew");
+				ent.itemHandler.insertItem(brewOutputSlot, new ItemStack(brewedPotion), false);
+				ent.itemHandler.extractItem(brewOutputSlot, 1, false); //put item back into the touchstone and delete it
+				ent.activatedPotion = 0;
+			}
+		}else if(ent.activatedPotion == 1)
+		{
+			if(ent.itemInInput[1] == false || ent.itemInInput[2] == false)
+			{
+				spiritw.LOGGER.debug("Items removed from brewing input slot(s), cancelling brewing");
+				ent.itemHandler.extractItem(brewOutputSlot, 1, false); //remove brewed potion
+				ent.activatedPotion = 0; //reset to not brewed
+			}
+		}else if(ent.activatedPotion == 2 && ent.itemInInput[1] == false)
+		{
+			spiritw.LOGGER.debug("Items removed from brewing input slot(s), cancelling brewing");
+			ent.itemHandler.extractItem(brewOutputSlot, 1, false); //remove brewed potion
+			ent.activatedPotion = 0; //reset to not brewed
+		}
 	}
 	
 	@Nullable
 	private static ItemStack CanEnchantItem(TouchstoneTile ent) //check if the item in slot 1 can be enchanted
 	{
-		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(0).copy(); //copy, don't set equal to!
+		ItemStack firstSlotItem = ent.itemHandler.getStackInSlot(enchantInputSlot).copy(); //copy, don't set equal to!
 		boolean hasEnchantableInFirstSlot = firstSlotItem.isEnchantable();
 		if(hasEnchantableInFirstSlot && ent.currentSavedItemsQ >= ent.maxSavedItems) //also check if we have slots available
 		{
@@ -192,7 +326,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			return;
 		}else
 		{
-			int currentSlot = this.currentSavedItemsQ + 2;
+			int currentSlot = this.currentSavedItemsQ + 5;
 			this.itemHandler.insertItem(currentSlot, item, false);
 			this.currentSavedItemsQ++;
 			return;
@@ -201,24 +335,62 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	
 	private void CheckSlots()
 	{
-		ItemStack inputSlot = this.itemHandler.getStackInSlot(0);
-		ItemStack outputSlot = this.itemHandler.getStackInSlot(1);
+		ItemStack inputSlot = this.itemHandler.getStackInSlot(enchantInputSlot);
+		ItemStack outputSlot = this.itemHandler.getStackInSlot(enchantOutputSlot);
+		ItemStack potionInput = this.itemHandler.getStackInSlot(brewInputSlot1);
+		ItemStack potionAdditive = this.itemHandler.getStackInSlot(brewInputSlot2);
+		ItemStack potionOutput = this.itemHandler.getStackInSlot(brewOutputSlot);
 		if(inputSlot == ItemStack.EMPTY)
 		{
-			itemInInput = false;
+			itemInInput[0] = false;
 		}else
 		{
-			itemInInput = true;
+			itemInInput[0] = true;
+		}
+		if(potionInput == ItemStack.EMPTY)
+		{
+			itemInInput[1] = false;
+		}else
+		{
+			itemInInput[1] = true;
+		}
+		if(potionAdditive == ItemStack.EMPTY)
+		{
+			itemInInput[2] = false;
+		}else
+		{
+			itemInInput[2] = true;
 		}
 		if(outputSlot == ItemStack.EMPTY)
 		{
-			itemInOutput = false;
+			itemInOutput[0] = false;
 		}else
 		{
-			itemInOutput = true;
+			itemInOutput[0] = true;
+		}
+		if(potionOutput.equals(ItemStack.EMPTY))
+		{
+			itemInOutput[1] = false;
+		}else
+		{
+			itemInOutput[1] = true;
 		}
 	}
 	
+	private ItemStack checkAndReturnBrewables(ItemStack bottle, ItemStack sand)
+	{
+		ItemStack output = null;
+		if(PotionUtils.getPotion(bottle).equals(Potions.WATER)
+				&& sand.getItem().equals(Items.SOUL_SAND))
+		{
+			output = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), PotionInit.REVIVE_POTION.get());
+		}else if(PotionUtils.getPotion(bottle).equals(PotionInit.INACTIVE_REVIVE.get()))
+		{
+			output = PotionUtils.setPotion(new ItemStack(Items.POTION), PotionInit.REVIVE_POTION.get());
+		}
+		return output;
+	}
+
 	public void setPlayer(Player player)
 	{
 		this.ownerPlayerID = player.getUUID();
@@ -231,103 +403,75 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		return ownerPlayerID;
 	}
 	
-	public void scanForDeathItems(ServerPlayer player, Death death)
+	public boolean scanForAndReturnItems(Player player, SpLantern lantern) throws Exception
 	{
-		//String plID = player.getStringUUID();
-		boolean isPlayerOwner = player.getUUID() == this.ownerPlayerID;
-		if(isPlayerOwner) //check if the person requesting items is the blocks owner
+		//import arrays and configure variables
+		ItemStack[] itemsFromBlock = this.getSavedItems();
+		ItemStack[] itemsFromLantern = null;
+		boolean didTransferItems = false;
+		if(lantern.getSavedStatus())
 		{
-			//Death death = DeathManager.getDeath(player, ownerPlayerID);
-			if(death == null)
+			try {
+				itemsFromLantern = lantern.getItemsToReturn();
+			} catch (Exception e) {
+				spiritw.LOGGER.error("Error trying to get items from Lantern");
+				e.printStackTrace();
+			}
+		}else
+		{
+			spiritw.LOGGER.debug("Lantern has no saved items, unable to return anything");
+			return false;
+		}
+		
+		//scan for items
+		try 
+		{
+			for(ItemStack item : itemsFromLantern)
 			{
-				System.out.println("Error, no deaths from player available. Unable to retrieve items.");
-			}else
-			{
-				System.out.println("Player has requested a return of valid enchanted items at block " + this.getDisplayName() + ", running checks");
-				List<ItemStack> deathItemsList = death.getAllItems();
-				int itemsToCheckQ = deathItemsList.size();
-				ItemStack[] itemsToRetrieve; // for all items with valid enchantment
-				ItemStack[] itemsInBlock = this.getSavedItems(); //for all the items currently saved in the right slot
-				ItemStack[] itemsToDeliver = new ItemStack[4]; //for all items the player had with the valid enchantment that were also saved to the touchstone
-				int itemsToCheckInd = 0;
 				int enchantLvl = 0;
-				int itemsToRetrieveQ = 0;
-				boolean restoreItems = false;
-				for(ItemStack item : deathItemsList) //get the number of items we'll be adding to the output array
+				if(item != null)
 				{
-					enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
-					if(enchantLvl > 1)
+					try
 					{
-						itemsToRetrieveQ++;
+						enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("Error occurred when trying to get Bound Items Enchantment Level");
 					}
-				}
-				if(itemsToRetrieveQ == 0)
-				{
-					System.out.println("No items with matching enchantment on players body, ignorning request");
-					return;
-				}
-				itemsToRetrieve = new ItemStack[itemsToRetrieveQ]; //setup the array
-				int itemToRetrieveInd = 0;
-				for(ItemStack item : deathItemsList) //now we actually store the items with the valid enchantment
-				{
-					enchantLvl = item.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get());
-					if(enchantLvl > 1)
+					if(enchantLvl > 0)
 					{
-						itemsToRetrieve[itemToRetrieveInd] = item;
-						itemToRetrieveInd++;
+						for(ItemStack itemCompare : itemsFromBlock)
+						{
+							if(item.is(itemCompare.getItem()))
+							{
+								player.addItem(item);
+								spiritw.LOGGER.debug("Returned Item" + item.toString() + "to player");
+							}
+						}
 					}
-				}
-				itemToRetrieveInd = 0;
-				ItemStack itemInInv;
-				ItemStack itemInBlock;
-				int outputInd = 0;
-				while(itemToRetrieveInd < itemsToRetrieveQ) //now put all items that match the items in the block into an array and remove them from the death
-				{
-					itemInInv = itemsToRetrieve[itemToRetrieveInd];
-					itemInBlock = itemsInBlock[itemToRetrieveInd];
-					if(itemInInv == itemInBlock)
-					{
-						itemsToDeliver[outputInd] = itemInInv;
-						outputInd++;
-						restoreItems = true;
-						System.out.println("Calculated all items to return to player via the Touchstone");
-					}
-					itemToRetrieveInd++;
-				}
-				if(restoreItems)
-				{
-					if(itemsToDeliver[0].isEmpty())
-					{
-						itemHandler.setStackInSlot(6, ItemStack.EMPTY);
-					}else
-					{
-						itemHandler.insertItem(6, itemsToDeliver[0], false);
-					}
-					if(itemsToDeliver[1].isEmpty())
-					{
-						itemHandler.setStackInSlot(7, ItemStack.EMPTY);
-					} else
-					{
-						itemHandler.insertItem(7, itemsToDeliver[2], false);
-					}
-					if(itemsToDeliver[2].isEmpty())
-					{
-						itemHandler.setStackInSlot(8, ItemStack.EMPTY);
-					} else
-					{
-						itemHandler.insertItem(8, itemsToDeliver[2], false);
-					}
-					if(itemsToDeliver[3].isEmpty())
-					{
-						itemHandler.setStackInSlot(9, ItemStack.EMPTY);
-					} else
-					{
-						itemHandler.insertItem(9, itemsToDeliver[3], false);
-					}
-					System.out.println("Delivered all items to Touchstone");
 				}
 			}
+			didTransferItems = true;
+		}catch(Exception e)
+		{
+			spiritw.LOGGER.error("Unkown Error occured comparing items from death to saved items in Touchstone");
+			throw(e);
 		}
+		
+		//clear out lantern if applicable
+		if(didTransferItems)
+		{
+			boolean clearedlantern = lantern.clearSavedItems();
+			if(clearedlantern)
+			{
+				spiritw.LOGGER.debug("Cleared the lantern of its saved items");
+			}else
+			{
+				throw new Exception("Error Clearing Items from the Lantern");
+			}
+		}
+		
+		return true;
 	}
 	
 	@Nullable
@@ -383,6 +527,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			this.itemHandler.insertItem(slotN, item, false);
 		}
 	}
+
 	
 	//overrode methods
 	@Override
@@ -413,7 +558,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		super.onLoad();
 		LazyItemHandler = LazyOptional.of(() -> itemHandler);
 		this.CheckSlots();
-		if(this.itemInInput && this.itemInOutput)
+		if(this.itemInInput[0] && this.itemInOutput[0])
 		{
 			this.enchantedItem = true;
 		}

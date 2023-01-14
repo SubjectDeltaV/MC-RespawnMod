@@ -1,9 +1,12 @@
 package com.subjectdeltav.spiritw;
 
 import com.mojang.logging.LogUtils;
+import com.subjectdeltav.spiritw.events.AnvilRecipeHandler;
 import com.subjectdeltav.spiritw.events.DeathHandler;
-import com.subjectdeltav.spiritw.events.InventoryHandler;
 import com.subjectdeltav.spiritw.events.WoundedProtectionHandler;
+import com.subjectdeltav.spiritw.events.GhostEventHandler;
+import com.subjectdeltav.spiritw.events.InventoryHandler;
+import com.subjectdeltav.spiritw.events.PotionRecipeHandler;
 import com.subjectdeltav.spiritw.gui.TouchstoneScreen;
 import com.subjectdeltav.spiritw.init.BlockInit;
 import com.subjectdeltav.spiritw.init.EffectInit;
@@ -12,6 +15,7 @@ import com.subjectdeltav.spiritw.init.ItemInit;
 import com.subjectdeltav.spiritw.init.MenuTypesInit;
 import com.subjectdeltav.spiritw.init.PotionInit;
 import com.subjectdeltav.spiritw.init.TileEntityInit;
+import com.subjectdeltav.spiritw.loot.ModLootModifiers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -71,20 +75,28 @@ public class spiritw
         MenuTypesInit.MENUS.register(modEventBus);
         
         //register events
+        
         MinecraftForge.EVENT_BUS.register(new InventoryHandler());
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
         MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
-
+        MinecraftForge.EVENT_BUS.register(new GhostEventHandler());
+        
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        
+        //Register Loot Modifiers
+        ModLootModifiers.LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
        
     }
-
+    
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
         LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
+        //add Anvil Recipes
+        //AnvilRecipeHandler.initAnvilRecipes();
+        PotionRecipeHandler.Potions(event);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

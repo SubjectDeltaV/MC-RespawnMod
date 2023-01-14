@@ -3,7 +3,25 @@
 	
 	"item.spiritw.splantern": "Spirit Lantern",
 	
+	"item.spiritw.soul_gem":"Soul Gem",
+	
+	"item.spiritw.bindingstone":"Bindingstone",
+	
+	"item.spiritw.soul_stone":"Soul Stone",
+	
 	"block.spiritw.touchstone": "Touchstone",
 	
-	"enchantment.spiritw.spiritbound":"Spiritbound"
+	"enchantment.spiritw.spiritbound":"Spiritbound",
+	
+	"mobeffect.spiritw.ghost":"Ghost",
+	
+	"mobeffect.spiritw.resurrectionsickness":"Resurrection Sickness",
+	
+	"mobeffect.spiritw.revival_sickness":"Revival Sickness",
+	
+	"mobeffect.spiritw.wounded":"Wounded",
+	
+	"potion.spiritw.revive_potion":"Revival Potion",
+	
+	"potion.spiritw.inactive_revive":"Inert Revival Potion"
 }

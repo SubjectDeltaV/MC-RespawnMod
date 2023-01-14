@@ -8,15 +8,20 @@ import java.util.Collections;
 
 import com.subjectdeltav.spiritw.init.EnchantmentInit;
 import com.subjectdeltav.spiritw.init.ItemInit;
+import com.subjectdeltav.spiritw.item.SpLantern;
 import com.subjectdeltav.spiritw.tiles.TouchstoneTile;
 
 import de.maxhenkel.corpse.corelib.death.Death;
 import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BedBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -28,11 +33,11 @@ import com.subjectdeltav.spiritw.effects.ModEffects;
 
 public class InventoryHandler
 	{
-		//this handler moves ensure the lantern stays with the player after respawn and also enables the spiritbound enchantment works in certain case
+		//this handler ensures the lantern stays with the player after respawn and also enables the spiritbound enchantment works in certain case
 	
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
-		//private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>();
+		//private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>(); //removed, tracking items with this was never implemented
 		
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void drops(PlayerDeathEvent event) 
@@ -75,7 +80,7 @@ public class InventoryHandler
 					if(itemToCheck != null)
 					{
 						System.out.println("Checking " + itemToCheck.toString());
-						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 0 && !player.hasEffect(ModEffects.ENTER_GHOST_STATE))
+						if(itemToCheck != null && itemToCheck.getEnchantmentLevel(EnchantmentInit.SPIRITBOUND.get()) > 2)
 						{
 							ItemsToSave[itemIndex] = itemToCheck;
 							saveItemsForTouchstone = true;
@@ -87,7 +92,7 @@ public class InventoryHandler
 						}
 						if(itemToCheck != null && itemToCheck.getItem() == ItemInit.SPLANTERN.get())
 						{
-							ItemsForRespawn[itemIndex] = itemToCheck.copy();
+							ItemsForRespawn[itemIndex] = itemToCheck;
 							saveItemsForRespawn = true;
 							System.out.println("Found and Saved Spirit Lantern");
 							droppedItems.remove(itemToCheck);
@@ -109,12 +114,6 @@ public class InventoryHandler
 				if(saveItemsForRespawn)
 				{
 					itemsOnRespawn.put(player.getStringUUID(), ItemsForRespawn);
-				}
-				List<ItemEntity> setDrops = Collections.emptyList();
-				for(ItemStack itemSt : droppedItems)
-				{
-					ItemEntity drop = (ItemEntity) itemSt.getEntityRepresentation();
-					setDrops.add(drop);
 				}
 				//death.processDrops(setDrops);
 			}
@@ -156,71 +155,129 @@ public class InventoryHandler
 			BlockPos blockPos = event.getPos();
 			Level level = event.getLevel();
 			Player player = (Player) event.getEntity();
-
+			
 			ItemStack[] itemstoRestore = new ItemStack[4];
 			int toRestoreInd = 0;
 			boolean restoreItems = false;
-			TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
-			if(tile != null && itemsToRestore.containsKey(player.getStringUUID()) && event.getItemStack().getItem() == ItemInit.SPLANTERN.get())
+			BlockEntity ent = level.getBlockEntity(blockPos);
+			if(ent instanceof TouchstoneTile) //prevent CTD from unable to cast
 			{
-				ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
-				if(itemsFromDeath != null)
+				TouchstoneTile tile = (TouchstoneTile) level.getBlockEntity(blockPos);
+				if(event.getItemStack().getItem().equals(ItemInit.SPLANTERN.get()) && tile != null)
 				{
-					spiritw.LOGGER.debug("A player has interacted with the touchstone with a lantern in hand, checking for any items to restore...");
-
-					ItemStack[] itemsFromTile = tile.getSavedItems();
-					if(!(itemsFromTile == null))
+					SpLantern lantern = null;
+					boolean foundlantern = false;
+					boolean lanternHasItems = false;
+					try
 					{
-						//ItemStack[] removeItemsFromCorpse = new ItemStack[itemsFromTile.length];
-						for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
+						lantern = (SpLantern) event.getItemStack().getItem();
+						foundlantern = true;
+					}catch(Exception e)
+					{
+						spiritw.LOGGER.error("Casting Error");
+						e.printStackTrace();
+					}
+					if(player.hasEffect(ModEffects.GHOST))
+					{
+						player.removeAllEffects(); //this will cancel the ghost effect
+						player.setHealth(Player.MAX_HEALTH);
+						player.setInvisible(false);
+						player.setInvulnerable(false);
+						player.addEffect(new MobEffectInstance(ModEffects.RESSURECTION_SICKNESS, 3600));
+					}
+					if(foundlantern)
+					{
+						try
 						{
-							ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
-							if(checkItemFromDeath != null)
+							lanternHasItems = lantern.getSavedStatus();
+						}catch(Exception e)
+						{
+							spiritw.LOGGER.debug("Error occurred while checking lantern status");
+							e.printStackTrace();
+						}
+					}
+					if(lanternHasItems)
+					{
+						spiritw.LOGGER.debug("Lantern has items bound to it, attempting to restore...");
+						try
+						{
+							boolean didReturn = tile.scanForAndReturnItems(player, lantern);
+							if(didReturn)
 							{
-								spiritw.LOGGER.debug("Comparing " + checkItemFromDeath.toString() + " against items in touchstone...");
-								for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
+								spiritw.LOGGER.debug("Success!");
+							}else
+							{
+								spiritw.LOGGER.debug("Undetected error occured");
+							}
+						}catch(Exception e)
+						{
+							spiritw.LOGGER.error("Error. Unable to return items.");
+							e.printStackTrace();
+						}
+					}else if(itemsToRestore.containsKey(player.getStringUUID()))
+					{
+						ItemStack[] itemsFromDeath = itemsToRestore.get(player.getStringUUID());
+						if(itemsFromDeath != null)
+						{
+							spiritw.LOGGER.debug("A player has interacted with the touchstone with a lantern in hand, checking for any items to restore...");
+
+							ItemStack[] itemsFromTile = tile.getSavedItems();
+							if(!(itemsFromTile == null))
+							{
+								//ItemStack[] removeItemsFromCorpse = new ItemStack[itemsFromTile.length];
+								for(int fromDeathInd = 0; fromDeathInd < itemsFromDeath.length; fromDeathInd++)
 								{
-									ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
-									if(checkItemFromDeath.is(checkItemFromTile.getItem()))
+									ItemStack checkItemFromDeath = itemsFromDeath[fromDeathInd];
+									if(checkItemFromDeath != null)
 									{
-										spiritw.LOGGER.debug("Item Matches, adding it to list to restore items.");
-										if(toRestoreInd < itemstoRestore.length)
+										spiritw.LOGGER.debug("Comparing " + checkItemFromDeath.toString() + " against items in touchstone...");
+										for( int fromTileInd = 0; fromTileInd < itemsFromTile.length; fromTileInd++)
 										{
-											itemstoRestore[toRestoreInd] = checkItemFromDeath;
-											toRestoreInd++;
-											restoreItems = true;
-										}else
-										{
-											spiritw.LOGGER.error("Maximum number of items to restore has been exceeded, not restoring further items");
+											ItemStack checkItemFromTile = itemsFromTile[fromTileInd];
+											if(checkItemFromDeath.is(checkItemFromTile.getItem()))
+											{
+												spiritw.LOGGER.debug("Item Matches, adding it to list to restore items.");
+												if(toRestoreInd < itemstoRestore.length)
+												{
+													itemstoRestore[toRestoreInd] = checkItemFromDeath;
+													toRestoreInd++;
+													restoreItems = true;
+												}else
+												{
+													spiritw.LOGGER.error("Maximum number of items to restore has been exceeded, not restoring further items");
+												}
+											}
 										}
+									} else
+									
+										spiritw.LOGGER.error("Item to check against touchstone is null, ignoring...");
 									}
 								}
-							} else
-							
-								spiritw.LOGGER.error("Item to check against touchstone is null, ignoring...");
-							}
-						}
-						if(restoreItems)
-						{
-							for(int index = 0; index < itemstoRestore.length; index++)
-							{
-								spiritw.LOGGER.debug("Giving Items to Player...");
-								ItemStack giveItem = itemstoRestore[index];
-								if(giveItem != null)
+								if(restoreItems)
 								{
-									player.addItem(giveItem);
-								}
-							}
-							//itemsRemoveFromCorpse.put(player.getStringUUID(), itemsToRestore.get(player.getStringUUID()).clone());
-							itemsToRestore.remove(player.getStringUUID());
+									for(int index = 0; index < itemstoRestore.length; index++)
+									{
+										spiritw.LOGGER.debug("Giving Items to Player...");
+										ItemStack giveItem = itemstoRestore[index];
+										if(giveItem != null)
+										{
+											player.addItem(giveItem);
+										}
+									}
+									//itemsRemoveFromCorpse.put(player.getStringUUID(), itemsToRestore.get(player.getStringUUID()).clone());
+									itemsToRestore.remove(player.getStringUUID());
 
-						}
-					} else
-					{
-						spiritw.LOGGER.error("items from Touchstone are null, unable to copy");
+								}
+							} else
+							{
+								spiritw.LOGGER.error("items from Touchstone are null, unable to copy");
+							}
+							
 					}
-					
 				}
+				
+			}
+			
 				
 		}
 	}

@@ -16,12 +16,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.phys.Vec3;
 
 public class Ghost extends MobEffect
 {
 	//Effect for when you are Spirit Walking
 	//Should drain XP and apply invisibility
-	//TODO needs icon
 	
 	//Properties
 	protected MobEffect blind;
@@ -62,7 +62,12 @@ public class Ghost extends MobEffect
 		{
 			player.setInvisible(true);
 		}
+		if(!player.isInvulnerable())
+		{
+			player.setInvulnerable(true);
+		}
 	}
+	
 	
 	//Overrode Methods
 	@Override //apply effect every 10 seconds, related effects are applied just short of this to ensure they are re-applied

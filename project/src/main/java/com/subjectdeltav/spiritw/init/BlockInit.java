@@ -23,7 +23,9 @@ public class BlockInit {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, spiritw.MODID);
 	
 	public static final RegistryObject<Block> TOUCHSTONE = BLOCKS.register("touchstone", 
-			() -> new TouchstoneBlock(Block.Properties.of(Material.STONE).strength(4f, 1200f).lightLevel((state) -> 15)));
+			() -> new TouchstoneBlock(Block.Properties.of(Material.STONE).strength(4f, 1200f).lightLevel((state) -> 15), 1));
+	
+	public static final RegistryObject<Block> TOUCHSTONE_2 = BLOCKS.register("touchstone_2",() -> new TouchstoneBlock(Block.Properties.of(Material.STONE).strength(4f, 1200f).lightLevel((state) -> 15), 2)); 
 	
 	
 	//automatically create items for blocks

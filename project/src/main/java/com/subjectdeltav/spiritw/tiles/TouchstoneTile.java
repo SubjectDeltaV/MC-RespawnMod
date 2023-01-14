@@ -203,11 +203,18 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				ItemStack potion = ent.checkAndReturnBrewables(inputBottle, material);
 				if(potion != null)
 				{
+					boolean throwable = potion.getItem().equals(Items.SPLASH_POTION);
 					try 
 					{
 						ent.itemHandler.insertItem(brewOutputSlot, potion, false);
 						brewedPotion = potion.getItem();
-						ent.activatedPotion = 1;
+						if(throwable)
+						{
+							ent.activatedPotion = 1;
+						}else
+						{
+							ent.activatedPotion = 2;
+						}
 					}catch(Exception e)
 					{
 						spiritw.LOGGER.error("An error occured while the touchstone was brewing. Printing stacktrace...");
@@ -232,7 +239,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				ent.activatedPotion = 0;
 				try 
 				{
-					ent.player.experienceLevel = ent.player.experienceLevel - levelsToEnchant;					
+					ent.player.giveExperienceLevels(-levelsToBrew);		
 				}catch(Exception e)
 				{
 					spiritw.LOGGER.error("An error occurred deducting levels");
@@ -241,11 +248,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				}
 			}else if(ent.activatedPotion == 2 && xpLevels > 5)
 			{
-				ent.itemHandler.extractItem(9, 1, false);
+				ent.itemHandler.extractItem(brewInputSlot1, 1, false);
 				ent.activatedPotion = 0;
 				try 
 				{
-					ent.player.experienceLevel = ent.player.experienceLevel - levelsToEnchant;					
+					ent.player.giveExperienceLevels(-levelsToEnchant);		
 				}catch(Exception e)
 				{
 					spiritw.LOGGER.error("An error occurred deducting levels");
@@ -257,6 +264,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				spiritw.LOGGER.debug("Error: Either  the touchstone block is in an incorrect state or the player no longer has enough levels to brew");
 				ent.itemHandler.insertItem(brewOutputSlot, new ItemStack(brewedPotion), false);
 				ent.itemHandler.extractItem(brewOutputSlot, 1, false); //put item back into the touchstone and delete it
+				ent.activatedPotion = 0;
 			}
 		}else if(ent.activatedPotion == 1)
 		{

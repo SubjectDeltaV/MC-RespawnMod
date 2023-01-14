@@ -80,8 +80,7 @@ public class spiritw
         MinecraftForge.EVENT_BUS.register(new DeathHandler());
         MinecraftForge.EVENT_BUS.register(new WoundedProtectionHandler());
         MinecraftForge.EVENT_BUS.register(new GhostEventHandler());
-        MinecraftForge.EVENT_BUS.register(new PotionRecipeHandler());
-
+        
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         
@@ -89,14 +88,15 @@ public class spiritw
         ModLootModifiers.LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
        
     }
-
+    
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
         LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
         //add Anvil Recipes
-        AnvilRecipeHandler.initAnvilRecipes();
+        //AnvilRecipeHandler.initAnvilRecipes();
+        PotionRecipeHandler.Potions(event);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

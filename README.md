@@ -51,10 +51,10 @@ SPIRIT LANTERN = IRON INGOT + BINDINGSTONE
 
 TOUCHSTONE = FLINT + BONE + SOUL STONE
 
-The splash potion can be crafted from the crafting table
+The Splash Potion can be Crafted early game using the Touchstone. Insert a bottle of water into the lower crafting slot, along with some soul sand. 
 
-INACTIVE REVIVE POTION = Water Bottle + Zombie Flesh + Gun Powder
+ALL REVIVE POTIONS COST EXPERIENCE! Throwables will cost you 3 levels, drinkables will cost you 5. 
 
-REVIVE POTION = INACTIVE REVIVE + SOUL SAND in a smithing station, will cost 	
-
-The drinkable can only be made in the brewing stand (not yet implemented)
+Drinkable Revive Potions must be crafted in a brewing stand using the standard brewing process. The active ingrediant is again, soul sand. 
+Crafting the potion this way will yield an "Inert Revival Potion" that can be activated in the touchstone. Splash Potions can also be brewed 
+this way by not using nether wort as a base. Using more soul sand will not have any gameplay effect, don't waste your ingredients. 

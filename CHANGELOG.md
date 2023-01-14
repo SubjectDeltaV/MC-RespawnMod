@@ -1,3 +1,7 @@
+2023-01-14 235 - Final final tweaks: Finished adjusting ghost effect. Added more to the lang file but some translation keys are still broken.
+
+2023-01-14 234 - More tweaks: Eliminated a number of crashes and finalized potion recipes. Brewing stand should now be working, and the touchstone deducts levels when being used now.
+
 2023-01-13 233 - Brewing now fully armed and operational: 
 2023-01-12 232 - Brewing Logic of tickloop not firing: 
 2023-01-12 231 - Fixed Missing Changes: Slot Numbers can now be fully adjusted using TouchstoneTile properties instead of manually adjusting all the methods.

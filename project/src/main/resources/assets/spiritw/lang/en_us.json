@@ -19,5 +19,9 @@
 	
 	"mobeffect.spiritw.revival_sickness":"Revival Sickness",
 	
-	"mobeffect.spiritw.wounded":"wounded"
+	"mobeffect.spiritw.wounded":"Wounded",
+	
+	"potion.spiritw.revive_potion":"Revival Potion",
+	
+	"potion.spiritw.inactive_revive":"Inert Revival Potion"
 }

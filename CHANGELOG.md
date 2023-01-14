@@ -1,3 +1,5 @@
+2023-01-13 233 - Brewing now fully armed and operational: 
+2023-01-12 232 - Brewing Logic of tickloop not firing: 
 2023-01-12 231 - Fixed Missing Changes: Slot Numbers can now be fully adjusted using TouchstoneTile properties instead of manually adjusting all the methods.
 
 2023-01-12 230 - Wrapping up Touchstone Rework: Removed a number of slots from the touchstone. Added in slots for brewing. Brewing is not working, going to take a second look at comparison logic. Enchanting is sticking stuff in the wrong slot.

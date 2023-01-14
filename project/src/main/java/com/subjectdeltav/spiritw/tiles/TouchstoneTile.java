@@ -52,8 +52,8 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	protected UUID ownerPlayerID;
 	protected Player player;
 	public boolean playerIsSet = false;
-	private boolean[] itemInInput;
-	private boolean[] itemInOutput;
+	private boolean[] itemInInput; //0 is enchanting, 1 is bottle slot, 2 is sand slot
+	private boolean[] itemInOutput; //0 is enchanting, 1 is brewing
 	protected boolean enchantedItem;
 	private ItemStack lastEnchanted;
 	private static int levelsToEnchant = 5;
@@ -135,17 +135,28 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	
 	public static void tick(Level l, BlockPos pos, BlockState state, TouchstoneTile ent) //logic for processing items, called every tick 
 	{
-		//System.out.println("Touchstone Ticked");
-		Item brewedPotion = null; //hopefully this won't cause a crash
 		if(l.isClientSide()) //check if on server side
 		{
 			return;
+		}
+		Item brewedPotion = null; //hopefully this won't cause a crash
+		int xpLevels = 0;
+		if(ent.playerIsSet)
+		{
+			try
+			{
+				xpLevels = ent.player.experienceLevel;
+			}catch(Exception e)
+			{
+				spiritw.LOGGER.warn("attempted to load info from player before it has loaded in!");
+				e.printStackTrace();
+			}
 		}
 		ent.CheckSlots();
 		if(ent.itemInInput[0] && ent.itemInOutput[0] == false && ent.enchantedItem == false)
 		{
 			ItemStack item = CanEnchantItem(ent); //get the item in the first slot if it's enchantable
-			if(item != null && ent.player.totalExperience > levelsToEnchant)
+			if(item != null && xpLevels > levelsToEnchant)
 			{
 				System.out.println("Enchanting requirements met, enchanting item");
 				ItemStack enchantedResult = enchantInSlot(item); //enchant as applicable
@@ -157,7 +168,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}else if(ent.enchantedItem && ent.itemInOutput[0] == false) //if we enchanted an item and the item in the output slot is missing
 		{
 			System.out.println("Player has removed the enchanted item, deleting the original, and saving the item with new information");
-			if(ent.player.experienceLevel > levelsToEnchant)
+			if(xpLevels > levelsToEnchant)
 			{
 				try
 				{
@@ -181,16 +192,16 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			ent.enchantedItem = false; //reset to false so we can enchant a new item;
 			ent.lastEnchanted = ItemStack.EMPTY;
 		}
-		if(ent.itemInInput[1] && ent.itemInInput[2] && ent.itemInOutput[1] == false) //check for new items, and see if we can output a valid potion
+		if(ent.itemInInput[1] && ent.itemInOutput[1] == false && ent.activatedPotion == 0) //check for new items, and see if we can output a valid potion
 		{
-			spiritw.LOGGER.debug("Items detected for brewing in brewing slots...");
-			if(ent.player.experienceLevel > 3)
+			//spiritw.LOGGER.debug("Items detected for brewing in brewing slots...");
+			if(xpLevels > levelsToBrew)
 			{
 				spiritw.LOGGER.debug("Player has enough XP to activate the potion, attempting a brew...");
 				ItemStack inputBottle = ent.itemHandler.getStackInSlot(brewInputSlot1);
 				ItemStack material = ent.itemHandler.getStackInSlot(brewInputSlot2);
 				ItemStack potion = ent.checkAndReturnBrewables(inputBottle, material);
-				if(inputBottle != null)
+				if(potion != null)
 				{
 					try 
 					{
@@ -214,9 +225,9 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}else if(ent.activatedPotion > 0 && ent.itemInOutput[1] == false) //if player removes potion, deduct the levels, if they no longer have the levels, destroy the potion
 		{
 			spiritw.LOGGER.debug("Player has removed potion, deducting experience levels");
-			if(ent.activatedPotion == 1 && ent.player.experienceLevel > levelsToBrew)
+			if(ent.activatedPotion == 1 && xpLevels > levelsToBrew)
 			{
-				ent.itemHandler.extractItem(brewInputSlot2, 1, false);
+				ent.itemHandler.extractItem(brewInputSlot1, 1, false);
 				ent.itemHandler.extractItem(brewInputSlot2, 1, false);
 				ent.activatedPotion = 0;
 				try 
@@ -228,7 +239,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 					e.printStackTrace();
 					return;
 				}
-			}else if(ent.activatedPotion == 2 && ent.player.experienceLevel > 5)
+			}else if(ent.activatedPotion == 2 && xpLevels > 5)
 			{
 				ent.itemHandler.extractItem(9, 1, false);
 				ent.activatedPotion = 0;
@@ -333,7 +344,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			itemInInput[1] = false;
 		}else
 		{
-			itemInInput[0] = true;
+			itemInInput[1] = true;
 		}
 		if(potionAdditive == ItemStack.EMPTY)
 		{
@@ -354,7 +365,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 			itemInOutput[1] = false;
 		}else
 		{
-			itemInOutput[1] = false;
+			itemInOutput[1] = true;
 		}
 	}
 	
@@ -365,7 +376,7 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 				&& sand.getItem().equals(Items.SOUL_SAND))
 		{
 			output = PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), PotionInit.REVIVE_POTION.get());
-		}else if(PotionUtils.getPotion(bottle).equals(Potions.WATER))
+		}else if(PotionUtils.getPotion(bottle).equals(PotionInit.INACTIVE_REVIVE.get()))
 		{
 			output = PotionUtils.setPotion(new ItemStack(Items.POTION), PotionInit.REVIVE_POTION.get());
 		}

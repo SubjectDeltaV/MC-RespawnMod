@@ -55,6 +55,6 @@ The splash potion can be crafted from the crafting table
 
 INACTIVE REVIVE POTION = Water Bottle + Zombie Flesh + Gun Powder
 
-REVIVE POTION = INACTIVE REVIVE + SPIRIT LANTERN (You will keep the lantern)
+REVIVE POTION = INACTIVE REVIVE + SOUL SAND in a smithing station, will cost 	
 
 The drinkable can only be made in the brewing stand (not yet implemented)

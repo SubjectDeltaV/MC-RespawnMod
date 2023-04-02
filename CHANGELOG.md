@@ -1,3 +1,4 @@
+2023-01-15 Update build.gradle: 
 2023-01-14 235 - Final final tweaks: Finished adjusting ghost effect. Added more to the lang file but some translation keys are still broken.
 
 2023-01-14 234 - More tweaks: Eliminated a number of crashes and finalized potion recipes. Brewing stand should now be working, and the touchstone deducts levels when being used now.

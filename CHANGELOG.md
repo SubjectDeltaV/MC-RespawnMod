@@ -1,3 +1,7 @@
+2023-04-02 302 - Lantern Model Working: Still need sprite and lighting work but this will work for now
+
+2023-04-01 301 - Create Lantern Model: Began work on lantern model. After implementing, there is a texture error.
+
 2023-01-15 Update build.gradle: 
 2023-01-14 235 - Final final tweaks: Finished adjusting ghost effect. Added more to the lang file but some translation keys are still broken.
 

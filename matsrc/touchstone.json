@@ -2,11 +2,11 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "block/touchstone_base",
-		"1": "block/touchstone_s",
-		"2": "block/touchstone_n",
-		"3": "block/touchstone_bowl",
-		"particle": "block/touchstone_base"
+		"0": "touchstone_base",
+		"1": "touchstone_s",
+		"2": "touchstone_n",
+		"3": "touchstone_bowl",
+		"particle": "touchstone_base"
 	},
 	"elements": [
 		{

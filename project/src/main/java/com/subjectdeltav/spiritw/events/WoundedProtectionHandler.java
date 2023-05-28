@@ -8,6 +8,14 @@ import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+/**
+ * This Event handler blocks damage from players that are currently wounded
+ * It does NOT trigger the wounded or the ghost effects
+ * Some Damage is not blocked, including: Explosions, Damage from Creative Players, Starvation, Drowning, and Lava
+ * Because wounded players automatically have a half heart, any damage taken will instantly kill them
+ * @author Mount
+ *
+ */
 public class WoundedProtectionHandler {
 	//protect players from damage or kills from certain sources
 	@SubscribeEvent

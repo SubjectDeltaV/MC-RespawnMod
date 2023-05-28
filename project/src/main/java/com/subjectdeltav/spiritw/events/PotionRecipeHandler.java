@@ -16,6 +16,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
+/**
+ * Potions Recipes Must be Added manually at runtime
+ * This will contain all the recipes we will add to the Brewing Stand
+ * @author Mount
+ *
+ */
 public class PotionRecipeHandler 
 {
 	//To Contain All Logic for adding recipes to Brewing Stand

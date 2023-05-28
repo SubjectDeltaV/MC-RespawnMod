@@ -18,6 +18,16 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * MobEffect APplied to Player to achieve spiritwalking
+ * Players are immune to ordinary damage
+ * Players are invisible
+ * Visibility is limtied by adding the Blind MobEffect
+ * XP is drained at a set rate. If it reaches zero the player is killed and
+ * must respawn normally
+ * @author Mount
+ *
+ */
 public class Ghost extends MobEffect
 {
 	//Effect for when you are Spirit Walking
@@ -41,12 +51,20 @@ public class Ghost extends MobEffect
 	
 	
 	//Custom Methods
-	
+	/**
+	 * Sets the internally store Spirit Lantern
+	 * @param lant the SpLantern to set
+	 */
 	public void setLantern(SpLantern lant)
 	{
 		this.lantern = lant;
 	}
 	
+	/**
+	 * How Many ticks are left before player death
+	 * @param playerXP XP of the player used to estimate how long until ghost expiration
+	 * @return int of ticks before ghost expiration
+	 */
 	public int estimateTicks(int playerXP) //estimate how many ticks the remaining XP has
 	{
 		this.currentXP = playerXP;
@@ -55,6 +73,11 @@ public class Ghost extends MobEffect
 		return ticksRemaining;
 	}
 	
+	/**
+	 * Adds the specific effects for ghosts
+	 * Includes Invisibility, Blindness and Invulnerability from damage
+	 * @param player
+	 */
 	private void addEffects(Player player)
 	{
 		player.addEffect(new MobEffectInstance(blind, effectLength * 20, 3));
@@ -70,6 +93,9 @@ public class Ghost extends MobEffect
 	
 	
 	//Overrode Methods
+	/**
+	 * Configure effect to happen every 10 seconds
+	 */
 	@Override //apply effect every 10 seconds, related effects are applied just short of this to ensure they are re-applied
 	public boolean isDurationEffectTick(int x, int y)
 	{
@@ -83,6 +109,10 @@ public class Ghost extends MobEffect
 		}
 	}
 	
+	/**
+	 * Curing Items by default are just the CureAllPotion
+	 * Milk does NOT work, and should not work
+	 */
 	@Override
 	public List<ItemStack> getCurativeItems()
 	{
@@ -94,6 +124,10 @@ public class Ghost extends MobEffect
 		return list;
 	}
 	
+	/**
+	 * Based on isDurationTickEffect(), applies effects every 10 seconds
+	 * Also drains xp at set rate
+	 */
 	@Override //configure effects, this is applied every 10 seconds
 	public void applyEffectTick(LivingEntity pl, int x)
 	{

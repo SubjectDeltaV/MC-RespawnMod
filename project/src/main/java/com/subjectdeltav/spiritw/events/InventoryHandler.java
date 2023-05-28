@@ -30,15 +30,30 @@ import com.subjectdeltav.spiritw.spiritw;
 import com.subjectdeltav.spiritw.effects.ModEffects;
 
 
-
+/**
+ * this handler ensures the lantern stays with the player after respawn and 
+ * also enables the spiritbound enchantment, making sure it works in certain case
+ * @author Mount
+ *
+ */
 public class InventoryHandler
 	{
-		//this handler ensures the lantern stays with the player after respawn and also enables the spiritbound enchantment works in certain case
+		//
+	/**
+	 * 2 Hashmaps are used to store items, itemsToRestore incldues most enchanted items to return to the player
+	 * itemsOnRespawn only return when the player dies and respawns at a bed, right now just means the lantern
+	 */
 	
 		private Map<String, ItemStack[]> itemsToRestore = new HashMap<String, ItemStack[]>();
 		private Map<String, ItemStack[]> itemsOnRespawn = new HashMap<String, ItemStack[]>();
 		//private Map<String, ItemStack[]> itemsRemoveFromCorpse = new HashMap<String, ItemStack[]>(); //removed, tracking items with this was never implemented
 		
+		/**
+		 * Grabs the Player Death Event (From the Corpse Mod)
+		 * Checks for any enchanted items with the spiritbound enchantment
+		 * Correct items are added to the itemsToRestore Hashmap
+		 * @param event
+		 */
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void drops(PlayerDeathEvent event) 
 		{
@@ -123,6 +138,10 @@ public class InventoryHandler
 			}
 		}
 		
+		/**
+		 * If a player respawns using the bed, return there lanter to them
+		 * @param event
+		 */
 		@SubscribeEvent
 		public void respawn(PlayerEvent.Clone event) 
 		{
@@ -149,6 +168,13 @@ public class InventoryHandler
 			}
 		}
 		
+		/**
+		 * When a player interacts with a block, check if its a ghosted player right clicking a touchstone
+		 * If so, the player id is checked against the hashmap before returning the items
+		 * This will also clear the spiritwalking/ghost effect from the player
+		 * It will only work if the player has set up their touchstone, empty touchstones return nothing!
+		 * @param event
+		 */
 		@SubscribeEvent(priority = EventPriority.LOW)
 		public void interact(PlayerInteractEvent event)
 		{

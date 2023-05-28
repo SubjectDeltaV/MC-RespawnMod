@@ -8,6 +8,11 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * Unused
+ * @author Mount
+ *
+ */
 public class Revive extends InstantenousMobEffect
 {
 	//This effect is to cure the player from the wounded effect

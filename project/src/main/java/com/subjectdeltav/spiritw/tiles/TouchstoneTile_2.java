@@ -7,6 +7,11 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.state.BlockState;
 
+/**
+ * Not Yet implemented/WIP
+ * @author Mount
+ *
+ */
 public class TouchstoneTile_2 extends TouchstoneTile implements MenuProvider{
 
 	//constructor

@@ -28,6 +28,18 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 
+/**
+ * This the logic for the Touchstone BLOCK
+ * When placed it will autogenerate a TileEnt of the same type to be referred to when interacting
+ * The USE function will currently check to see if the owner matches. If none is set the owner is
+ * automatically set on first use. It will reject the player if there is an owner and it doesn't match
+ * For info on how this block behvave see Tiles.TouchstoneTile
+ * For info on the UI that accesses this block see gui.TouchstoneMenu and gui.TouchstoneScreen
+ * This blocks item form is not represented directly in code, it is auto-generated during initialization 
+ * and has no unique properties
+ * @author Mount
+ *
+ */
 public class TouchstoneBlock extends BaseEntityBlock
 {
 	//properties
@@ -41,8 +53,6 @@ public class TouchstoneBlock extends BaseEntityBlock
 		this.tier = tier;
 	}
 
-	//custom methods
-	
 	//overrode methods
 	
 	@Override
@@ -51,6 +61,9 @@ public class TouchstoneBlock extends BaseEntityBlock
 		return new TouchstoneTile(pos, state);
 	} 
 	
+	/**
+	 * On Removal of Block: Get the associated drops from the interal TileEnt
+	 */
 	@Override
 	public void onRemove(BlockState state, Level l, BlockPos pos, BlockState newState, boolean isMoving) //setup drops on destroy, will need additional logic to exclude saved items, since we instatiate a copy of them instead
 	{
@@ -71,6 +84,12 @@ public class TouchstoneBlock extends BaseEntityBlock
 		return RenderShape.MODEL;
 	} 
 	
+	/**
+	 * OnUse (Right Cl on Block) check for correct ownership
+	 * If no Ownership, new owner is set and the Touchstone UI Opens
+	 * If owner is set and matches, UI opens
+	 * if owner is set and does not match, nothing happens
+	 */
 	@Override 
 	public InteractionResult use(BlockState state, Level l, BlockPos pos, Player pl, InteractionHand hand, BlockHitResult hit)
 	{

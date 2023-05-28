@@ -1,3 +1,6 @@
+2023-05-27 306 - Notations: Added in documentations and notations to most coding work.
+
+2023-05-23 305: 
 2023-04-02 303 - Touchstone model: created model, texture is broken
 
 2023-04-02 302 - Lantern Model Working: Still need sprite and lighting work but this will work for now

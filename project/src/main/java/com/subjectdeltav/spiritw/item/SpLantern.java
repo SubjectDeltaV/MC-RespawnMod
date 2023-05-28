@@ -35,11 +35,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 
+/**
+ * This item is held by the player while spirit walking. It enables the ghost effect while spirit walking
+ * Also will lift the ghost effect once player right clicks on touchstone. Logic to restore items are still in the event handler
+ * @author Mount
+ *
+ */
 public class SpLantern extends Item 
 {
-	//NAME: Spirit Lantern
-	//Function: This item is held by the player while spirit walking. It enables the ghost effect while spirit walking
-	//Also will lift the ghost effect once player right clicks on touchstone. Logic to restore items are still in the event handler
 	//TODO create block for placement
 	
 	//Properties
@@ -53,7 +56,10 @@ public class SpLantern extends Item
 	private BlockPos lastDeathLoc;
 	public ItemStack thisStack;
 	
-	
+	/**
+	 * 
+	 * @param tier the tier of the item
+	 */
 	//Constructor
 	public SpLantern(int tier) 
 	{
@@ -64,6 +70,12 @@ public class SpLantern extends Item
 		itemsOnDeath = new ItemStack[4];
 	}
 	
+	/**
+	 * Checks players inventory for items
+	 * This is called externally, (presumably from the touchstone)
+	 * @param player The Player to check for matching saved items
+	 * @return List of items with the Spiritbound Enchantment
+	 */
 	//Custom Methods
 	public List<ItemStack> scanAndSaveItems(Player player)
 	{
@@ -102,11 +114,24 @@ public class SpLantern extends Item
 		return null;
 	}
 	
+	/**
+	 * Set the last death position of this player
+	 * @param pos
+	 */
 	public void SetLastDeathLoc(BlockPos pos)
 	{
 		this.lastDeathLoc = pos;
 	}
 	
+	/**
+	 * Tries to drop a fake corpse at the current location and initiate a Spiritwalk
+	 * This method is called externally, and uses SetGhostEffect() as applicable
+	 * @param player
+	 * @param lanterns
+	 * @param setGhost Whether or not to enter the Ghost State
+	 * @return Returns true if we succeeded
+	 * @throws Exception Will throw exception if we encounter an error adding the ghost state
+	 */
 	public boolean DropCorpse(Player player, List<ItemStack> lanterns, boolean setGhost) throws Exception
 	{
 
@@ -141,6 +166,13 @@ public class SpLantern extends Item
 		return true;
 	}
 	
+	/**
+	 * Clears all active effects and gives the player the ghost effect
+	 * Called by DropCorpse when trying to start a spiritwalk
+	 * @param player
+	 * @param xp
+	 * @return whether or not we succeeded in adding the Effect
+	 */
 	protected boolean SetGhostEffect(Player player, int xp)
 	{
 		player.removeAllEffects();
@@ -151,6 +183,11 @@ public class SpLantern extends Item
 		return true;
 	}
 	
+	/**
+	 * Check if we have items internally stored to return to the player
+	 * @return ItemStack Array of items to return to the player after a spiritwalk
+	 * @throws Exception if said array is empty
+	 */
 	public ItemStack[] getItemsToReturn() throws Exception
 	{
 		if(hasItemsToReturn)
@@ -162,11 +199,19 @@ public class SpLantern extends Item
 		}
 	}
 	
+	/**
+	 * 
+	 * @return Do we have items to Return to the player?
+	 */
 	public boolean getSavedStatus()
 	{
 		return hasItemsToReturn;
 	}
 	
+	/**
+	 * Erases any stored item info
+	 * @return
+	 */
 	public boolean clearSavedItems()
 	{
 		itemsOnDeath = null; //empty out the array
@@ -186,6 +231,12 @@ public class SpLantern extends Item
     }
 	
 	//Overrode Methods
+    /**
+     * If we are downed and use the lantern, start a spiritwalk
+     * This will call the DropCorpse() method
+     * The method will abort if we fail at dropping a corpse
+     * An error will be returned if we drop a corpse but can't add the effect
+     */
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
 	{

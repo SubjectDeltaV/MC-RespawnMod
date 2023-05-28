@@ -13,6 +13,12 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+/**
+ * Initializer for Mob Effects
+ * for a full list of effects, it is easier to use effects.ModEffects
+ * @author Mount
+ *
+ */
 
 public class EffectInit 
 {

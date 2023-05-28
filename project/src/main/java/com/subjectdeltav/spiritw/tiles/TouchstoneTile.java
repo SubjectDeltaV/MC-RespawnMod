@@ -41,6 +41,11 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import de.maxhenkel.corpse.corelib.death.*;
 
+/**
+ * This is the Tile Entity data for the touchstone
+ * @author Mount
+ *
+ */
 public class TouchstoneTile extends BlockEntity implements MenuProvider {
 
 	//Properties
@@ -122,6 +127,10 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 	}
 	
 	//custom methods
+	/**
+	 * Drops any items in our inventory
+	 * Called when the block is broken or destroyed
+	 */
 	public void drops()
 	{
 		SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
@@ -133,6 +142,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		Containers.dropContents(this.level, this.worldPosition, inventory);
 	}	
 	
+	/**
+	 * Called Every Tick. Runs associated method to save and enchant items
+	 * Also replaces inactive potions with active ones if we have enough XP
+	 * 
+	 */
 	public static void tick(Level l, BlockPos pos, BlockState state, TouchstoneTile ent) //logic for processing items, called every tick 
 	{
 		if(l.isClientSide()) //check if on server side
@@ -282,6 +296,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param ent Touchstone Tile Entity
+	 * @return 
+	 */
 	@Nullable
 	private static ItemStack CanEnchantItem(TouchstoneTile ent) //check if the item in slot 1 can be enchanted
 	{
@@ -299,6 +318,11 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 
+	/**
+	 * Enchant the item in the current slot
+	 * @param item Item to enchant
+	 * @return enchanted item
+	 */
 	@Nullable
 	private static ItemStack enchantInSlot(ItemStack item) //enchant item through method
 	{
@@ -319,6 +343,10 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
+	/**
+	 * Set an item to copied status in the next available slot
+	 * @param item
+	 */
 	private void setCopiedItem(ItemStack item)
 	{
 		if(this.currentSavedItemsQ >= this.maxSavedItems) //make sure we have slots available
@@ -333,6 +361,9 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
+	/**
+	 * Sets the itemInInpit int array up by checking all of our items slots
+	 */
 	private void CheckSlots()
 	{
 		ItemStack inputSlot = this.itemHandler.getStackInSlot(enchantInputSlot);
@@ -377,6 +408,13 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		}
 	}
 	
+	/**
+	 * Check to see if we have activatable potions in our slots
+	 * Note that xp deduction occurs only when the potion is removed
+	 * @param bottle Input Potion or bottle
+	 * @param sand Enhancing item, should be soul sand
+	 * @return Returns the activated potion
+	 */
 	private ItemStack checkAndReturnBrewables(ItemStack bottle, ItemStack sand)
 	{
 		ItemStack output = null;
@@ -391,6 +429,10 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		return output;
 	}
 
+	/**
+	 * Set the player owner of this block
+	 * @param player
+	 */
 	public void setPlayer(Player player)
 	{
 		this.ownerPlayerID = player.getUUID();
@@ -398,11 +440,23 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		playerIsSet = true;
 	}
 	
+	/**
+	 * Get the owner of this block
+	 * @return UUID of player owner
+	 */
 	public UUID getPlayerID()
 	{
 		return ownerPlayerID;
 	}
 	
+	/**
+	 * Check saved items, a Lanterns saved items, and player info for saved items 
+	 * to return to player
+	 * @param player
+	 * @param lantern
+	 * @return Returns true if we succeeded
+	 * @throws Exception Exception thrown when we failed to erase the items in the lantern
+	 */
 	public boolean scanForAndReturnItems(Player player, SpLantern lantern) throws Exception
 	{
 		//import arrays and configure variables
@@ -474,6 +528,10 @@ public class TouchstoneTile extends BlockEntity implements MenuProvider {
 		return true;
 	}
 	
+	/**
+	 * scans all items currently in the saved items slots and returns an array of items for all saved items
+	 * @return List of items we have saved in this block
+	 */
 	@Nullable
 	public ItemStack[] getSavedItems() //scans all items currently in the saved items slots and returns an array of items for all saved items
 	{

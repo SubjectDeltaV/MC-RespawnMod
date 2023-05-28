@@ -19,17 +19,29 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+/**
+ * Handler for any events related to the Ghost Mob Effect
+ * this handler only maintains the status effect, it does 
+ * NOT put players into the ghost state. see the death handler 
+ * and the lantern for that!
+ * @author Mount
+ *
+ */
 public class GhostEventHandler 
 {
-	//for any events related to the Ghost Mob Effect
-	//this handler only maintains the status effect, it does NOT put players into the ghost state. see the death handler and the lantern for that!
+	//
+	//
 	
 	private Minecraft minecraft = Minecraft.getInstance();
 	
 	
 	
 	@SubscribeEvent
-	protected void hudSupress(Pre event) //cancel health and food hud elements
+	/**
+	 * cancel health and food hud elements
+	 * @param event
+	 */
+	protected void hudSupress(Pre event) 
 	{
 		Player player = minecraft.player;
 		if(event.getOverlay().equals(VanillaGuiOverlay.PLAYER_HEALTH.type()) && player.hasEffect(ModEffects.GHOST))
@@ -41,6 +53,10 @@ public class GhostEventHandler
 		}
 	}
 	
+	/**
+	 * This will auto-cancel the item pickup event
+	 * @param event
+	 */
 	@SubscribeEvent
 	protected void pickup(EntityItemPickupEvent event) //prevent item pickup
 	{
@@ -72,6 +88,11 @@ public class GhostEventHandler
 		}
 	}
 	
+	/**
+	 * Prevents players from opening inventories while a ghost
+	 * (Does this include there inventory?)
+	 * @param event
+	 */
 	@SubscribeEvent
 	protected void openInv(PlayerContainerEvent event)
 	{

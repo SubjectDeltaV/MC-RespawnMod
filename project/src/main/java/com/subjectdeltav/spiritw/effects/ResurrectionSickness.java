@@ -7,6 +7,13 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * Applied after a succesful spiritwalk/right clicking on the Touchstone while a ghost
+ * Adds related effects including Hunger, fatigue, nasea and slowness
+ * Only 1 level of severity
+ * @author Mount
+ *
+ */
 public class ResurrectionSickness extends MobEffect
 {
 	//The Effect a player gets after a successful spirit walk	
@@ -26,6 +33,9 @@ public class ResurrectionSickness extends MobEffect
 	}
 
 	//Overrode Methods
+	/**
+	 * Applies the effect every [freq] seconds
+	 */
 	@Override //apply effect every [freq] seconds, related effects are applied just short of this to ensure they are re-applied
 	public boolean isDurationEffectTick(int x, int y)
 	{
@@ -39,6 +49,11 @@ public class ResurrectionSickness extends MobEffect
 		}
 	}
 	
+	/**
+	 * Applies the side effects of resurrection sickness
+	 * Hunger and Fatigue persist for the entirety of the effect
+	 * Nausea and hunger wear off after 30 seconds
+	 */
 	@Override //configure effects, this is applied every [freq] seconds
 	public void applyEffectTick(LivingEntity ent, int x)
 	{

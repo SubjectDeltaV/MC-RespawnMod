@@ -10,6 +10,11 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+/**
+ * Initializer for our Tile or Block Entities
+ * @author Mount
+ *
+ */
 public class TileEntityInit 
 {
 	public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES_TYPES = 

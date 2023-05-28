@@ -14,6 +14,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
+/**
+ * Applied whever a player is revived from a downed state
+ * either via Potion or Second Wind
+ * Severity scales from just a few sympoms to ramping intensity
+ * Lowest Levels just cause hunger
+ * Highest Levels cause: Hunger, Weakness, Miners Fatigue, Blindness, Confusion, and a movment debuff
+ * @author Mount
+ *
+ */
 public class Revival_Sickness extends MobEffect 
 {
 
@@ -41,6 +50,9 @@ public class Revival_Sickness extends MobEffect
 	//boolean appliedOnce;
 	//int t; //ticks
 	
+	/**
+	 * Applies effect every 30 Seconds
+	 */
 	@Override //apply effect every 30 seconds, related effects are applied just short of this to ensure they are re-applied
 	public boolean isDurationEffectTick(int x, int y)
 	{
@@ -54,6 +66,11 @@ public class Revival_Sickness extends MobEffect
 		}
 	}
 	
+	/**
+	 * Curative items include ONLY the CureAll, but this effect wears off over time
+	 * Its related side effects can be temporarily relieved through milk but come back
+	 * each time applyEffectTick() is called
+	 */
 	@Override //setup items that can cure (none)
 	public List<ItemStack> getCurativeItems()
 	{
@@ -65,6 +82,17 @@ public class Revival_Sickness extends MobEffect
 		return list;
 	}
 	
+	/**
+	 * Apply Effects with graduating intensity based on Severity
+	 * Severity is increased during consumption if the player
+	 * already had this effect when they were downed
+	 * 1 = Hunger
+	 * 2 = Weakness
+	 * 3 = Miners Fatigue
+	 * 4 = blindness
+	 * Further increases increase length of the effect
+	 * There is no cap in severity at this time
+	 */
 	@Override //configure effects
 	public void applyEffectTick(LivingEntity pl, int x)
 	{

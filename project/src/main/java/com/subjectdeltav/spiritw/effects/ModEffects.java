@@ -4,6 +4,12 @@ import com.subjectdeltav.spiritw.init.EffectInit;
 
 import net.minecraft.world.effect.MobEffect;
 
+/**
+ * Class containing all of this Mods Effects for easier access
+ * see the specific classes for there details
+ * @author Mount
+ *
+ */
 public class ModEffects 
 {
 	public static final MobEffect WOUNDED = EffectInit.WOUNDED.get();

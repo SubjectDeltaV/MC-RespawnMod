@@ -36,9 +36,14 @@ import de.maxhenkel.corpse.corelib.death.DeathManager;
 import de.maxhenkel.corpse.corelib.death.PlayerDeathEvent;
 import de.maxhenkel.corpse.entities.CorpseEntity;
 
+/**
+ * This handler is for reacting to deaths, it currently initiates the wounded status effect and allows for "second wind"
+ * @author Mount
+ *
+ */
 public class DeathHandler 
 {
-	//This handler is for reacting to deaths, it currently initiates the wounded status effect and allows for "second wind"
+	//
 	
 	//public MobEffectInstance downed player = new MobEffectInstance(EffectInit.WOUNDED.get(), 1800);
 	//boolean diedAlready = false;
@@ -46,6 +51,13 @@ public class DeathHandler
 	private Map<String, BlockPos> rememberDeath = new HashMap<String, BlockPos>();
 	private Map<String, Integer> rememberXP = new HashMap<String, Integer>(); 
 	
+	/**
+	 * Triggered whenever a player dies
+	 * Checks the death type and filters it
+	 * If the death type is of a type that leads to wounded it leads to wounded status
+	 * Other death types directly initiate a Spirit Walks
+	 * @throws Exception lantern.DropCorpse()
+	 */
 	@SubscribeEvent
 	public void Death(LivingDeathEvent event) throws Exception 
 	{
@@ -186,6 +198,10 @@ public class DeathHandler
 	}
 	
 	//@SubscribeEvent
+	/**
+	 * Unused 
+	 * @param event
+	 */
 	public void Respawn(PlayerEvent.Clone event)
 	{
 		Player player = event.getEntity();
@@ -209,7 +225,11 @@ public class DeathHandler
 	}
 	
 	
-	
+	/**
+	 * The Hashmap that stores the Lantern, and the inventory of the player
+	 * the lantern is used to lookup the inventory
+	 * @param inv inventory of the player
+	 */
 	protected HashMap<Boolean, SpLantern> ContainsLantern(Inventory inv)
 	{
 		HashMap<Boolean, SpLantern> output = new HashMap<Boolean, SpLantern>();
